@@ -4,6 +4,7 @@ public class User implements UserInterface {
     private String password;
     private String email;
     private String birthday;
+    private double phoneNumber;
 
     public User(String username, String password) {
         this.name = null;
@@ -11,6 +12,7 @@ public class User implements UserInterface {
         this.password = password;
         this.email = null;
         this.birthday = null;
+        this.phoneNumber = 0;
     }
 
     public String getName() {
@@ -51,6 +53,14 @@ public class User implements UserInterface {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public double getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(double phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override
