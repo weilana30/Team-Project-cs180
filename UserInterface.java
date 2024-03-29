@@ -20,4 +20,8 @@ public interface UserInterface {
 
     void setEmail(String email);
 
+    double getPhoneNumber();
+
+    void setPhoneNumber(double phoneNumber);
+
 }
