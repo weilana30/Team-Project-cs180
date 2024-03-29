@@ -1,20 +1,16 @@
-import java.util.ArrayList;
-
-public class User {
+public class User implements UserInterface {
     private String name;
     private String username;
     private String password;
-    public ArrayList <User> friends;
-    private ArrayList <User> blocked;
-    private directMessage [] messages;
+    private String email;
+    private String birthday;
 
-    public static void main(String[] args) {
-
-    }
-    public User(String name, String username, String password) {
-        this.name = name;
+    public User(String username, String password) {
+        this.name = null;
         this.username = username;
         this.password = password;
+        this.email = null;
+        this.birthday = null;
     }
 
     public String getName() {
@@ -41,56 +37,37 @@ public class User {
         this.password = password;
     }
 
-    public boolean addFriend(User friend) {
-        try {
-            for (User user : blocked) {
-                if (user.getUsername().equals(friend.getUsername())) {
-                    return false;
-                }
-            }
-        } catch(NullPointerException e) {
-            try {
-                for (User user : friends) {
-                    if (friend.getUsername().equals(user.getUsername())) {
-                        return false;
-                    }
-                }
-                friends.add(friend);
-            } catch (NullPointerException er) {
-                friends = new ArrayList<>();
-                friends.add(friend);
-                return true;
-            }
-        }
-        return true;
-    }
-    public boolean removeFriend(User friend) {
-        try {
-            for (int i = 0; i < friends.size(); i++) {
-                if (friend.getUsername().equals(friends.get(i).getUsername())) {
-                    friends.remove(i);
-                    return true;
-                }
-            }
-        } catch(NullPointerException e) {
-            return false;
-        }
-        return false;
-    }
-    public boolean blockUser(User userToBlock) {
-        try{
-            for (int i = 0; i < blocked.size(); i++) {
-                if (userToBlock.getUsername().equals(blocked.get(i).getUsername())) {
-                    return false;
-                }
-            }
-            blocked.add(userToBlock);
-        } catch(NullPointerException e) {
-            blocked = new ArrayList<>();
-            blocked.add(userToBlock);
-            return true;
-        }
-        return true;
+    public String getBirthday() {
+        return birthday;
     }
 
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o.getClass() == User.class) {
+            return ((User) o).getUsername().equals(this.getUsername());
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Username: %s, Password: %s,",
+                getUsername(), getPassword());
+    }
 }
