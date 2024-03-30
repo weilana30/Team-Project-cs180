@@ -1,0 +1,8 @@
+import java.util.*;
+public interface directMessageInterface {
+User [] getUsers();
+ArrayList<IndividualText> getMessages();
+boolean addMessage(User user, String message);
+boolean deleteMessage(IndividualText individualText, User user);
+String toString();
+}
