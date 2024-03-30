@@ -1,0 +1,8 @@
+public interface IndividualTextInterface {
+    User getUser();
+    String getText();
+    int getTextNumber();
+    void setTextNumber(int textNumber);
+    boolean equals(Object o);
+    String toString();
+}
