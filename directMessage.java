@@ -1,40 +1,61 @@
-import java.io.*;
+import java.util.*;
 
-public class directMessage {
+public class directMessage implements directMessageInterface{
+    private String name;
     private User [] users;
-    private String messageFile;
+    private int textNumber;
+    private ArrayList <IndividualText> messages;
 
-    //constructs a new Message Object
     public directMessage(User user1, User user2) {
+        this.name = user1.getUsername() + user2.getUsername();
         this.users = new User[]{user1, user2};
-        this.messageFile = user1.getUsername() +"/"+ user2.getUsername() + "Message.txt";
-
-        //This is supposed to check if the file exists already, so it can't duplicate the chat
-        //It does not work though
-        File file = new File(this.messageFile);
-        File file2 = new File(user2.getUsername() +"/"+ user1.getUsername() + "Message.txt");
-        if (file.exists()) {
-            throw new IllegalArgumentException("These two users already have a chat." + messageFile);
-        }
-        if (file2.exists()) {
-            throw new IllegalArgumentException("These two users already have a chat." + messageFile);
-        }
+        this.textNumber = 0;
+        this.messages = new ArrayList<>();
     }
-    //This adds a message to the end of the file message in the format user-who-sent-message:::message
-    public boolean addMessage(String message, User user) {
-        try {
-            File
-            FileOutputStream fos = new FileOutputStream(messageFile);
-            PrintWriter pw = new BufferedWriter(fos);
-            pw.write(user.getUsername() + ":::" + message);
-        } catch(IOException io) {
-            io.printStackTrace();
-            System.out.println("There was an error adding a message");
+
+    public User[] getUsers() {
+        return users;
+    }
+
+    public ArrayList<IndividualText> getMessages() {
+        return messages;
+    }
+
+
+    public boolean addMessage(User user, String message) {
+        boolean found = false;
+        for (User currentUser : this.users) {
+            if (user.getUsername().equals(currentUser.getUsername())) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
             return false;
         }
+        textNumber++;
+        IndividualText newText = new IndividualText(user, message, textNumber);
+        messages.add(newText);
         return true;
     }
-    public boolean deleteMessage(String message) {
-
+    public boolean deleteMessage(IndividualText text, User user) {
+        //Checks if the message is actually in the messages list
+        if (!messages.contains(text)) {
+            return false;
+        }
+        //Does not allow one user to delete another users text
+        if (!user.getUsername().equals(text.getUser().getUsername())) {
+            return false;
+        }
+        return messages.remove(text);
+    }
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (IndividualText text: messages) {
+            stringBuilder.append(text.toString() + "\n");
+        }
+        return stringBuilder.toString();
     }
 }
+
+
