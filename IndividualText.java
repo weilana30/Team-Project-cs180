@@ -27,7 +27,8 @@ public class IndividualText implements IndividualTextInterface{
     public void setTextNumber(int textNumber) {
         this.textNumber = textNumber;
     }
-
+    //checks if two texts are equal by checking if they have the same message and
+    //username of the user
     public boolean equals(Object o) {
         if (o.getClass() != IndividualText.class) {
             return false;
