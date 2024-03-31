@@ -9,8 +9,8 @@ public class RunLocalTestFriends {
     @Test
     public void testAddFriend() {
         Profile profiles = new Profile();
-        User user1 = new User("user1");
-        User user2 = new User("user2");
+        User user1 = new User("user1", "12345");
+        User user2 = new User("user2", "54321");
         profiles.addUser(user1);
         profiles.addUser(user2);
 
@@ -32,8 +32,8 @@ public class RunLocalTestFriends {
     @Test
     public void testRemoveFriend() {
         Profile profiles = new Profile();
-        User user1 = new User("user1");
-        User user2 = new User("user2");
+        User user1 = new User("user1", "12345");
+        User user2 = new User("user2", "54321");
         profiles.addUser(user1);
         profiles.addUser(user2);
 
@@ -52,8 +52,8 @@ public class RunLocalTestFriends {
     @Test
     public void testBlockUser() {
         Profile profiles = new Profile();
-        User user1 = new User("user1");
-        User user2 = new User("user2");
+        User user1 = new User("user1", "12345");
+        User user2 = new User("user2", "54321");
         profiles.addUser(user1);
         profiles.addUser(user2);
 
