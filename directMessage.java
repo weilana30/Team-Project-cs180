@@ -1,13 +1,21 @@
 import java.io.*;
 import java.util.*;
-
-public class directMessage implements directMessageInterface{
+/**
+ * directMessage
+ *
+ * <p>
+ * Creates an object that resembled the chat between two users
+ *
+ * @author Andrew Weiland, lab section 15
+ * @version March 31, 2024
+ */
+public class DirectMessage implements DirectMessageInterface {
     private String fileName;
     private User [] users;
     private int textNumber;
-    private ArrayList <IndividualText> messages;
+    private ArrayList<IndividualText> messages;
 
-    public directMessage(User user1, User user2) {
+    public DirectMessage(User user1, User user2) {
         this.fileName = user1.getUsername() + user2.getUsername() + ".txt";
         this.users = new User[]{user1, user2};
         this.textNumber = 0;
@@ -50,7 +58,7 @@ public class directMessage implements directMessageInterface{
             }
             pw.close();
             fos.close();
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             return false;
         } catch (IOException e) {
@@ -78,4 +86,5 @@ public class directMessage implements directMessageInterface{
         return stringBuilder.toString();
     }
 }
+
 
