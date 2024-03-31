@@ -1,13 +1,14 @@
+import java.io.*;
 import java.util.*;
 
 public class directMessage implements directMessageInterface{
-    private String name;
+    private String fileName;
     private User [] users;
     private int textNumber;
     private ArrayList <IndividualText> messages;
 
     public directMessage(User user1, User user2) {
-        this.name = user1.getUsername() + user2.getUsername();
+        this.fileName = user1.getUsername() + user2.getUsername() + ".txt";
         this.users = new User[]{user1, user2};
         this.textNumber = 0;
         this.messages = new ArrayList<>();
@@ -21,7 +22,7 @@ public class directMessage implements directMessageInterface{
         return messages;
     }
 
-
+    //adds a message to the arraylist when there is a new message
     public boolean addMessage(User user, String message) {
         boolean found = false;
         for (User currentUser : this.users) {
@@ -38,6 +39,26 @@ public class directMessage implements directMessageInterface{
         messages.add(newText);
         return true;
     }
+    //updates the file with the current contents of messages
+    public boolean updateFile() {
+        try {
+            File file = new File(fileName);
+            FileOutputStream fos = new FileOutputStream(file, false);
+            PrintWriter pw = new PrintWriter(fos);
+            for (IndividualText text : messages) {
+                pw.println(text);
+            }
+            pw.close();
+            fos.close();
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
+    }
+    //deletes a message if the user who sent it is the one trying to delete it
     public boolean deleteMessage(IndividualText text, User user) {
         //Checks if the message is actually in the messages list
         if (!messages.contains(text)) {
@@ -57,5 +78,4 @@ public class directMessage implements directMessageInterface{
         return stringBuilder.toString();
     }
 }
-
 
