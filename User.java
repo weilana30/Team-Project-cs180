@@ -68,8 +68,7 @@ public class User implements UserInterface {
 
         if (o.getClass() == User.class) {
             return ((User) o).getUsername().equals(this.getUsername());
-        }
-        else {
+        } else {
             return false;
         }
 
@@ -77,7 +76,7 @@ public class User implements UserInterface {
 
     @Override
     public String toString() {
-        return String.format("Username: %s, Password: %s,",
+        return String.format("Username: %s, Password: %s",
                 getUsername(), getPassword());
     }
 
