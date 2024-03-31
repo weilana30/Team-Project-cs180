@@ -6,6 +6,9 @@ public class User implements UserInterface {
     private String birthday;
     private String phoneNumber;
 
+    // constructor for User.java that only takes 2 required parameters (username and password)
+    // all other fields will be set to null for now as they will be set using setters based on user input from
+    // the sign-up page
     public User(String username, String password) {
         this.name = null;
         this.username = username;
@@ -15,6 +18,7 @@ public class User implements UserInterface {
         this.phoneNumber = null;
     }
 
+    // all getters and setters involving each field
     public String getName() {
         return name;
     }
@@ -63,6 +67,7 @@ public class User implements UserInterface {
         this.phoneNumber = phoneNumber;
     }
 
+    // .equals method to compare user objects with one another
     @Override
     public boolean equals(Object o) {
 
@@ -74,6 +79,8 @@ public class User implements UserInterface {
 
     }
 
+    // .toString() method to create a string representation of a user which could be useful
+    // if we were to store all users in a file
     @Override
     public String toString() {
         return String.format("Username: %s, Password: %s",
