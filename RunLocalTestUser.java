@@ -1,4 +1,5 @@
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.JUnitCore;
@@ -18,6 +19,7 @@ public class RunLocalTestUser {
             }
         }
     }
+
     public static class TestCase {
         @Test(timeout = 1000)
         public void userTest() {
