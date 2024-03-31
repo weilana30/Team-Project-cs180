@@ -24,7 +24,7 @@ public class RunLocalTestProfileSearch {
         User user1 = new User("user1", "user1@example.com", "123456", "John Doe", "1980-01-01", "1234567890");
         profile.addUser(user1);
 
-        ProfileViewerInterface profileViewer = new ProfileViewer(profile);
+        ProfileViewerInterface profileViewer = new Viewer(profile);
 
         ProfileSearch profileSearch = new ProfileSearch(profile, profileViewer);
         profileSearch.search();
