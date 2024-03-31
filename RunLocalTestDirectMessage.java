@@ -6,9 +6,6 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 
-import java.io.*;
-import java.lang.reflect.Modifier;
-
 @RunWith(Enclosed.class)
 public class RunLocalTestDirectMessage {
     public static void main(String[] args) {
@@ -60,5 +57,19 @@ public class RunLocalTestDirectMessage {
             Assert.assertTrue("Ensure that the message is properly deleted", removeTrue);
             Assert.assertEquals("Ensure the message is properly deleted.", "", message.toString());
         }
+        @Test(timeout = 1000)
+        public void updateFileTest() {
+            User user1 = new User("AndyMan_18", "MonkeyBananas6");
+            User user2 = new User("The-Salty-Salzmann46", "LetsGoBoilers!@");
+            directMessage message = new directMessage(user1, user2);
+            String textMessage = "Hello Andrew, how was you day today?";
+            boolean adds = message.addMessage(user2, textMessage);
+            String textMessage2 = "It was excellent. I went to the mall with my mom!!";
+            message.addMessage(user1, textMessage2);
+            boolean update = message.updateFile();
+            System.out.println(update);
+            Assert.assertTrue("Ensure that it updates the file correctly", update);
+        }
     }
 }
+
