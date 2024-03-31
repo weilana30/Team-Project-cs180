@@ -1,8 +1,17 @@
-public class IndividualText implements IndividualTextInterface{
+/**
+ * individualText
+ * <p>
+ * Create an object that represents a single text that
+ * will be sent via directMessage
+ *
+ * @author Andrew Weiland, lab section 15
+ * @version March 31, 2024
+ */
+public class IndividualText implements IndividualTextInterface {
     private final User user;
     private final String text;
     private int textNumber;
-    public IndividualText (User user, String text, int lineNumber) {
+    public IndividualText(User user, String text, int lineNumber) {
         this.user = user;
         this.text = text;
         this.textNumber = lineNumber;
@@ -27,6 +36,7 @@ public class IndividualText implements IndividualTextInterface{
     public void setTextNumber(int textNumber) {
         this.textNumber = textNumber;
     }
+
     //checks if two texts are equal by checking if they have the same message and
     //username of the user
     public boolean equals(Object o) {
@@ -34,7 +44,7 @@ public class IndividualText implements IndividualTextInterface{
             return false;
         }
         if (this.user.getUsername().equals(((IndividualText) o).getUser().getUsername()) &&
-        this.text.equals(((IndividualText) o).getText()) &&
+            this.text.equals(((IndividualText) o).getText()) &&
                 (this.textNumber == ((IndividualText) o).getTextNumber())) {
             return true;
         }
