@@ -5,6 +5,11 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 /**
  * RunLocalTestDirectMessage
  * <p>
@@ -62,7 +67,7 @@ public class RunLocalTestDirectMessage {
 
         @Test(timeout = 1000)
         public void deleteMessageTest() {
-            User user1 = new User( "AndyMan_18", "MonkeyBananas6");
+            User user1 = new User("AndyMan_18", "MonkeyBananas6");
             User user2 = new User("The-Salty-Salzmann46", "LetsGoBoilers!@");
             DirectMessage message = new DirectMessage(user1, user2);
             String textMessage = "Hello Andrew, how was you day today?";
@@ -75,6 +80,7 @@ public class RunLocalTestDirectMessage {
             Assert.assertTrue("Ensure that the message is properly deleted", removeTrue);
             Assert.assertEquals("Ensure the message is properly deleted.", "", message.toString());
         }
+
         @Test(timeout = 1000)
         public void updateFileTest() {
             User user1 = new User("AndyMan_18", "MonkeyBananas6");
@@ -85,10 +91,22 @@ public class RunLocalTestDirectMessage {
             String textMessage2 = "It was excellent. I went to the mall with my mom!!";
             message.addMessage(user1, textMessage2);
             boolean update = message.updateFile();
-            System.out.println(update);
+            String expectedOutput = "The-Salty-Salzmann46:   Hello Andrew, how was you day today?\n" +
+                    "AndyMan_18:   It was excellent. I went to the mall with my mom!!\n";
             Assert.assertTrue("Ensure that it updates the file correctly", update);
+            String actualOutput = "";
+            try (BufferedReader reader = new BufferedReader(new FileReader(message.getFileName()))) {
+                String in = "";
+                while ((in = reader.readLine()) != null) {
+                    actualOutput += in + "\n";
+                }
+            } catch (IOException a) {
+                Assert.assertTrue("An IO exception was encountered while reading dataOut.txt", false);
+            } catch (Exception e) {
+                Assert.assertTrue("An unknown exception was encountered while reading dataOut.txt", false);
+            }
+            Assert.assertEquals("Make sure your FoundationDatabase is writing the outputfile correctly",
+                    expectedOutput.trim(), actualOutput.trim());
         }
     }
 }
-
-
