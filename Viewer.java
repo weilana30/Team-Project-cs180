@@ -1,3 +1,12 @@
+/**
+ * viewer
+ *
+ * <p>
+ * Create a way to look at the information of a viewer
+ *
+ * @author Ricardo Liu, lab section 15
+ * @version March 31, 2024
+ */
 public class Viewer implements ViewerInterface {
     private Profile profile;
     public ProfileViewer(Profile profile) {
@@ -7,7 +16,6 @@ public class Viewer implements ViewerInterface {
         StringBuilder userInfo = new StringBuilder();
         User user = profile.getUserByUsername(username);
         if (user != null) {
-            userInfo.append("Name: ").append(user.getName()).append("\n");
             userInfo.append("Username: ").append(user.getUsername()).append("\n");
             userInfo.append("Email: ").append(user.getEmail()).append("\n");
             userInfo.append("Phone Number: ").append(user.getPhoneNumber()).append("\n");
