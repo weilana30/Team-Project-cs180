@@ -1,5 +1,5 @@
 /**
- * profile
+ * profileinterface
  *
  * <p>
  * Creates an object that restores the information of a user
