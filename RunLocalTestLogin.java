@@ -22,17 +22,41 @@ public class RunLocalTestLogin {
 
     public static class TestCase {
         @Test(timeout = 1000)
-        public void authenticateTest() {
+        public void authenticateUsernameTest() {
             User[] users = new User[10];
             users[0] = new User("Rvelma", "Password1!");
             Login login = new Login(users);
 
-            assertTrue(login.authenticate("Rvelma", "Password1!"));
-            assertTrue(login.authenticate("rvelma", "Password1!"));
-            assertFalse(login.authenticate("rvelma", "Password1"));
-            assertFalse(login.authenticate("rvelma", "password1"));
-            assertFalse(login.authenticate("Velma", "Password1!"));
+            assertTrue(login.authenticateUsername("Rvelma", "Password1!"));
+            assertTrue(login.authenticateUsername("rvelma", "Password1!"));
+            assertFalse(login.authenticateUsername("rvelma", "Password1"));
+            assertFalse(login.authenticateUsername("rvelma", "password1"));
+            assertFalse(login.authenticateUsername("Velma", "Password1!"));
         }
 
+        @Test(timeout = 1000)
+        public void authenticateEmailTest() {
+            User[] users = new User[10];
+            users[0] = new User("Rvelma", "Password1!");
+            users[0].setEmail("rvelma@purdue.edu");
+            Login login = new Login(users);
+
+            assertTrue(login.authenticateEmail("Rvelma@purdue.edu", "Password1!"));
+            assertTrue(login.authenticateEmail("rvelma@purdue.edu", "Password1!"));
+            assertFalse(login.authenticateEmail("3303960658", "Password1!"));
+        }
+
+        @Test(timeout = 1000)
+        public void authenticatePhoneTest() {
+            User[] users = new User[10];
+            users[0] = new User("Rvelma", "Password1!");
+            users[0].setPhoneNumber("3303960658");
+            Login login = new Login(users);
+
+            assertTrue(login.authenticatePhone("330-396-0658", "Password1!"));
+            assertTrue(login.authenticatePhone("3303960658", "Password1!"));
+            assertTrue(login.authenticatePhone("330 396 0658", "Password1!"));
+            assertFalse(login.authenticatePhone("rvelma@purdue.edu", "Password1!"));
+        }
     }
 }
