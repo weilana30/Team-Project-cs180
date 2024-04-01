@@ -1,3 +1,12 @@
+/**
+ * UserInterface.java
+ * <p>
+ * An interface for User.java that contains all
+ * the methods associated with it as well.
+ *
+ * @author Rishi Velma, lab section 15
+ * @version April 1st, 2024
+ */
 public interface UserInterface {
 
     String getName();

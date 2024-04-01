@@ -1,3 +1,13 @@
+/**
+ * Signup.java
+ * <p>
+ * A class that defines the backend processes for signup
+ * and takes in one parameter which is the user array users of
+ * all users currently on the platform.
+ *
+ * @author Rishi Velma, lab section 15
+ * @version April 1st, 2024
+ */
 public class Signup implements SignupInterface {
 
     private User[] users;

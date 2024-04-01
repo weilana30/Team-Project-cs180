@@ -7,6 +7,16 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 
+/**
+ * RunLocalTestLogin.java
+ * <p>
+ * A test case file that will run different test cases
+ * on Login.java and its methods.
+ *
+ * @author Rishi Velma, lab section 15
+ * @version April 1st, 2024
+ */
+
 @RunWith(Enclosed.class)
 public class RunLocalTestLogin {
     public static void main(String[] args) {
@@ -19,6 +29,16 @@ public class RunLocalTestLogin {
             }
         }
     }
+
+    /**
+     * TestCase
+     * <p>
+     * The test case class that contains all the different
+     * test cases for Login.java.
+     *
+     * @author Rishi Velma, lab section 15
+     * @version April 1st, 2024
+     */
 
     public static class TestCase {
         @Test(timeout = 1000)

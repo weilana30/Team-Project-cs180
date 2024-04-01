@@ -1,5 +1,13 @@
-import java.util.Arrays;
-
+/**
+ * Login.java
+ * <p>
+ * A class that defines the backend processes for login
+ * and takes in one parameter which is the user array users of
+ * all users currently on the platform.
+ *
+ * @author Rishi Velma, lab section 15
+ * @version April 1st, 2024
+ */
 public class Login implements LoginInterface {
 
     private User[] users;

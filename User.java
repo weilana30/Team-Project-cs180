@@ -1,3 +1,12 @@
+/**
+ * User.java
+ * <p>
+ * A class that defines the user and its properties as well as
+ * includes methods for equals and toString.
+ *
+ * @author Rishi Velma, lab section 15
+ * @version April 1st, 2024
+ */
 public class User implements UserInterface {
     private String name;
     private String username;

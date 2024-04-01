@@ -1,3 +1,12 @@
+/**
+ * SignupGUIInterface.java
+ * <p>
+ * An interface for the future SignupGUI.java that contains all
+ * the methods that will be associated with it as well in the future.
+ *
+ * @author Rishi Velma, lab section 15
+ * @version April 1st, 2024
+ */
 public interface SignupGUIInterface {
 
     // FOR PHASE 2/3
