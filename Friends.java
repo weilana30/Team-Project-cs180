@@ -18,7 +18,7 @@ public class Friends implements FriendsInterface {
             User friend = profiles.getUserByUsername(friendUsername);
             User user = profiles.getUserByUsername(userUsername);
             
-            //if friend or user is null, returns false
+            //if friend or user doesn't exist, returns false
             if (friend == null || user == null) {
                 return false;
             }
@@ -42,7 +42,7 @@ public class Friends implements FriendsInterface {
     public boolean removeFriend(String friendUsername) {
         User friend = profiles.getUserByUsername(friendUsername);
         
-        //if friend username is null
+        //if friend username doesn't exist
         if (friend == null) {
             return false;
         }
@@ -62,7 +62,7 @@ public class Friends implements FriendsInterface {
         User userToBlock = profiles.getUserByUsername(userToBlockUsername);
         User currentUser = profiles.getUserByUsername(currentUserUsername);
 
-        //if userToBlock or currentUser is null, returns false
+        //if userToBlock or currentUser doesn't exist, returns false
         if (userToBlock == null || currentUser == null) {
             return false;
         }
