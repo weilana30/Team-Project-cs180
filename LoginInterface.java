@@ -1,6 +1,10 @@
 public interface LoginInterface {
 
-    boolean authenticate(String username, String password);
+    boolean authenticateUsername(String username, String password);
+
+    boolean authenticateEmail(String email, String password);
+
+    boolean authenticatePhone(String phoneNumber, String password);
 
     User[] getUsers();
 
