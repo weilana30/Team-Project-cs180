@@ -2,6 +2,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+/**
+ * runlocaltestprofile
+ *
+ * <p>
+ * Creates an object that examine the profile
+ *
+ * @author Ricardo Liu, lab section 15
+ * @version March 31, 2024
+ */
 public class RunLocalTestProfile {
     public void testProfile() {
         Profile profile = new Profile();
