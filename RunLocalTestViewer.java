@@ -2,7 +2,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
+/**
+ * runlocaltestviewer
+ *
+ * <p>
+ * Creates an object that examine viewer
+ *
+ * @author Ricardo Liu, lab section 15
+ * @version March 31, 2024
+ */
 @RunWith(JUnit4.class)
 public class RunLocalTestViewer {
 
