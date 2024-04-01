@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Login implements LoginInterface {
 
     private User[] users;
@@ -11,15 +13,71 @@ public class Login implements LoginInterface {
         this.users = users;
     }
 
-    // this method ensures that the username and password inputted match the
-    // username and password that is in the users array
-    public boolean authenticate(String username, String password) {
+    // this method ensures that if user chooses username log in method,
+    // the username and password inputted are both in the users array as a user
+    public boolean authenticateUsername(String username, String password) {
 
         // this iterates through users array and ensures that both inputs are in the users array as a user
         // returns true if successful
         for (User user : users) {
             if (user != null) {
                 if (user.getUsername().equalsIgnoreCase(username) & user.getPassword().equals(password)) {
+                    return true;
+                }
+            }
+        }
+
+        // otherwise returns false
+        return false;
+
+    }
+
+    // this method ensures that if user chooses email log in method,
+    // the email and password inputted are both in the users array as a user
+    public boolean authenticateEmail(String email, String password) {
+
+        // this iterates through users array and ensures that both inputs are in the users array as a user
+        // returns true if successful
+        for (User user : users) {
+            if (user != null) {
+                if (user.getEmail().equalsIgnoreCase(email) & user.getPassword().equals(password)) {
+                    return true;
+                }
+            }
+        }
+
+        // otherwise returns false
+        return false;
+
+    }
+
+    // this method ensures that if user chooses phone number log in method,
+    // the phoneNumber and password inputted are both in the users array as a user
+    public boolean authenticatePhone(String phoneNumber, String password) {
+
+        // these check if the phone number entered has hyphens or spaces between its numbers
+        // if it does then it will remove them and create a new phone number without these symbols
+        if (phoneNumber.contains("-")) {
+            String[] splitPhone = phoneNumber.split("-");
+            phoneNumber = "";
+            for (String part : splitPhone) {
+                phoneNumber += part;
+            }
+        }
+        if (phoneNumber.contains(" ")) {
+            String[] splitPhone = phoneNumber.split(" ");
+            phoneNumber = "";
+            for (String part : splitPhone) {
+                phoneNumber += part;
+            }
+        }
+
+        // this iterates through users array and ensures that both inputs are in the users array as a user
+        // returns true if successful
+        for (User user : users) {
+            if (user != null) {
+                if (user.getPhoneNumber().equalsIgnoreCase(phoneNumber) &
+                        user.getPassword().equals(password)) {
                     return true;
                 }
             }
