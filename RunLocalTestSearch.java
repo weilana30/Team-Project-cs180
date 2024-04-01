@@ -2,12 +2,19 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
-
+/**
+ * runlocaltestsearch
+ *
+ * <p>
+ * Creates an object that examine the search
+ *
+ * @author Ricardo Liu, lab section 15
+ * @version March 31, 2024
+ */
 @RunWith(JUnit4.class)
 public class RunLocalTestProfileSearch {
 
