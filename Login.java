@@ -30,4 +30,12 @@ public class Login implements LoginInterface {
 
     }
 
+    // getter and setter for users
+    public User[] getUsers() {
+        return users;
+    }
+
+    public void setUsers(User[] users) {
+        this.users = users;
+    }
 }
