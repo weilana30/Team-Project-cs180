@@ -83,7 +83,7 @@ public class RunLocalTestFriends {
 
             // blocking same user (False)
             boolean result2 = friends.blockUser("user2", "user1");
-            Assert.assertFalse(result2); // Should return false
+            Assert.assertFalse(result2);
 
             // block user that doesn't exist (False)
             boolean result3 = friends.blockUser("user3", "user1");
