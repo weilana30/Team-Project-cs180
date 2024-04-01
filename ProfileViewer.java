@@ -7,7 +7,7 @@
  * @author Ricardo Liu, lab section 15
  * @version March 31, 2024
  */
-public class Viewer implements ViewerInterface {
+public class ProfileViewer implements ProfileViewerInterface {
     private Profile profile;
     public ProfileViewer(Profile profile) {
         this.profile = profile;
