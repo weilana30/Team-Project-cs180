@@ -51,7 +51,19 @@ public class Server implements Runnable {
                         pw.println("incorrect_password");
                     }
                 }
-            } 
+                pw.println("Welcome, " + username + "! What would you like to do? (Type 'friends', 'search', or 'signout')");
+                String userChoice = br.readLine();
+                if ("friends".equalsIgnoreCase(userChoice)) {
+                    handleFriends(user, br, pw);
+                } else if ("search".equalsIgnoreCase(userChoice)) {
+                    handleProfileSearch(br, pw);
+                } else if ("signout".equalsIgnoreCase(userChoice)) {
+                    pw.println("Signing out...");
+                    return;
+                } else {
+                    pw.println("Invalid choice. Please type 'friends', 'search', or 'signout'.");
+                }
+            }
         } else {
                 String newAccount = br.readLine();
                 
@@ -86,4 +98,36 @@ public class Server implements Runnable {
                 user.getUsername(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getBirthday());
         pw.println(userInfo);
     }
+    private void handleFriends(User user, BufferedReader br, PrintWriter pw) throws IOException {
+    pw.println("Here are your friends:");
+    for (User friend : user.getFriends().getFriends()) {
+        pw.println(friend.getUsername());
+    }
+}
+
+private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
+    pw.println("Do you want to find a user? (yes/no)");
+    String choice = br.readLine().trim().toLowerCase();
+    if (choice.equals("yes")) {
+        pw.println("Choose search criteria (username/phone number/email): ");
+        String searchCriteria = br.readLine().trim().toLowerCase();
+        pw.println("Enter the value to search for: ");
+        String searchValue = br.readLine().trim();
+        switch (searchCriteria) {
+            case "username":
+                pw.println(profileViewer.displayUserInformationByUsername(searchValue));
+                break;
+            case "phone number":
+                pw.println(profileViewer.displayUserInformationByPhoneNumber(searchValue));
+                break;
+            case "email":
+                pw.println(profileViewer.displayUserInformationByEmail(searchValue));
+                break;
+            default:
+                pw.println("Invalid search criteria!");
+        }
+    } else if (!choice.equals("no")) {
+        pw.println("Invalid choice!");
+    }
+}
 }
