@@ -12,6 +12,7 @@ public class Server implements Runnable {
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
+    
     public static void main(String[] args) throws IOException {
         int port = 1234;
         ServerSocket serverSocket = new ServerSocket(port);
