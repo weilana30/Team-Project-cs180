@@ -1,3 +1,4 @@
+
 /**
  * profileinterface
  *
@@ -10,6 +11,8 @@
 public interface ProfileInterface {
     void addUser(User user);
     User getUserByUsername(String username);
+    User getUserByPhoneNumber(String phoneNumber);
+    User getUserByEmail(String email);
     String getEmailByUsername(String username);
     String getPhoneNumberByUsername(String username);
     String getBirthdayByUsername(String username);
