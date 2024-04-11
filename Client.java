@@ -49,7 +49,19 @@ public class Client {
         String [] userInfo = userInfoString.split(" ");
 
         //this should check if the password is correct after
-
+        boolean validPassword;
+        do {
+            String password = enterPassword();
+            
+            if (!password.equals(userInfo[4])) {
+                System.out.println("That is the wrong password. Please try again!");
+                validPassword = false;
+            }
+            else {
+                System.out.println("Login successful!");
+                validPassword = true;
+            }
+        } while (!validPassword);
 
         //
         showProfilePage();
@@ -83,6 +95,12 @@ public class Client {
         Scanner scan = new Scanner(System.in);
         String response = scan.nextLine();
         return response;
+    }
+
+    public static String enterPassword() throws IOException {
+        System.out.println("Please enter your password");
+        Scanner scan = new Scanner(System.in);
+        return scan.nextLine();
     }
 
     public static void showProfilePage(String profileInformation) {
