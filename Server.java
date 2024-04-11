@@ -8,11 +8,12 @@ import java.net.Socket;
 public class Server implements Runnable {
     private Socket clientSocket;
     private static Profile profile = new Profile();
-
+    private ProfileViewer profileViewer;
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
+        this.profileViewer = new ProfileViewer(profile);
     }
-    
+
     public static void main(String[] args) throws IOException {
         int port = 1234;
         ServerSocket serverSocket = new ServerSocket(port);
@@ -25,8 +26,8 @@ public class Server implements Runnable {
             }
         }
     }
-    
-    
+
+
 
     public void run() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
@@ -34,39 +35,39 @@ public class Server implements Runnable {
 
             String newUser = br.readLine();
 
-           if ("yes".equalsIgnoreCase(newUser)) {
-            String username = br.readLine();
-            User user = profile.getUserByUsername(username);
-            if (user != null) {
-                boolean passwordCorrect = false;
-                while (!passwordCorrect) {
-                    pw.println("Please enter your password:");
-                    String password = br.readLine();
-                    if (user.getPassword().equals(password)) {
-                        ProfileViewer profileViewer = new ProfileViewer(profile);
-                        String userProfile = profileViewer.displayUserInformation(username);
-                        pw.println(userProfile);
-                        passwordCorrect = true;
+            if ("yes".equalsIgnoreCase(newUser)) {
+                String username = br.readLine();
+                User user = profile.getUserByUsername(username);
+                if (user != null) {
+                    boolean passwordCorrect = false;
+                    while (!passwordCorrect) {
+                        pw.println("Please enter your password:");
+                        String password = br.readLine();
+                        if (user.getPassword().equals(password)) {
+                            ProfileViewer profileViewer = new ProfileViewer(profile);
+                            String userProfile = profileViewer.displayUserInformationByUsername(username);
+                            pw.println(userProfile);
+                            passwordCorrect = true;
+                        } else {
+                            pw.println("incorrect_password");
+                        }
+                    }
+                    pw.println("Welcome, " + username + "! What would you like to do? (Type 'friends', 'search', or 'signout')");
+                    String userChoice = br.readLine();
+                    if ("friends".equalsIgnoreCase(userChoice)) {
+                        handleFriends(user, br, pw);
+                    } else if ("search".equalsIgnoreCase(userChoice)) {
+                        handleProfileSearch(br, pw);
+                    } else if ("signout".equalsIgnoreCase(userChoice)) {
+                        pw.println("Signing out...");
+                        return;
                     } else {
-                        pw.println("incorrect_password");
+                        pw.println("Invalid choice. Please type 'friends', 'search', or 'signout'.");
                     }
                 }
-                pw.println("Welcome, " + username + "! What would you like to do? (Type 'friends', 'search', or 'signout')");
-                String userChoice = br.readLine();
-                if ("friends".equalsIgnoreCase(userChoice)) {
-                    handleFriends(user, br, pw);
-                } else if ("search".equalsIgnoreCase(userChoice)) {
-                    handleProfileSearch(br, pw);
-                } else if ("signout".equalsIgnoreCase(userChoice)) {
-                    pw.println("Signing out...");
-                    return;
-                } else {
-                    pw.println("Invalid choice. Please type 'friends', 'search', or 'signout'.");
-                }
-            }
-        } else {
+            } else {
                 String newAccount = br.readLine();
-                
+
                 String [] parts = newAccount.split(", ");
                 String username = parts[0].trim();
                 String email = parts[1].trim();
@@ -80,7 +81,7 @@ public class Server implements Runnable {
                     pw.println(phoneNumber);
                 }
             }
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,35 +100,35 @@ public class Server implements Runnable {
         pw.println(userInfo);
     }
     private void handleFriends(User user, BufferedReader br, PrintWriter pw) throws IOException {
-    pw.println("Here are your friends:");
-    for (User friend : user.getFriends().getFriends()) {
-        pw.println(friend.getUsername());
-    }
-}
-
-private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
-    pw.println("Do you want to find a user? (yes/no)");
-    String choice = br.readLine().trim().toLowerCase();
-    if (choice.equals("yes")) {
-        pw.println("Choose search criteria (username/phone number/email): ");
-        String searchCriteria = br.readLine().trim().toLowerCase();
-        pw.println("Enter the value to search for: ");
-        String searchValue = br.readLine().trim();
-        switch (searchCriteria) {
-            case "username":
-                pw.println(profileViewer.displayUserInformationByUsername(searchValue));
-                break;
-            case "phone number":
-                pw.println(profileViewer.displayUserInformationByPhoneNumber(searchValue));
-                break;
-            case "email":
-                pw.println(profileViewer.displayUserInformationByEmail(searchValue));
-                break;
-            default:
-                pw.println("Invalid search criteria!");
+        pw.println("Here are your friends:");
+        for (User friend : user.getFriends().getFriends()) {
+            pw.println(friend.getUsername());
         }
-    } else if (!choice.equals("no")) {
-        pw.println("Invalid choice!");
     }
-}
+
+    private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
+        pw.println("Do you want to find a user? (yes/no)");
+        String choice = br.readLine().trim().toLowerCase();
+        if (choice.equals("yes")) {
+            pw.println("Choose search criteria (username/phone number/email): ");
+            String searchCriteria = br.readLine().trim().toLowerCase();
+            pw.println("Enter the value to search for: ");
+            String searchValue = br.readLine().trim();
+            switch (searchCriteria) {
+                case "username":
+                    pw.println(profileViewer.displayUserInformationByUsername(searchValue));
+                    break;
+                case "phone number":
+                    pw.println(profileViewer.displayUserInformationByPhoneNumber(searchValue));
+                    break;
+                case "email":
+                    pw.println(profileViewer.displayUserInformationByEmail(searchValue));
+                    break;
+                default:
+                    pw.println("Invalid search criteria!");
+            }
+        } else if (!choice.equals("no")) {
+            pw.println("Invalid choice!");
+        }
+    }
 }
