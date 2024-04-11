@@ -34,10 +34,25 @@ public class Server implements Runnable {
 
             String newUser = br.readLine();
 
-            if ("yes".equalsIgnoreCase(newUser)) {
-                String username = br.readLine();
-                returningUser(username, br, pw);
-            } else {
+           if ("yes".equalsIgnoreCase(newUser)) {
+            String username = br.readLine();
+            User user = profile.getUserByUsername(username);
+            if (user != null) {
+                boolean passwordCorrect = false;
+                while (!passwordCorrect) {
+                    pw.println("Please enter your password:");
+                    String password = br.readLine();
+                    if (user.getPassword().equals(password)) {
+                        ProfileViewer profileViewer = new ProfileViewer(profile);
+                        String userProfile = profileViewer.displayUserInformation(username);
+                        pw.println(userProfile);
+                        passwordCorrect = true;
+                    } else {
+                        pw.println("incorrect_password");
+                    }
+                }
+            } 
+        } else {
                 String newAccount = br.readLine();
                 
                 String [] parts = newAccount.split(", ");
