@@ -66,5 +66,21 @@ public class Profile {
             return null;
         }
     }
-}
+    public User getUserByPhoneNumber(String phoneNumber) {
+        for (User user : users) {
+            if (user.getPhoneNumber().equals(phoneNumber)) {
+                return user;
+            }
+        }
+        return null;
+    }
 
+    public User getUserByEmail(String email) {
+        for (User user : users) {
+            if (user.getEmail().equals(email)) {
+                return user;
+            }
+        }
+        return null;
+    }
+}
