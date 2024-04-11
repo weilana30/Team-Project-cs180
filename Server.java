@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server implements Runnable {
     private Socket clientSocket;
@@ -101,7 +102,8 @@ public class Server implements Runnable {
     }
     private void handleFriends(User user, BufferedReader br, PrintWriter pw) throws IOException {
         pw.println("Here are your friends:");
-        for (User friend : user.getFriends().getFriends()) {
+        ArrayList<User> friendsList = user.getFriends();
+        for (User friend : friendsList) {
             pw.println(friend.getUsername());
         }
     }
