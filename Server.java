@@ -4,6 +4,6 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class ServerClass {
+public class Server {
   //insert code here
 }
