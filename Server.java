@@ -37,7 +37,20 @@ public class Server implements Runnable {
                 String username = br.readLine();
                 returningUser(username, br, pw);
             } else {
-                //sign up
+                String newAccount = br.readLine();
+                
+                String [] parts = newAccount.split(", ");
+                String username = parts[0].trim();
+                String email = parts[1].trim();
+                String phoneNumber = parts[2].trim();
+
+                if (profile.getUserByUsername(username) != null) {
+                    pw.write(username);
+                } else if (profile.getEmailByUsername(email) != null) {
+                    pw.println(email);
+                } else if (profile.getPhoneNumberByUsername(phoneNumber) != null) {
+                    pw.println(phoneNumber);
+                }
             }
             
         } catch (IOException e) {
@@ -52,7 +65,7 @@ public class Server implements Runnable {
             username = br.readLine();
             user = profile.getUserByUsername(username);
         }
-        
+        // Once a valid username is found, send user information
         String userInfo = String.format("Username: %s, Name: %s, Password: %s, Email: %s, Phone: %s, Birthday: %s",
                 user.getUsername(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getBirthday());
         pw.println(userInfo);
