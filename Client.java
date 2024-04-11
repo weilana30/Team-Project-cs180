@@ -54,7 +54,7 @@ public class Client {
         do {
             String password = enterPassword();
 
-            if (!password.equals(userInfo[4])) {
+            if (!password.equals(userInfo[2])) {
                 System.out.println("That is the wrong password. Please try again! You have " + (3-attempts) + " attempts remaining.");
                 attempts += 1;
                 validPassword = false;
