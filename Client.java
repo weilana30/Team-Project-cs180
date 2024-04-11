@@ -49,23 +49,30 @@ public class Client {
         String [] userInfo = userInfoString.split(" ");
 
         //this should check if the password is correct after
+        int attempts = 0;
         boolean validPassword;
         do {
             String password = enterPassword();
-            
+
             if (!password.equals(userInfo[4])) {
-                System.out.println("That is the wrong password. Please try again!");
+                System.out.println("That is the wrong password. Please try again! You have " + (3-attempts) + " attempts remaining.");
+                attempts += 1;
                 validPassword = false;
             }
             else {
                 System.out.println("Login successful!");
+                attempts = 3;
                 validPassword = true;
             }
-        } while (!validPassword);
+            if (attempts == 3 && !validPassword) {
+                System.out.println("You have used your maximum attempts. You will now be logged out to prevent suspicious activity.");
+            }
+        } while (attempts < 3);
 
-        //
-        showProfilePage();
-
+        if (validPassword) {
+            //
+            showProfilePage();
+        }
 
     }
 
