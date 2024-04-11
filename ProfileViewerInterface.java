@@ -8,5 +8,11 @@
  * @version March 31, 2024
  */
 public interface ProfileViewerInterface {
-    String displayUserInformation(String username);
+    String displayUserInformationByUsername(String username);
+    String displayUserInformationByPhoneNumber(String phoneNumber);
+    String displayUserInformationByEmail(String email);
 }
+
+
+
+
