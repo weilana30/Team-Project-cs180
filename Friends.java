@@ -80,4 +80,8 @@ public class Friends implements FriendsInterface {
         return true;
     }
 
+    public ArrayList<User> getFriends() {
+        return friends;
+    }
+
 }
