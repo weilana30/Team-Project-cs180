@@ -1,21 +1,60 @@
-import javax.swing.*;
 import java.io.*;
-import java.net.ConnectException;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Scanner;
 public class Client {
 
     public static void main(String[] args) throws IOException, NullPointerException {
         String hostName;
         int portNum;
+        Socket socket = new Socket("textogram", 1234);
         Boolean newOrReturning = showLogInMessage();
-        if (newOrReturning) {
-            //send server a yes
-        } else {
-            //send server a no
-        }
+        //output stream to send messages to server
+        PrintWriter pw = new PrintWriter(socket.getOutputStream());
+        boolean continueGoing = false;
+        do {
+            if (newOrReturning) {
+                //sends yes to the server if they are a returning user
+                pw.write("yes");
+                pw.println();
+                pw.flush();
+                continueGoing = true;
+            } else {
+                //send server a no if they are a new user
+                pw.write("no");
+                pw.println();
+                pw.flush();
+            }
+        } while(!continueGoing);
+        boolean isUser = true;
+        do {
+            String username = enterUsername();
+            pw.write(username);
+            pw.println();
+            pw.flush();
+            BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            //server returns whether or not they are a valid user
+            String validUser = bfr.readLine();
+            bfr.close();
+            if (validUser.equals("no")) {
+                System.out.println("The Username, email, or phone-Number you entered does not have an account");
+                isUser = false;
+            }
+        } while(!isUser);
+        BufferedReader readUserInfo = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String userInfoString = readUserInfo.readLine();
+        readUserInfo.close();
+
+        //recieves the user information from the server if they are a valid user and splits it into each component
+        String [] userInfo = userInfoString.split(" ");
+
+        //this should check if the password is correct after
+
+
+        //
+        showProfilePage();
+
+
     }
 
     public static boolean showLogInMessage() {
@@ -38,25 +77,21 @@ public class Client {
         } while(!validResponse);
         return false;
     }
-    public static boolean enterUsername() throws IOException {
+
+    public static String enterUsername() throws IOException {
         System.out.println("Please enter your username, email, or phoneNumber");
         Scanner scan = new Scanner(System.in);
-        File file = new File("Users.txt");
-        FileReader fr = new FileReader(file);
-        BufferedReader bfr = new BufferedReader(fr);
-        String line = bfr.readLine();
-        boolean found = false;
-        while(line != null) {
-            String[] userInformation = line.split(" ");
-            if (userInformation[0].equals(line) || userInformation[2].equals(line) || userInformation[3].equals(line)) {
-                found = true;
-                break;
-            }
-            line = bfr.readLine();
+        String response = scan.nextLine();
+        return response;
+    }
+
+    public static void showProfilePage(String profileInformation) {
+        //splits the user information
+        String [] profilePageThings = profileInformation.split("-");
+        for (String thing : profilePageThings) {
+            System.out.println(thing);
         }
-        bfr.close();
-        fr.close();
-        return found;
     }
 }
+
 
