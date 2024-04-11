@@ -35,7 +35,7 @@ public class Server implements Runnable {
 
             if ("yes".equalsIgnoreCase(newUser)) {
                 String username = br.readLine();
-                returningUser(username, pw);
+                returningUser(username, br, pw);
             } else {
                 //sign up
             }
@@ -45,19 +45,16 @@ public class Server implements Runnable {
         }
     }
 
-    private void returningUser(String username, PrintWriter pw) {
+    private void returningUser(String username, BufferedReader br, PrintWriter pw) throws IOException {
         User user = profile.getUserByUsername(username);
-        
-        if (user != null) {
-            String userInfo = String.format("Username: %s, Name: %s, Password: %s, Email: %s, Phone: %s, Birthday: %s",
-                    user.getUsername(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getBirthday());
-            pw.write(userInfo);
-            pw.println();
-            pw.flush();
-        } else {
-            pw.write("no");
-            pw.println();
-            pw.flush();
+        while (user == null) {
+            pw.println("no");
+            username = br.readLine();
+            user = profile.getUserByUsername(username);
         }
+        
+        String userInfo = String.format("Username: %s, Name: %s, Password: %s, Email: %s, Phone: %s, Birthday: %s",
+                user.getUsername(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getBirthday());
+        pw.println(userInfo);
     }
 }
