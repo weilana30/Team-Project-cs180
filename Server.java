@@ -74,12 +74,18 @@ public class Server implements Runnable {
                 String email = parts[1].trim();
                 String phoneNumber = parts[2].trim();
 
-                if (profile.getUserByUsername(username) != null) {
-                    pw.write("username");
-                } else if (profile.getEmailByUsername(email) != null) {
-                    pw.println("email");
-                } else if (profile.getPhoneNumberByUsername(phoneNumber) != null) {
-                    pw.println("phoneNumber");
+                boolean accountCorrect = false;
+
+                while (!accountCorrect) {
+                    if (profile.getUserByUsername(username) != null) {
+                        pw.write("username");
+                    } else if (profile.getEmailByUsername(email) != null) {
+                        pw.println("email");
+                    } else if (profile.getPhoneNumberByUsername(phoneNumber) != null) {
+                        pw.println("phoneNumber");
+                    } else {
+                        accountCorrect = true;
+                    }
                 }
             }
 
