@@ -1,17 +1,18 @@
-port java.io.*;
+import java.io.*;
 import java.net.Socket;
-import java.nio.Buffer;
+import java.util.ArrayList;
 import java.util.Scanner;
 public class Client {
 
     public static void main(String[] args) throws IOException, NullPointerException {
         Socket socket = new Socket("textogram", 1234);
-        Boolean newOrReturning = showLogInMessage();
+        boolean newOrReturning = showLogInMessage();
         //output stream to send messages to server
         PrintWriter pw = new PrintWriter(socket.getOutputStream());
         boolean continueGoing = false;
         boolean newUser = false;
         String [] userInformation = new String[0];
+
         do {
             if (newOrReturning) {
                 //sends yes to the server if they are a returning user
@@ -42,7 +43,7 @@ public class Client {
                         continueGoing = true;
                         newUser = true;
                         String[] accountInfo = newUserInfo.split(", ");
-                        userInformation = new String[]{accountInfo[0], accountInfo[1], accountInfo[2], accountInfo[3],}
+                        userInformation = new String[]{accountInfo[0], accountInfo[1], accountInfo[2], accountInfo[3],};
                     } else {
                         invalidInformation = false;
                         if (validNewUser.equals("username")) {
@@ -159,20 +160,20 @@ public class Client {
     public static boolean showLogInMessage() {
         boolean validResponse = false;
         do {
-        System.out.println("Welcome to TextOGram");
-        System.out.println("If you already have an account enter yes. If you want to create an account enter no.");
-        Scanner scan = new Scanner(System.in);
-        String response = scan.nextLine();
+            System.out.println("Welcome to TextOGram");
+            System.out.println("If you already have an account enter yes. If you want to create an account enter no.");
+            Scanner scan = new Scanner(System.in);
+            String response = scan.nextLine();
 
-        //returns old if it is an old user
-        if (scan.equals("yes")) {
-            validResponse = true;
-            return true;
-            //returns new if it is a new user
-        } else if(scan.equals("no")) {
-            validResponse = true;
-            return false;
-        }
+            //returns old if it is an old user
+            if (scan.equals("yes")) {
+                validResponse = true;
+                return true;
+                //returns new if it is a new user
+            } else if(scan.equals("no")) {
+                validResponse = true;
+                return false;
+            }
         } while(!validResponse);
         return false;
     }
@@ -181,6 +182,14 @@ public class Client {
         System.out.println("Please enter the username for your new account");
         Scanner scan = new Scanner(System.in);
         String username = scan.nextLine();
+        boolean validUser = checkUsername(username);
+
+        while (!validUser) {
+            System.out.println("Sorry, that username is taken! Please enter a different username.");
+            username = scan.nextLine();
+            validUser = checkUsername(username);
+        }
+        
         System.out.println("Please enter the email for your new account");
         String email = scan.nextLine();
         System.out.println("Please enter the phone number for your new account");
@@ -211,6 +220,29 @@ public class Client {
             }
         } while(!checkPassword(passwordOne));
         return passwordOne;
+    }
+
+    public static boolean checkUsername(String username) {
+        ArrayList<User> users = new ArrayList<>(10);
+
+        try (BufferedReader bfr = new BufferedReader(new FileReader("Users.txt"))) {
+            String line = bfr.readLine();
+            while (line != null) {
+                String[] eachUser = line.split(" ");
+                users.add(new User(eachUser[0], eachUser[1]));
+                line = bfr.readLine();
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // this method checks if the password inputted meets all the requirements for a secure password
@@ -270,9 +302,8 @@ public class Client {
 
     public static String enterUsername() throws IOException {
         System.out.println("Please enter your username, email, or phoneNumber");
-        Scanner scan = new Scanner(System.in);
-        String response = scan.nextLine();
-        return response;
+        Scanner scan = new Scanner(System.in); 
+        return scan.nextLine();
     }
 
     public static String enterPassword() throws IOException {
