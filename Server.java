@@ -75,11 +75,11 @@ public class Server implements Runnable {
                 String phoneNumber = parts[2].trim();
 
                 if (profile.getUserByUsername(username) != null) {
-                    pw.write(username);
+                    pw.write("username");
                 } else if (profile.getEmailByUsername(email) != null) {
-                    pw.println(email);
+                    pw.println("email");
                 } else if (profile.getPhoneNumberByUsername(phoneNumber) != null) {
-                    pw.println(phoneNumber);
+                    pw.println("phoneNumber");
                 }
             }
 
