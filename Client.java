@@ -1,11 +1,10 @@
-import java.io.*;
+port java.io.*;
 import java.net.Socket;
+import java.nio.Buffer;
 import java.util.Scanner;
 public class Client {
 
     public static void main(String[] args) throws IOException, NullPointerException {
-        String hostName;
-        int portNum;
         Socket socket = new Socket("textogram", 1234);
         Boolean newOrReturning = showLogInMessage();
         //output stream to send messages to server
@@ -58,6 +57,7 @@ public class Client {
                             System.out.println("There is already an account with that phoneNumber.");
                         }
                     }
+                    bfrNewUser.close();
                     //continues looping until the information is new and valid
                 } while(!invalidInformation);
             }
@@ -111,6 +111,47 @@ public class Client {
             }
         }
         showProfilePage(userInformation);
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        System.out.println("Welcome to textogram. What would you like to do? (Type 'friends', 'search', or 'signout'");
+        Scanner scan = new Scanner(System.in);
+        String response = scan.nextLine();
+        pw.write(response);
+
+        //these should all be methods
+        if (response.equalsIgnoreCase("friends")) {
+            response = "friends";
+            String recieved = br.readLine();
+            while(recieved != null) {
+                System.out.println(recieved);
+                recieved = br.readLine();
+            }
+        } else if (response.equalsIgnoreCase("search")) {
+            response = "search";
+            String recieved = br.readLine();
+            System.out.println(recieved);
+            String search = scan.nextLine();
+            pw.write(search);
+            pw.println();
+            pw.flush();
+            if (search.equalsIgnoreCase("yes")) {
+                System.out.println(br.readLine());
+                String criteria = scan.nextLine();
+                pw.write(criteria);
+                pw.println();
+                pw.flush();
+                String searchCriteria = br.readLine();
+                if (searchCriteria.equalsIgnoreCase("Invalid search criteria!")) {
+                    System.out.println(searchCriteria);
+                } else {
+
+                }
+            }
+        } else if (response.equalsIgnoreCase("signout")) {
+            response = "signout";
+        } else {
+            response = "invalid";
+        }
+
 
 
     }
@@ -255,4 +296,3 @@ public class Client {
     }
 
 }
-
