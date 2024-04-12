@@ -1,12 +1,11 @@
-port java.io.*;
+import java.io.*;
 import java.net.Socket;
-import java.nio.Buffer;
 import java.util.Scanner;
 public class Client {
 
     public static void main(String[] args) throws IOException, NullPointerException {
         Socket socket = new Socket("textogram", 1234);
-        Boolean newOrReturning = showLogInMessage();
+        boolean newOrReturning = showLogInMessage();
         //output stream to send messages to server
         PrintWriter pw = new PrintWriter(socket.getOutputStream());
         boolean continueGoing = false;
@@ -42,7 +41,7 @@ public class Client {
                         continueGoing = true;
                         newUser = true;
                         String[] accountInfo = newUserInfo.split(", ");
-                        userInformation = new String[]{accountInfo[0], accountInfo[1], accountInfo[2], accountInfo[3],}
+                        userInformation = new String[]{accountInfo[0], accountInfo[1], accountInfo[2], accountInfo[3],};
                     } else {
                         invalidInformation = false;
                         if (validNewUser.equals("username")) {
@@ -83,7 +82,7 @@ public class Client {
             String userInfoString = readUserInfo.readLine();
             readUserInfo.close();
 
-            //recieves the user information from the server if they are a valid user and splits it into each component
+            //receives the user information from the server if they are a valid user and splits it into each component
             String[] userInfo = userInfoString.split(" ");
 
             //this should check if the password is correct after
@@ -159,20 +158,20 @@ public class Client {
     public static boolean showLogInMessage() {
         boolean validResponse = false;
         do {
-        System.out.println("Welcome to TextOGram");
-        System.out.println("If you already have an account enter yes. If you want to create an account enter no.");
-        Scanner scan = new Scanner(System.in);
-        String response = scan.nextLine();
+            System.out.println("Welcome to TextOGram");
+            System.out.println("If you already have an account enter yes. If you want to create an account enter no.");
+            Scanner scan = new Scanner(System.in);
+            String response = scan.nextLine();
 
-        //returns old if it is an old user
-        if (scan.equals("yes")) {
-            validResponse = true;
-            return true;
-            //returns new if it is a new user
-        } else if(scan.equals("no")) {
-            validResponse = true;
-            return false;
-        }
+            //returns old if it is an old user
+            if (scan.equals("yes")) {
+                validResponse = true;
+                return true;
+                //returns new if it is a new user
+            } else if(scan.equals("no")) {
+                validResponse = true;
+                return false;
+            }
         } while(!validResponse);
         return false;
     }
