@@ -38,9 +38,9 @@ public class Server implements Runnable {
 
 
 
-    public void run() {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-             PrintWriter pw = new PrintWriter(this.clientSocket.getOutputStream(), true)) {
+public void run() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+             PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
             String newUser = br.readLine();
             User user;
@@ -65,7 +65,7 @@ public class Server implements Runnable {
                     pw.println("Welcome, " + username + "! What would you like to do? (Type 'friends', 'search', or 'signout')");
                     String userChoice = br.readLine();
                     if ("friends".equalsIgnoreCase(userChoice)) {
-                        handleFriends(user, br, pw);
+                        handleFriends(user, pw);
                     } else if ("search".equalsIgnoreCase(userChoice)) {
                         handleProfileSearch(br, pw);
                     } else if ("signout".equalsIgnoreCase(userChoice)) {
@@ -100,8 +100,8 @@ public class Server implements Runnable {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
-        }finally {
+            System.err.println("An error occurred with the client connection: " + e.getMessage());
+        } finally {
             try {
                 if (clientSocket != null && !clientSocket.isClosed()) {
                     clientSocket.close();
@@ -110,19 +110,6 @@ public class Server implements Runnable {
                 System.err.println("An error occurred while closing the client socket: " + e.getMessage());
             }
         }
-    }
-
-    private void returningUser(String username, BufferedReader br, PrintWriter pw) throws IOException {
-        User user = profile.getUserByUsername(username);
-        while (user == null) {
-            pw.println("no");
-            username = br.readLine();
-            user = profile.getUserByUsername(username);
-        }
-        // Once a valid username is found, send user information
-        String userInfo = String.format("Username: %s, Name: %s, Password: %s, Email: %s, Phone: %s, Birthday: %s",
-                user.getUsername(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getBirthday());
-        pw.println(userInfo);
     }
 
     private void handleFriends(User user, PrintWriter pw) {
@@ -139,7 +126,7 @@ public class Server implements Runnable {
     private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
         pw.println("Do you want to find a user? (yes/no)");
         String choice = br.readLine().trim().toLowerCase();
-        if (choice.equals("yes")) {
+        if ("yes".equals(choice)) {
             pw.println("Choose search criteria (username/phone number/email): ");
             String searchCriteria = br.readLine().trim().toLowerCase();
             pw.println("Enter the value to search for: ");
@@ -157,10 +144,11 @@ public class Server implements Runnable {
                 default:
                     pw.println("Invalid search criteria!");
             }
-        } else if (!choice.equals("no")) {
+        } else if (!"no".equals(choice)) {
             pw.println("Invalid choice!");
         }
     }
+
     public static void stopServer() {
         isRunning = false;
     }
