@@ -18,6 +18,20 @@ public class Profile {
         if (!usersAdded) {
             this.users = new ArrayList<>();
         }
+          try {
+            File users = new File("Users.txt");
+            BufferedReader bfr = new BufferedReader(new FileReader("Users.txt"));
+            String userString = bfr.readLine();
+            while(userString != null) {
+                User user = new User(userString);
+                this.users.add(user);
+                userString = bfr.readLine();
+            }
+        } catch(FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean readFile(File usersFile) {
