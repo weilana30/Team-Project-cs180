@@ -8,9 +8,10 @@ import java.util.List;
 
 public class Server implements Runnable {
     private static volatile boolean isRunning = true;
-    private static Profile profile = new Profile(); 
+    private static Profile profile = new Profile();
     private Socket clientSocket;
-    private ProfileViewer profileViewer; 
+    private ProfileViewer profileViewer;
+    private Friends friends;
 
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -112,7 +113,7 @@ public class Server implements Runnable {
     }
 
     private void handleFriends(User user, PrintWriter pw) {
-        List<User> friendsList = user.getFriends();
+        List<User> friendsList = friends.getFriends(user.getUsername());
         if (friendsList.isEmpty()) {
             pw.println("You have no friends added.");
         } else {
