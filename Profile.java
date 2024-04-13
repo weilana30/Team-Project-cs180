@@ -18,7 +18,7 @@ public class Profile {
         if (!usersAdded) {
             this.users = new ArrayList<>();
         }
-          try {
+        try {
             File users = new File("Users.txt");
             BufferedReader bfr = new BufferedReader(new FileReader("Users.txt"));
             String userString = bfr.readLine();
@@ -40,8 +40,7 @@ public class Profile {
             String line = bfr.readLine();
 
             while (line != null) {
-                String[] userInfo = line.split(" ");
-                User user = new User(userInfo[0], userInfo[1], userInfo[2], userInfo[3], userInfo[4]);
+                User user = new User(line);
                 users.add(user);
                 line = bfr.readLine();
             }
