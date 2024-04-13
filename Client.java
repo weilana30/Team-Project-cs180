@@ -153,7 +153,7 @@ public class Client {
         do {
             System.out.println("Would you like to search for a user? yes or no");
             response = scan.nextLine();
-            if (response.equalsIgnoreCase("yes") || response.equalsIgnoreCase("no")) {
+            if (!response.equalsIgnoreCase("yes") && !response.equalsIgnoreCase("no")) {
                 System.out.println("Not a valid response");
             } else {
                 validResponse = true;
@@ -165,6 +165,7 @@ public class Client {
             do {
                 System.out.println("Please enter the user you are searching for?");
                 String userToSearch = scan.nextLine();
+                System.out.println(userToSearch);
                 pw.println(userToSearch);
 
                 ArrayList<String> users = new ArrayList<>();
@@ -175,7 +176,7 @@ public class Client {
                 if (users.size() == 0) {
                     boolean again = false;
                     do {
-                        System.out.println("There were no results." +
+                        System.out.println("There were no results.\n" +
                                 "If you want to search again, type search. If you want to go back to your profile, type profile.");
                         String noResultsResponse = scan.nextLine();
                         if (noResultsResponse.equalsIgnoreCase("profile")) {
@@ -365,4 +366,3 @@ public class Client {
     }
 
 }
-
