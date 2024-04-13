@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -10,6 +11,7 @@ public class Server implements Runnable {
     private Socket clientSocket;
     private static Profile profile = new Profile();
     private ProfileViewer profileViewer;
+
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
         this.profileViewer = new ProfileViewer(profile);
@@ -106,11 +108,16 @@ public class Server implements Runnable {
                 user.getUsername(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getBirthday());
         pw.println(userInfo);
     }
+
     private void handleFriends(User user, BufferedReader br, PrintWriter pw) throws IOException {
         pw.println("Here are your friends:");
-        ArrayList<User> friendsList = user.getFriends();
-        for (User friend : friendsList) {
-            pw.println(friend.getUsername());
+        try (BufferedReader reader = new BufferedReader(new FileReader("usernamesFriends.txt"))) {
+            String friendUsername;
+            while ((friendUsername = reader.readLine()) != null) {
+                pw.println(friendUsername);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
