@@ -7,7 +7,8 @@ public class Server implements Runnable {
     private Socket clientSocket;
     private static Profile profile = new Profile();
     private ProfileViewer profileViewer;
-
+    private Friends friends;
+    private User user;
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
         this.profileViewer = new ProfileViewer(profile);
@@ -133,8 +134,6 @@ public class Server implements Runnable {
     private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
         Scanner scanner = new Scanner(System.in);
         String choice;
-        Friends friends;
-        User user;
         do {
             // Prompt the user to initiate a search
             System.out.print("Do you want to find a user? (yes/no): ");
@@ -183,7 +182,6 @@ public class Server implements Runnable {
                                 friends.addFriend(profile.getUserByEmail(searchValue).getUsername(), user.getUsername());
                             }
                         }
-
                         break;
                     default:
                         System.out.println("Invalid search criteria!");
