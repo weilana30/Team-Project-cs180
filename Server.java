@@ -133,6 +133,8 @@ public class Server implements Runnable {
     private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
         Scanner scanner = new Scanner(System.in);
         String choice;
+        Friends friends;
+        User user;
         do {
             // Prompt the user to initiate a search
             System.out.print("Do you want to find a user? (yes/no): ");
@@ -154,7 +156,7 @@ public class Server implements Runnable {
                             System.out.println("Do you want to add this user as your friend?(yes/no): ");
                             String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
                             if (addFriendAnswer == "yes") {
-                                friends.addFriend(searchValue, user.getUsername());
+                                friends.addFriend(profile.getUserByUsername(searchValue).getUsername(), user.getUsername());
                             }
                         }
                         break;
