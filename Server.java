@@ -45,23 +45,29 @@ public void run() {
             String newUser = br.readLine();
             User user;
 
-            if ("yes".equalsIgnoreCase(newUser)) {
-                String username = br.readLine();
-                user = profile.getUserByUsername(username);
-                if (user != null) {
-                    boolean passwordCorrect = false;
-                    while (!passwordCorrect) {
-                        pw.println("Please enter your password:");
-                        String password = br.readLine();
-                        if (user.getPassword().equals(password)) {
-                            ProfileViewer profileViewer = new ProfileViewer(profile);
-                            String userProfile = profileViewer.displayUserInformationByUsername(username);
-                            pw.println(userProfile);
-                            passwordCorrect = true;
-                        } else {
-                            pw.println("incorrect_password");
+           if ("yes".equalsIgnoreCase(newUser)) {
+                do {
+                    String username = br.readLine();
+                    user = profile.getUserByUsername(username);
+                    if (user != null) {
+                        pw.println("yes");
+                        boolean passwordCorrect = false;
+                        pw.println(user);
+                        while (!passwordCorrect) {
+                            String password = br.readLine();
+                            if (user.getPassword().equals(password)) {
+                                passwordCorrect = true;
+                            } else {
+                                pw.println("incorrect_password");
+                            }
                         }
+                        pw.println("Welcome, " + username + "! What would you like to do? (Type 'friends', 'search', or 'signout')");
+
+                    } else {
+                        pw.println("no");
                     }
+                } while (user == null);
+            }
                     pw.println("Welcome, " + username + "! What would you like to do? (Type 'friends', 'search', or 'signout')");
                     String userChoice = br.readLine();
                     if ("friends".equalsIgnoreCase(userChoice)) {
