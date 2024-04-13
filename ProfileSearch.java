@@ -1,4 +1,5 @@
 import java.util.Scanner;
+
 /**
  * search
  *
@@ -11,6 +12,9 @@ import java.util.Scanner;
 public class ProfileSearch {
     private Profile profile;
     private ProfileViewerInterface profileViewer;
+    private Friends friends;
+    private User user;
+
 
     // Constructor to initialize Profile and ProfileViewerInterface objects
     public ProfileSearch(Profile profile, ProfileViewerInterface profileViewer) {
@@ -36,13 +40,41 @@ public class ProfileSearch {
                 // Perform search based on the chosen criteria
                 switch (searchCriteria) {
                     case "username":
-                        System.out.println(profileViewer.displayUserInformationByUsername(searchValue));
+                        if (profile.getUserByUsername(searchValue) == null) {
+                            System.out.println("Make sure you enter the correct username!");
+                        } else {
+                            System.out.println(profileViewer.displayUserInformationByUsername(searchValue));
+                            System.out.println("Do you want to add this user as your friend?(yes/no): ");
+                            String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
+                            if (addFriendAnswer == "yes") {
+                                friends.addFriend(searchValue, user.getUsername());
+                            }
+                        }
                         break;
                     case "phone number":
-                        System.out.println(profileViewer.displayUserInformationByPhoneNumber(searchValue));
+                        if (profile.getUserByPhoneNumber(searchValue) == null) {
+                            System.out.println("Make sure you enter the correct phone number!");
+                        } else {
+                            System.out.println(profileViewer.displayUserInformationByPhoneNumber(searchValue));
+                            System.out.println("Do you want to add this user as your friend?(yes/no): ");
+                            String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
+                            if (addFriendAnswer == "yes") {
+                                friends.addFriend(profile.getUserByPhoneNumber(searchValue).getUsername(), user.getUsername());
+                            }
+                        }
                         break;
                     case "email":
-                        System.out.println(profileViewer.displayUserInformationByEmail(searchValue));
+                        if (profile.getUserByEmail(searchValue) == null) {
+                            System.out.println("Make sure you enter the correct email!");
+                        } else {
+                            System.out.println(profileViewer.displayUserInformationByEmail(searchValue));
+                            System.out.println("Do you want to add this user as your friend?(yes/no): ");
+                            String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
+                            if (addFriendAnswer == "yes") {
+                                friends.addFriend(profile.getUserByEmail(searchValue).getUsername(), user.getUsername());
+                            }
+                        }
+
                         break;
                     default:
                         System.out.println("Invalid search criteria!");
