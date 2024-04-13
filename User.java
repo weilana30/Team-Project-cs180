@@ -18,13 +18,13 @@ public class User implements UserInterface {
     // constructor for User.java that only takes 2 required parameters (username and password)
     // all other fields will be set to null for now as they will be set using setters based on user input from
     // the sign-up page
-    public User(String username, String password) {
-        this.name = null;
+    public User(String username, String name, String email, String phoneNumber, String password) {
         this.username = username;
-        this.password = password;
-        this.email = null;
-        this.birthday = null;
+        this.name = name;
+        this.email = email;
         this.phoneNumber = null;
+        this.password = password;
+        this.birthday = null;
     }
 
     // all getters and setters involving each field
