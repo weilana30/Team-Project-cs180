@@ -9,6 +9,7 @@
  * @version March 31, 2024
  */
 public interface ProfileInterface {
+    boolean readFile(File usersFile);
     void addUser(User user);
     User getUserByUsername(String username);
     User getUserByPhoneNumber(String phoneNumber);
