@@ -1,3 +1,5 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -85,9 +87,52 @@ public class Friends implements FriendsInterface {
         return true;
     }
 
-    public ArrayList<User> getFriends() {
+    public ArrayList<User> getFriends(String username) {
+        if (friends.isEmpty()) {
+            readFriendsFromFile(username); //populates friends ArrayList from file if it's empty
+        }
         return friends;
     }
+
+    private void readFriendsFromFile(String username) {
+        // reads friends data from file and populates the friends ArrayList
+        try {
+            FileReader reader = new FileReader(username + "Friends.txt");
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                User friend = profiles.getUserByUsername(line.trim());
+                if (friend != null) {
+                    friends.add(friend);
+                }
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public boolean unblockUser(String userToUnblockUsername, String currentUserUsername) {
+        User userToUnblock = profiles.getUserByUsername(userToUnblockUsername);
+        User currentUser = profiles.getUserByUsername(currentUserUsername);
+    
+        // if both users don't exist, returns false
+        if (userToUnblock == null || currentUser == null) {
+            return false;
+        }
+    
+        // if user you want to unblock is not blocked, returns false
+        if (!blocked.contains(userToUnblock)) {
+            return false;
+        }
+    
+        // removes userToUnblock from the blocklist
+        blocked.remove(userToUnblock);
+        updateBlockedFile(currentUser.getUsername()); // updates the [username]Blocked.txt file
+        return true;
+    }
+    
 
     private void updateFriendsFile(String username) {
         try {
@@ -112,4 +157,30 @@ public class Friends implements FriendsInterface {
             e.printStackTrace();
         }
     }
+
+    public ArrayList<User> getBlocked(String username) {
+        if (blocked.isEmpty()) {
+            readBlockedFromFile(username); // populates blocked ArrayList from file if it's empty
+        }
+        return blocked;
+    }
+    
+    private void readBlockedFromFile(String username) {
+        // reads blocked users data from file specific to the given username and populate the blocked ArrayList
+        try {
+            FileReader reader = new FileReader(username + "Blocked.txt");
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                User blockedUser = profiles.getUserByUsername(line.trim());
+                if (blockedUser != null) {
+                    blocked.add(blockedUser);
+                }
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
 }
