@@ -22,7 +22,7 @@ public class User implements UserInterface {
         this.username = username;
         this.name = name;
         this.email = email;
-        this.phoneNumber = null;
+        this.phoneNumber = phoneNumber;
         this.password = password;
         this.birthday = null;
     }
