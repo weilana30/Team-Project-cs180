@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 /**
  * User.java
  * <p>
@@ -7,7 +12,7 @@
  * @author Rishi Velma, lab section 15
  * @version April 1st, 2024
  */
-public class User implements UserInterface {
+public class User{
     private String name;
     private String username;
     private String password;
@@ -18,13 +23,23 @@ public class User implements UserInterface {
     // constructor for User.java that only takes 2 required parameters (username and password)
     // all other fields will be set to null for now as they will be set using setters based on user input from
     // the sign-up page
-    public User(String username, String name, String email, String phoneNumber, String password) {
+    public User(String username, String password) {
+        this.name = null;
         this.username = username;
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
         this.password = password;
+        this.email = null;
         this.birthday = null;
+        this.phoneNumber = null;
+    }
+
+    public User(String userString) {
+        String [] information = userString.split(", ");
+        this.username = information[0];
+        this.name = information[1];
+        this.password = information[2];
+        this.email = information[3];
+        this.phoneNumber = information[4];
+        this.birthday = information[5];
     }
 
     // all getters and setters involving each field
@@ -76,6 +91,15 @@ public class User implements UserInterface {
         this.phoneNumber = phoneNumber;
     }
 
+    public void addUserToFile() throws IOException {
+        File file = new File("Users.txt");
+        FileOutputStream fos = new FileOutputStream(file, true);
+        PrintWriter pw = new PrintWriter(fos);
+        pw.println(this);
+        pw.close();
+        fos.close();
+    }
+
     // .equals method to compare user objects with one another
     @Override
     public boolean equals(Object o) {
@@ -92,8 +116,7 @@ public class User implements UserInterface {
     // if we were to store all users in a file
     @Override
     public String toString() {
-        return String.format("Username: %s, Password: %s",
-                getUsername(), getPassword());
+        return String.format("%s, %s, %s, %s, %s, %s", username, name, password, email, phoneNumber, birthday);
     }
 
 
