@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Server implements Runnable {
     private Socket clientSocket;
@@ -24,7 +25,6 @@ public class Server implements Runnable {
             }
         }
     }
-
 
 
     public void run() {
@@ -62,7 +62,7 @@ public class Server implements Runnable {
 
                 while (!accountCorrect) {
                     String newAccount = br.readLine();
-                    String [] parts = newAccount.split(", ");
+                    String[] parts = newAccount.split(", ");
                     String username = parts[0].trim();
                     String email = parts[1].trim();
                     String phoneNumber = parts[2].trim();
@@ -131,28 +131,63 @@ public class Server implements Runnable {
     }
 
     private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
-//        pw.println("Do you want to find a user? (yes/no)");
-//        String choice = br.readLine().trim().toLowerCase();
-//        if (choice.equals("yes")) {
-//            pw.println("Choose search criteria (username/phone number/email): ");
-//            String searchCriteria = br.readLine().trim().toLowerCase();
-//            pw.println("Enter the value to search for: ");
-//            String searchValue = br.readLine().trim();
-//            switch (searchCriteria) {
-//                case "username":
-//                    pw.println(profileViewer.displayUserInformationByUsername(searchValue));
-//                    break;
-//                case "phone number":
-//                    pw.println(profileViewer.displayUserInformationByPhoneNumber(searchValue));
-//                    break;
-//                case "email":
-//                    pw.println(profileViewer.displayUserInformationByEmail(searchValue));
-//                    break;
-//                default:
-//                    pw.println("Invalid search criteria!");
-//            }
-//        } else if (!choice.equals("no")) {
-//            pw.println("Invalid choice!");
-//        }
+        Scanner scanner = new Scanner(System.in);
+        String choice;
+        do {
+            // Prompt the user to initiate a search
+            System.out.print("Do you want to find a user? (yes/no): ");
+            choice = scanner.nextLine().trim().toLowerCase();
+            if (choice.equals("yes")) {
+                // Prompt the user to choose search criteria
+                System.out.print("Choose search criteria (username/phone number/email): ");
+                String searchCriteria = scanner.nextLine().trim().toLowerCase();
+                // Prompt the user to enter the value to search for
+                System.out.print("Enter the value to search for: ");
+                String searchValue = scanner.nextLine().trim();
+                // Perform search based on the chosen criteria
+                switch (searchCriteria) {
+                    case "username":
+                        if (profile.getUserByUsername(searchValue) == null) {
+                            System.out.println("Make sure you enter the correct username!");
+                        } else {
+                            System.out.println(profileViewer.displayUserInformationByUsername(searchValue));
+                            System.out.println("Do you want to add this user as your friend?(yes/no): ");
+                            String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
+                            if (addFriendAnswer == "yes") {
+                                friends.addFriend(searchValue, user.getUsername());
+                            }
+                        }
+                        break;
+                    case "phone number":
+                        if (profile.getUserByPhoneNumber(searchValue) == null) {
+                            System.out.println("Make sure you enter the correct phone number!");
+                        } else {
+                            System.out.println(profileViewer.displayUserInformationByPhoneNumber(searchValue));
+                            System.out.println("Do you want to add this user as your friend?(yes/no): ");
+                            String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
+                            if (addFriendAnswer == "yes") {
+                                friends.addFriend(profile.getUserByPhoneNumber(searchValue).getUsername(), user.getUsername());
+                            }
+                        }
+                        break;
+                    case "email":
+                        if (profile.getUserByEmail(searchValue) == null) {
+                            System.out.println("Make sure you enter the correct email!");
+                        } else {
+                            System.out.println(profileViewer.displayUserInformationByEmail(searchValue));
+                            System.out.println("Do you want to add this user as your friend?(yes/no): ");
+                            String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
+                            if (addFriendAnswer == "yes") {
+                                friends.addFriend(profile.getUserByEmail(searchValue).getUsername(), user.getUsername());
+                            }
+                        }
+
+                        break;
+                    default:
+                        System.out.println("Invalid search criteria!");
+                }
+            }
+        } while (choice.equals("yes")); // Repeat the search process if the user wants to continue
+        System.out.println("Exiting search.");
     }
 }
