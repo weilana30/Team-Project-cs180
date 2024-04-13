@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -124,11 +125,76 @@ public class Client {
         showProfilePage(userInformation);
         //create a user object when logged in
 
-        System.out.println("Welcome to textogram. What would you like to do? (Type 'friends', 'search', or 'signout'");
-        Scanner scan = new Scanner(System.in);
-        String response = scan.nextLine();
+        boolean askQuestion = true;
+        String response = null;
+        do {
+            System.out.println("Welcome to textogram. What would you like to do? (Type 'friends', 'search', or 'signout')");
+            Scanner scan = new Scanner(System.in);
+            response = scan.nextLine();
+            if (!response.equalsIgnoreCase("friends") && response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
+                System.out.println("Not a valid response");
+                askQuestion = true;
+            } else {
+                askQuestion = false;
+            }
+        } while(askQuestion);
         pw.write(response);
+        if(response.equalsIgnoreCase("friends")) {
 
+        } else if (response.equalsIgnoreCase("search")) {
+
+        }
+    }
+
+    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is) throws IOException {
+        boolean validResponse = false;
+        Scanner scan = new Scanner(System.in);
+        String response;
+        do {
+            System.out.println("Would you like to search for a user? yes or no");
+            response = scan.nextLine();
+            if (response.equalsIgnoreCase("yes") || response.equalsIgnoreCase("no")) {
+                System.out.println("Not a valid response");
+            } else {
+                validResponse = true;
+            }
+        } while (!validResponse);
+        if (response.equalsIgnoreCase("yes")) {
+            pw.println(response);
+            boolean search = true;
+            do {
+                System.out.println("Please enter the user you are searching for?");
+                String userToSearch = scan.nextLine();
+                pw.println(userToSearch);
+
+                ArrayList<String> users = new ArrayList<>();
+                while (is.available() > 0) {
+                    String username = bfr.readLine();
+                    users.add(username);
+                }
+                if (users.size() == 0) {
+                    boolean again = false;
+                    do {
+                        System.out.println("There were no results." +
+                                "If you want to search again, type search. If you want to go back to your profile, type profile.");
+                        String noResultsResponse = scan.nextLine();
+                        if (noResultsResponse.equalsIgnoreCase("profile")) {
+                            search = false;
+                        } else if (!noResultsResponse.equalsIgnoreCase("profile")) {
+                            System.out.println("Not a valid response");
+                            again = true;
+                        }
+                    } while (again);
+                } else {
+                    for (String username : users) {
+                        System.out.println(username);
+                    }
+                    System.out.println("If you want to view one of these users profiles enter their username.\n " +
+                            "If you want to search again, type search. If you want to go back to your profile, type profile.");
+                }
+            } while (search = true);
+
+        }
     }
 
     public static boolean showLogInMessage() {
@@ -151,6 +217,7 @@ public class Client {
         } while (!validResponse);
         return false;
     }
+
 
     public static String createNewUsername() {
         System.out.println("Please enter the username for your new account");
