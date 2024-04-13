@@ -75,27 +75,26 @@ public class Client {
         } while(!continueGoing);
         boolean isUser = true;
         if (!newUser) {
+            BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             do {
                 String username = enterUsername();
                 pw.write(username);
                 pw.println();
-                pw.flush();
-                BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
                 //server returns whether or not they are a valid user
                 String validUser = bfr.readLine();
-                bfr.close();
-                if (validUser == null) {
+                System.out.println(validUser);
+                if (validUser.equals("no")) {
                     System.out.println("The Username, email, or phone-Number you entered does not have an account");
                     isUser = false;
+                } else {
+                    isUser = true;
                 }
             } while (!isUser);
-            BufferedReader readUserInfo = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String userInfoString = readUserInfo.readLine();
-            readUserInfo.close();
+            String userInfoString = bfr.readLine();
+            bfr.close();
 
             //recieves the user information from the server if they are a valid user and splits it into each component
-            String[] userInfo = userInfoString.split(" ");
+            String[] userInfo = userInfoString.split(", ");
 
             //this should check if the password is correct after
             int attempts = 0;
