@@ -69,7 +69,6 @@ public class Client {
                             System.out.println("There is already an account with that phoneNumber.");
                         }
                     }
-                    bfrNewUser.close();
                     //continues looping until the information is new and valid
                 } while(!invalidInformation);
             }
@@ -92,7 +91,6 @@ public class Client {
                 }
             } while (!isUser);
             String userInfoString = bfr.readLine();
-            bfr.close();
 
             //recieves the user information from the server if they are a valid user and splits it into each component
             String[] userInfo = userInfoString.split(", ");
@@ -131,18 +129,20 @@ public class Client {
             System.out.println("Welcome to textogram. What would you like to do? (Type 'friends', 'search', or 'signout')");
             Scanner scan = new Scanner(System.in);
             response = scan.nextLine();
-            if (!response.equalsIgnoreCase("friends") && response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
+            if (!response.equalsIgnoreCase("friends") && !response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
                 System.out.println("Not a valid response");
                 askQuestion = true;
             } else {
                 askQuestion = false;
             }
         } while(askQuestion);
+        System.out.println(response);
         pw.write(response);
+        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         if(response.equalsIgnoreCase("friends")) {
 
         } else if (response.equalsIgnoreCase("search")) {
-
+            searchUsers(pw, br, inputStream);
         }
     }
 
@@ -365,3 +365,4 @@ public class Client {
     }
 
 }
+
