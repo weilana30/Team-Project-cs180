@@ -38,7 +38,7 @@ public class Friends implements FriendsInterface {
         }
 
         friends.add(friend);
-        updateFriendsFile(); //updates the usernamesFriends.txt file
+        updateFriendsFile(user.getUsername()); // updates the [username]Friends.txt file
         return true;
     }
 
@@ -53,7 +53,7 @@ public class Friends implements FriendsInterface {
         // if friend username is able to be removed from friend, return true
         // else it means that friend is not on friends list and can't be removed
         if (friends.remove(friend)) {
-            updateFriendsFile();
+            updateFriendsFile(friend.getUsername()); // updates the [username]Friends.txt file
             return true;
         } else {
             System.out.println(friendUsername + " is not on your friends list.");
@@ -81,7 +81,7 @@ public class Friends implements FriendsInterface {
         // adds to block list
         removeFriend(userToBlock.getUsername());
         blocked.add(userToBlock);
-        updateBlockedFile(); ////updates the blocklist.txt file
+        updateBlockedFile(currentUser.getUsername()); // updates the [username]Blocked.txt file
         return true;
     }
 
@@ -89,9 +89,9 @@ public class Friends implements FriendsInterface {
         return friends;
     }
 
-    private void updateFriendsFile() {
+    private void updateFriendsFile(String username) {
         try {
-            FileWriter writer = new FileWriter("usernamesFriends.txt");
+            FileWriter writer = new FileWriter(username + "Friends.txt");
             for (User friend : friends) {
                 writer.write(friend.getUsername() + "\n");
             }
@@ -101,9 +101,9 @@ public class Friends implements FriendsInterface {
         }
     }
 
-    private void updateBlockedFile() {
+    private void updateBlockedFile(String username) {
         try {
-            FileWriter writer = new FileWriter("blocklist.txt");
+            FileWriter writer = new FileWriter(username + "Blocked.txt");
             for (User blockedUser : blocked) {
                 writer.write(blockedUser.getUsername() + "\n");
             }
