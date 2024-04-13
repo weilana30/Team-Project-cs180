@@ -1,16 +1,16 @@
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.List;
 
 public class Server implements Runnable {
+    private static volatile boolean isRunning = true;
+    private static Profile profile = new Profile(); 
     private Socket clientSocket;
-    private static Profile profile = new Profile();
-    private ProfileViewer profileViewer;
+    private ProfileViewer profileViewer; 
 
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -36,38 +36,31 @@ public class Server implements Runnable {
         }
     }
 
-
-
-public void run() {
+    @Override
+    public void run() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
             String newUser = br.readLine();
             User user;
 
-           if ("yes".equalsIgnoreCase(newUser)) {
-                do {
-                    String username = br.readLine();
-                    user = profile.getUserByUsername(username);
-                    if (user != null) {
-                        pw.println("yes");
-                        boolean passwordCorrect = false;
-                        pw.println(user);
-                        while (!passwordCorrect) {
-                            String password = br.readLine();
-                            if (user.getPassword().equals(password)) {
-                                passwordCorrect = true;
-                            } else {
-                                pw.println("incorrect_password");
-                            }
+            if ("yes".equalsIgnoreCase(newUser)) {
+                String username = br.readLine();
+                user = profile.getUserByUsername(username);
+                if (user != null) {
+                    boolean passwordCorrect = false;
+                    while (!passwordCorrect) {
+                        pw.println("Please enter your password:");
+                        String password = br.readLine();
+                        if (user.getPassword().equals(password)) {
+                            ProfileViewer profileViewer = new ProfileViewer(profile);
+                            String userProfile = profileViewer.displayUserInformationByUsername(username);
+                            pw.println(userProfile);
+                            passwordCorrect = true;
+                        } else {
+                            pw.println("incorrect_password");
                         }
-                        pw.println("Welcome, " + username + "! What would you like to do? (Type 'friends', 'search', or 'signout')");
-
-                    } else {
-                        pw.println("no");
                     }
-                } while (user == null);
-            }
                     pw.println("Welcome, " + username + "! What would you like to do? (Type 'friends', 'search', or 'signout')");
                     String userChoice = br.readLine();
                     if ("friends".equalsIgnoreCase(userChoice)) {
