@@ -87,8 +87,15 @@ public class Server implements Runnable {
                         pw.println("phoneNumber");
                     } else {
                         accountCorrect = true;
+                        pw.write("yes");
+                        pw.println();
                     }
                 }
+                String userInfo = br.readLine();
+                File users = new File("Users.txt");
+                PrintWriter userPW = new PrintWriter(new FileOutputStream(users, true));
+                userPW.println(userInfo);
+                userPW.close();
             }
 
         } catch (IOException e) {
