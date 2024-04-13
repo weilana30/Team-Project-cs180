@@ -191,8 +191,10 @@ public class Client {
                     }
                     System.out.println("If you want to view one of these users profiles enter their username.\n " +
                             "If you want to search again, type search. If you want to go back to your profile, type profile.");
+                    String nextResponse = scan.nextLine();
+
                 }
-            } while (search = true);
+            } while (search);
 
         }
     }
