@@ -19,13 +19,19 @@ public class Server implements Runnable {
 
     public static void main(String[] args) throws IOException {
         int port = 1234;
-        ServerSocket serverSocket = new ServerSocket(port);
-        while (true) {
-            try {
-                Socket clientSocket = serverSocket.accept();
-                new Thread(new Server(clientSocket)).start();
-            } catch (Exception e) {
-                e.printStackTrace();
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            System.out.println("Server started. Listening on port " + port);
+            while (isRunning) {
+                try {
+                    Socket clientSocket = serverSocket.accept();
+                    new Thread(new Server(clientSocket)).start();
+                } catch (IOException e) {
+                    if (!isRunning) {
+                        System.out.println("Server is shutting down...");
+                    } else {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -113,6 +119,14 @@ public class Server implements Runnable {
 
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            try {
+                if (clientSocket != null && !clientSocket.isClosed()) {
+                    clientSocket.close();
+                }
+            } catch (IOException e) {
+                System.err.println("An error occurred while closing the client socket: " + e.getMessage());
+            }
         }
     }
 
@@ -129,15 +143,14 @@ public class Server implements Runnable {
         pw.println(userInfo);
     }
 
-    private void handleFriends(User user, BufferedReader br, PrintWriter pw) throws IOException {
-        pw.println("Here are your friends:");
-        try (BufferedReader reader = new BufferedReader(new FileReader("usernamesFriends.txt"))) {
-            String friendUsername;
-            while ((friendUsername = reader.readLine()) != null) {
-                pw.println(friendUsername);
+    private void handleFriends(User user, PrintWriter pw) {
+        List<User> friendsList = user.getFriends();
+        if (friendsList.isEmpty()) {
+            pw.println("You have no friends added.");
+        } else {
+            for (User friend : friendsList) {
+                pw.println(friend.getUsername());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -165,5 +178,8 @@ public class Server implements Runnable {
         } else if (!choice.equals("no")) {
             pw.println("Invalid choice!");
         }
+    }
+    public static void stopServer() {
+        isRunning = false;
     }
 }
