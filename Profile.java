@@ -14,10 +14,7 @@ public class Profile {
     private ArrayList<User> users;
 
     public Profile() {
-        boolean usersAdded = readFile(new File("Users.txt"));
-        if (!usersAdded) {
-            this.users = new ArrayList<>();
-        }
+        this.users = new ArrayList<>();
         try {
             File users = new File("Users.txt");
             BufferedReader bfr = new BufferedReader(new FileReader("Users.txt"));
@@ -31,23 +28,6 @@ public class Profile {
             e.printStackTrace();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public boolean readFile(File usersFile) {
-        try (BufferedReader bfr = new BufferedReader(new FileReader(usersFile))) {
-
-            String line = bfr.readLine();
-
-            while (line != null) {
-                User user = new User(line);
-                users.add(user);
-                line = bfr.readLine();
-            }
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
         }
     }
     public void addUser(User user) {
