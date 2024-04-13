@@ -92,7 +92,7 @@ public class User{
     }
 
     public void addUserToFile() throws IOException {
-        File file = new File("User.txt");
+        File file = new File("Users.txt");
         FileOutputStream fos = new FileOutputStream(file, true);
         PrintWriter pw = new PrintWriter(fos);
         pw.println(this);
