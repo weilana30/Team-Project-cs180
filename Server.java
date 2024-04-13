@@ -98,25 +98,7 @@ public class Server implements Runnable {
                         pw.println();
                     }
                 }
-                String userInfo = br.readLine();
-                user = new User(userInfo);
-                File users = new File("Users.txt");
-                PrintWriter userPW = new PrintWriter(new FileOutputStream(users, true));
-                userPW.println(userInfo);
-                userPW.close();
             }
-            String userChoice = br.readLine();
-            if ("friends".equalsIgnoreCase(userChoice)) {
-                handleFriends(user, br, pw);
-            } else if ("search".equalsIgnoreCase(userChoice)) {
-                //handleProfileSearch(br, pw);
-            } else if ("signout".equalsIgnoreCase(userChoice)) {
-                pw.println("Signing out...");
-                return;
-            } else {
-                pw.println("Invalid choice. Please type 'friends', 'search', or 'signout'.");
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
