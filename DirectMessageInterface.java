@@ -11,6 +11,7 @@ public interface DirectMessageInterface {
     User [] getUsers();
     ArrayList<IndividualText> getMessages();
     boolean addMessage(User user, String message);
+    boolean updateFile();
     boolean deleteMessage(IndividualText individualText, User user);
     String toString();
 }
