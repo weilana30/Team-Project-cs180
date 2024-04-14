@@ -89,4 +89,29 @@ public class RunLocalTestFriends {
         boolean result3 = friends.blockUser("user3", "user1");
         Assert.assertFalse(result3);
     }
+
+    @Test
+    public void testUnblockUser() {
+        Profile profiles = new Profile();
+        User user1 = new User("user1", "12345");
+        User user2 = new User("user2", "54321");
+        profiles.addUser(user1);
+        profiles.addUser(user2);
+
+        Friends friends = new Friends(profiles);
+        friends.addFriend("user2", "user1");
+        friends.blockUser("user2", "user1");
+
+        // Unblock a blocked user
+        boolean result1 = friends.unblockUser("user2", "user1");
+        Assert.assertTrue(result1);
+
+        // Unblock a user that is not blocked (should fail)
+        boolean result2 = friends.unblockUser("user2", "user1");
+        Assert.assertFalse(result2);
+
+        // Unblock a non-existent user (should fail)
+        boolean result3 = friends.unblockUser("user3", "user1");
+        Assert.assertFalse(result3);
+    }
 }
