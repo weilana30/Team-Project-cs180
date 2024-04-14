@@ -1,5 +1,6 @@
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+
 /**
  * directMessage
  *
@@ -9,17 +10,25 @@ import java.util.*;
  * @author Andrew Weiland, lab section 15
  * @version March 31, 2024
  */
-public class DirectMessage implements DirectMessageInterface {
+public class DirectMessage {
     private String fileName;
     private User [] users;
     private int textNumber;
     private ArrayList<IndividualText> messages;
 
     public DirectMessage(User user1, User user2) {
-        this.fileName = user1.getUsername() + user2.getUsername() + ".txt";
+        if (user1.getUsername().compareTo(user2.getUsername()) < 1) {
+            this.fileName = user1.getUsername() + user2.getUsername() + ".txt";
+        } else {
+            this.fileName = user2.getUsername() + user1.getUsername() + ".txt";
+        }
         this.users = new User[]{user1, user2};
         this.textNumber = 0;
         this.messages = new ArrayList<>();
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public User[] getUsers() {
@@ -53,9 +62,7 @@ public class DirectMessage implements DirectMessageInterface {
             File file = new File(fileName);
             FileOutputStream fos = new FileOutputStream(file, false);
             PrintWriter pw = new PrintWriter(fos);
-            for (IndividualText text : messages) {
-                pw.println(text);
-            }
+            pw.println(this);
             pw.close();
             fos.close();
         } catch (FileNotFoundException e) {
