@@ -198,6 +198,8 @@ public class Client {
                         } else if (!noResultsResponse.equalsIgnoreCase("search")) {
                             System.out.println("Not a valid response");
                             again = true;
+                        } else if (noResultsResponse.equals(search)) {
+                            again = false;
                         }
                     } while (again);
                 } else {
@@ -218,29 +220,46 @@ public class Client {
                             pw.println(response);
                             //should send back the users string
                             String profile = bfr.readLine();
+
+                            //sends back no if it not a valid username
                             if (profile.equalsIgnoreCase("no")) {
                                 System.out.println("That username is not valid");
                             } else {
                                 validUsername = true;
                                 String[] info = profile.split(", ");
+                                //prints the profile of the user
                                 showProfilePage(info);
-                                System.out.println("Would you like to add the user as a friend or block them? Enter add " +
-                                        "or block, or entire profile to return to the profile");
-                                String friend = scan.nextLine();
-                                if (friend.equalsIgnoreCase("block")) {
-                                    //blocks the user
-                                    pw.println("block");
-                                } else if (friend.equalsIgnoreCase("add")) {
-                                    //adds the user as a friend
-                                    pw.println("add");
-                                } else if (friend.equalsIgnoreCase("profile")) {
-                                    search = false;
-                                }
+
+                                boolean repeatFriend = false;
+                                do {
+                                    //asks the user if they want to add them as a friend
+                                    System.out.println("Would you like to add the user as a friend or block them? Enter add " +
+                                            "or block, or entire profile to return to the profile");
+                                    String friend = scan.nextLine();
+
+                                    //if block, add the user to the blocked list
+                                    if (friend.equalsIgnoreCase("block")) {
+                                        //blocks the user
+                                        pw.println("block");
+
+                                        //if add, adds the user to friends list
+                                    } else if (friend.equalsIgnoreCase("add")) {
+                                        //adds the user as a friend
+                                        pw.println("add");
+
+                                        //if profile, returns to user profile
+                                    } else if (friend.equalsIgnoreCase("profile")) {
+                                        search = false;
+                                    } else {
+                                        System.out.println("Not a valid response");
+                                        repeatFriend = true;
+                                    }
+                                } while (repeatFriend);
 
                             }
                         }
-                    } while(!validUsername);
-                } while(!validResponse);
+                    } while (!validUsername);
+                }
             } while (search);
         }
     }
