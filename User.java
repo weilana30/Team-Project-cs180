@@ -12,7 +12,7 @@ import java.io.PrintWriter;
  * @author Rishi Velma, lab section 15
  * @version April 1st, 2024
  */
-public class User{
+public class User implements UserInterface{
     private String name;
     private String username;
     private String password;
