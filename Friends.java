@@ -18,9 +18,9 @@ public class Friends implements FriendsInterface {
     }
 
     // methods
-    public boolean addFriend(String friendUsername, String userUsername) {
+    public boolean addFriend(String friendUsername, String currentUserUsername) {
         User friend = profiles.getUserByUsername(friendUsername);
-        User user = profiles.getUserByUsername(userUsername);
+        User user = profiles.getUserByUsername(currentUserUsername);
 
         // if friend or user doesn't exist, returns false
         if (friend == null || user == null) {
