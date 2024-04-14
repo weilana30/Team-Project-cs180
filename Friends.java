@@ -18,9 +18,9 @@ public class Friends implements FriendsInterface {
     }
 
     // methods
-    public boolean addFriend(String friendUsername, String currentUserUsername) {
+    public boolean addFriend(String friendUsername, String userUsername) {
         User friend = profiles.getUserByUsername(friendUsername);
-        User user = profiles.getUserByUsername(currentUserUsername);
+        User user = profiles.getUserByUsername(userUsername);
 
         // if friend or user doesn't exist, returns false
         if (friend == null || user == null) {
@@ -79,7 +79,7 @@ public class Friends implements FriendsInterface {
 
         // automatically removes userToBlock from friend list if they're in it
         // adds to block list
-        removeFriend(userToBlock.getUsername());
+        removeFriend(userToBlock.getUsername(), currentUser.getUsername());
         blocked.add(userToBlock);
         updateBlockedFile(currentUser.getUsername()); // updates the [username]Blocked.txt file
         return true;
