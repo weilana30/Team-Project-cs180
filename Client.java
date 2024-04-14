@@ -1,150 +1,265 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 public class Client {
 
     public static void main(String[] args) throws IOException, NullPointerException {
-        Socket socket = new Socket("localhost", 1234);
-        Boolean newOrReturning = showLogInMessage();
-        //output stream to send messages to server
-        InputStream inputStream = socket.getInputStream();
-        PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
-        boolean continueGoing = false;
-        boolean newUser = false;
-        String [] userInformation = new String[0];
-        do {
-            if (newOrReturning) {
-                //sends yes to the server if they are a returning user
-                pw.write("yes");
-                pw.println();
-                pw.flush();
-                continueGoing = true;
-            } else {
-                //send server a no if they are a new user
-                pw.write("no");
-                pw.println();
-                boolean invalidInformation = false;
-                do {
-                    String newUserInfo = createNewUsername();
-                    //sends a string of the new users username, email, number, and birthday
-                    pw.write(newUserInfo);
+
+        try (Socket socket = new Socket("localhost", 1234);
+             BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             InputStream is = socket.getInputStream();
+             PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+             Scanner scan = new Scanner(System.in)) {
+
+            boolean newOrReturning = showLogInMessage();
+            boolean continueGoing = false;
+            boolean newUser = false;
+            String[] userInformation = new String[0];
+            do {
+                if (newOrReturning) {
+                    //sends yes to the server if they are a returning user
+                    pw.write("yes");
                     pw.println();
-                    BufferedReader bfrNewUser = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    String validNewUser = bfrNewUser.readLine();
-                    System.out.println(validNewUser);
-                    //if the username, email, and number are not taken
-                    if (validNewUser.equals("yes")) {
-                        //creates a new password
-                        String password = createNewPassword();
-                        String [] information = newUserInfo.split(", ");
-                        String userString = information[0] + ", " + information[1]  + ", " + password  + ", " +
-                            information[2] + ", " +  information[3] + ", " + information[4];
-                        pw.write(userString);
+                    pw.flush();
+                    continueGoing = true;
+                } else {
+                    //send server a no if they are a new user
+                    pw.write("no");
+                    pw.println();
+                    boolean invalidInformation = false;
+                    do {
+                        String newUserInfo = createNewUsername();
+                        //sends a string of the new users username, email, number, and birthday
+                        pw.write(newUserInfo);
                         pw.println();
-                        userInformation = new String[] {information[0], information[1], password,
-                                information[2], information[3],information[4]};
+                        String validNewUser = bfr.readLine();
+                        System.out.println(validNewUser);
+                        //if the username, email, and number are not taken
+                        if (validNewUser.equals("yes")) {
+                            //creates a new password
+                            String password = createNewPassword();
+                            String[] information = newUserInfo.split(", ");
+                            String userString = information[0] + ", " + information[1] + ", " + password + ", " +
+                                    information[2] + ", " + information[3] + ", " + information[4];
+                            pw.write(userString);
+                            pw.println();
+                            userInformation = new String[]{information[0], information[1], password,
+                                    information[2], information[3], information[4]};
 
 
-                        continueGoing = true;
-                        newUser = true;
-                        invalidInformation = true;
-                        //userInformation = new String[]{accountInfo[0], accountInfo[1], accountInfo[2], accountInfo[3],}
+                            continueGoing = true;
+                            newUser = true;
+                            invalidInformation = true;
+                            //userInformation = new String[]{accountInfo[0], accountInfo[1], accountInfo[2], accountInfo[3],}
+                        } else {
+                            if (validNewUser.equals("username")) {
+                                System.out.println("The username is already taken.");
+                                validNewUser = bfr.readLine();
+                            }
+                            if (validNewUser.equals("email")) {
+                                System.out.println("There is already an account with that email.");
+                                validNewUser = bfr.readLine();
+                            }
+                            if (validNewUser.equals("phoneNumber")) {
+                                System.out.println("There is already an account with that phoneNumber.");
+                            }
+                        }
+                        //continues looping until the information is new and valid
+                    } while (!invalidInformation);
+                }
+            } while (!continueGoing);
+            boolean isUser = true;
+            if (!newUser) {
+                do {
+                    String username = enterUsername();
+                    pw.write(username);
+                    pw.println();
+                    //server returns whether or not they are a valid user
+                    String validUser = bfr.readLine();
+                    System.out.println(validUser);
+                    if (validUser.equals("no")) {
+                        System.out.println("The Username, email, or phone-Number you entered does not have an account");
+                        isUser = false;
                     } else {
-                        if (validNewUser.equals("username")) {
-                            System.out.println("The username is already taken.");
-                            if(inputStream.available() > 0) {
-                                validNewUser = bfrNewUser.readLine();
-                            }
-                        }
-                        if (validNewUser.equals("email")) {
-                            System.out.println("There is already an account with that email.");
-                            if(inputStream.available() > 0) {
-                                validNewUser = bfrNewUser.readLine();
-                            }
-                        }
-                        if (validNewUser.equals("phoneNumber")) {
-                            System.out.println("There is already an account with that phoneNumber.");
-                        }
+                        isUser = true;
                     }
-                    //continues looping until the information is new and valid
-                } while(!invalidInformation);
+                } while (!isUser);
+                String userInfoString = bfr.readLine();
+
+                //recieves the user information from the server if they are a valid user and splits it into each component
+                String[] userInfo = userInfoString.split(", ");
+
+                //this should check if the password is correct after
+                int attempts = 0;
+                boolean validPassword;
+                do {
+                    String password = enterPassword();
+
+                    if (!password.equals(userInfo[2])) {
+                        System.out.println("That is the wrong password. Please try again! You have " + (2 - attempts) + " attempts remaining.");
+                        attempts += 1;
+                        validPassword = false;
+                    } else {
+                        System.out.println("Login successful!");
+                        attempts = 3;
+                        validPassword = true;
+                    }
+                    if (attempts == 3 && !validPassword) {
+                        System.out.println("You have used your maximum attempts. You will now be logged out to prevent suspicious activity.");
+                    }
+                } while (attempts < 3);
+
+                if (validPassword) {
+                    userInformation = userInfo;
+                }
             }
-        } while(!continueGoing);
-        boolean isUser = true;
-        if (!newUser) {
-            BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            showProfilePage(userInformation);
+            //create a user object when logged in
+
+            boolean askQuestion;
+            String response;
             do {
-                String username = enterUsername();
-                pw.write(username);
-                pw.println();
-                //server returns whether or not they are a valid user
-                String validUser = bfr.readLine();
-                System.out.println(validUser);
-                if (validUser.equals("no")) {
-                    System.out.println("The Username, email, or phone-Number you entered does not have an account");
-                    isUser = false;
+                System.out.println("Welcome to textogram. What would you like to do? (Type 'friends', 'search', or 'signout')");
+                response = scan.nextLine();
+                if (!response.equalsIgnoreCase("friends") && !response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
+                    System.out.println("Not a valid response");
+                    askQuestion = true;
                 } else {
-                    isUser = true;
+                    askQuestion = false;
                 }
-            } while (!isUser);
-            String userInfoString = bfr.readLine();
-
-            //recieves the user information from the server if they are a valid user and splits it into each component
-            String[] userInfo = userInfoString.split(", ");
-
-            //this should check if the password is correct after
-            int attempts = 0;
-            boolean validPassword;
+            } while (askQuestion);
+            pw.write(response);
+            pw.println();
+            pw.flush();
+            boolean validResponse;
             do {
-                String password = enterPassword();
+                if (response.equalsIgnoreCase("friends")) {
+                    friendsOption(pw, bfr, userInformation, scan);
+                    validResponse = true;
+                } else if (response.equalsIgnoreCase("search")) {
+                    searchUsers(pw, bfr, is);
+                    validResponse = true;
+                } else if (response.equalsIgnoreCase("signout")) {
 
-                if (!password.equals(userInfo[2])) {
-                    System.out.println("That is the wrong password. Please try again! You have " + (3 - attempts) + " attempts remaining.");
-                    attempts += 1;
-                    validPassword = false;
+                    validResponse = true;
                 } else {
-                    System.out.println("Login successful!");
-                    attempts = 3;
-                    validPassword = true;
+                    validResponse = false;
                 }
-                if (attempts == 3 && !validPassword) {
-                    System.out.println("You have used your maximum attempts. You will now be logged out to prevent suspicious activity.");
-                }
-            } while (attempts < 3);
-
-            if (validPassword) {
-                userInformation = userInfo;
-            }
-        }
-
-        showProfilePage(userInformation);
-        //create a user object when logged in
-
-        boolean askQuestion = true;
-        String response = null;
-        do {
-            System.out.println("Welcome to textogram. What would you like to do? (Type 'friends', 'search', or 'signout')");
-            Scanner scan = new Scanner(System.in);
-            response = scan.nextLine();
-            if (!response.equalsIgnoreCase("friends") && !response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
-                System.out.println("Not a valid response");
-                askQuestion = true;
-            } else {
-                askQuestion = false;
-            }
-        } while(askQuestion);
-        System.out.println(response);
-        pw.println(response);
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        if(response.equalsIgnoreCase("friends")) {
-
-        } else if (response.equalsIgnoreCase("search")) {
-            searchUsers(pw, br, inputStream);
+            } while (!validResponse);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
+    public static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
+        System.out.println("Here are your friends:");
+        pw.write("friends");
+        pw.println();
+        pw.flush();
+        String friends = bfr.readLine();
+        ArrayList<String> allFriends = new ArrayList<>();
+
+        while (!friends.equals(" ")) {
+            allFriends.add(friends.split(", ")[0]);
+            System.out.println(friends);
+            friends = bfr.readLine();
+        }
+        System.out.println(" ");
+        boolean valid;
+        do {
+            System.out.println("What would you like to do now? (Type 'message', 'view', or 'profile')");
+            String response = scan.nextLine();
+
+            if (response.equalsIgnoreCase("message")) {
+                pw.write(response);
+                pw.println();
+                pw.flush();
+
+                boolean validFriend;
+                String friendToMessage;
+                do {
+                    System.out.println("Which friend would you like to message?");
+                    friendToMessage = scan.nextLine();
+
+                    if (allFriends.contains(friendToMessage)) {
+                        validFriend = true;
+                    }
+                    else {
+                        System.out.println("That person is not one of your friends!");
+                        validFriend = false;
+                    }
+                } while (!validFriend);
+
+                pw.write(friendToMessage);
+                pw.println();
+                pw.flush();
+
+                pw.write(userInfo[0]);
+                pw.println();
+                pw.flush();
+
+                System.out.println("Opening message file...");
+                String message = bfr.readLine();
+                if (message.equals(" ")) {
+                    System.out.println("No previous message history!");
+                }
+                while (!message.equals(" ")) {
+                    System.out.println(message);
+                    message = bfr.readLine();
+                }
+                System.out.println(" ");
+                System.out.println("What would you like to send to " + friendToMessage + "?");
+                String messageToSend = scan.nextLine();
+
+                pw.write(messageToSend);
+                pw.println();
+                pw.flush();
+
+                String outcome = bfr.readLine();
+
+                if (outcome.equals("yes")) {
+                    System.out.println("Message sent!");
+                }
+
+                valid = true;
+            } else if (response.equalsIgnoreCase("view")) {
+
+                valid = true;
+            } else if (response.equalsIgnoreCase("profile")) {
+                boolean askQuestion;
+                do {
+                    System.out.println("What would you like to do? (Type 'friends', 'search', or 'signout')");
+                    response = scan.nextLine();
+                    if (!response.equalsIgnoreCase("friends") && !response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
+                        System.out.println("Not a valid response");
+                        askQuestion = true;
+                    } else {
+                        askQuestion = false;
+                    }
+                } while (askQuestion);
+                pw.write(response);
+                pw.println();
+                pw.flush();
+                valid = true;
+                if (response.equalsIgnoreCase("friends")) {
+                    friendsOption(pw, bfr, userInfo, scan);
+                } else if (response.equalsIgnoreCase("search")) {
+
+                }
+            } else {
+                System.out.println("Not a valid response");
+                valid = false;
+            }
+        } while (!valid);
+
+    }
+
 
     public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is) throws IOException {
         boolean validResponse = false;
@@ -172,7 +287,7 @@ public class Client {
 
                 ArrayList<String> users = new ArrayList<>();
                 String firstUser = bfr.readLine();
-                if (firstUser != null)  {
+                if (firstUser != null) {
                     users.add(firstUser);
                 }
                 while (is.available() > 0) {
@@ -277,16 +392,7 @@ public class Client {
         return false;
     }
 
-    public static void friendsOption(PrintWriter pw, BufferedReader bfr) throws IOException {
-        System.out.println("Here are your friends:");
-        pw.write("friends");
-        String friends = bfr.readLine();
 
-        while (friends != null) {
-            System.out.println(friends);
-            friends = bfr.readLine();
-        }
-    }
     public static String createNewUsername() {
         System.out.println("Please enter the username for your new account");
         Scanner scan = new Scanner(System.in);
@@ -301,6 +407,7 @@ public class Client {
         String name = scan.nextLine();
         return String.format("%s, %s, %s, %s, %s", username, name, email, phone, birthday);
     }
+
     public static String createNewPassword() {
         boolean same = false;
         String passwordOne;
@@ -321,7 +428,7 @@ public class Client {
             if (!checkPassword(passwordOne)) {
                 System.out.println("The password does not include all of the required characters");
             }
-        } while(!checkPassword(passwordOne));
+        } while (!checkPassword(passwordOne));
         return passwordOne;
     }
 
@@ -397,6 +504,7 @@ public class Client {
         System.out.println("Enter Message");
 
     }
+
     public static void sendMessage(PrintWriter pw, BufferedReader bfr) throws IOException {
         System.out.println("Please enter your friend that you would like to send a message to.");
         Scanner scan = new Scanner(System.in);
@@ -416,7 +524,7 @@ public class Client {
         }
     }
 
-    public static void showProfilePage(String [] profilePageThings) {
+    public static void showProfilePage(String[] profilePageThings) {
         //splits the user information;
         String username = profilePageThings[0];
         String name = profilePageThings[1];
@@ -425,9 +533,11 @@ public class Client {
         StringBuilder userInfo = new StringBuilder();
         userInfo.append("Username: ").append(username).append("\n");
         userInfo.append("Name: ").append(name).append("\n");
-        userInfo.append("Email: ").append(email).append("\n");;
+        userInfo.append("Email: ").append(email).append("\n");
+        ;
         userInfo.append("Birthday: ").append(birthday).append("\n");
         System.out.println(userInfo);
     }
+
 
 }
