@@ -8,7 +8,7 @@ public class Server implements Runnable {
     private Socket clientSocket;
     private static Profile profile = new Profile();
     private ProfileViewer profileViewer;
-    private Friends friends;
+    private Friends friends = new Friends(profile);
     private User user;
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -121,6 +121,12 @@ public class Server implements Runnable {
     }
 
     private void handleFriends(User user, BufferedReader bfr, PrintWriter pw) throws IOException {
+
+        File friendsFile = new File(user.getUsername() + "sFriends");
+        if (!friendsFile.exists()) {
+            friendsFile.createNewFile();
+        }
+
         try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "sFriends"))) {
             String friendUsername;
             while ((friendUsername = reader.readLine()) != null) {
@@ -139,13 +145,24 @@ public class Server implements Runnable {
             if (response.equalsIgnoreCase("message")) {
                 String friendToMessage = bfr.readLine();
                 String userMessaging = bfr.readLine();
+                String first = "";
+                String second = "";
 
-                File messageFile = new File(userMessaging + friendToMessage + ".txt");
+                if (friendToMessage.compareTo(userMessaging) < 0) {
+                    first = friendToMessage;
+                    second = userMessaging;
+                }
+                else if (friendToMessage.compareTo(userMessaging) > 0) {
+                    first = userMessaging;
+                    second = friendToMessage;
+                }
+
+                File messageFile = new File(first + second + ".txt");
                 if (!messageFile.exists()) {
                     messageFile.createNewFile();
                 }
 
-                try (BufferedReader reader = new BufferedReader(new FileReader(userMessaging + friendToMessage + ".txt"))) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
 
                     String message = reader.readLine();
 
@@ -160,8 +177,8 @@ public class Server implements Runnable {
 
                 String message = bfr.readLine();
 
-                try (PrintWriter pwr = new PrintWriter(new FileWriter(userMessaging + friendToMessage + ".txt", true));
-                    BufferedReader reader = new BufferedReader(new FileReader(userMessaging + friendToMessage + ".txt"))) {
+                try (PrintWriter pwr = new PrintWriter(new FileWriter(first + second + ".txt", true));
+                    BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
 
                     if (reader.readLine() != null) {
                         pwr.println();
@@ -180,6 +197,30 @@ public class Server implements Runnable {
                 valid = true;
             } else if (response.equalsIgnoreCase("view")) {
                 valid = true;
+                String friendToView = bfr.readLine();
+                String unfriendOption = bfr.readLine();
+
+                System.out.println(unfriendOption);
+
+                if (unfriendOption.equals("unfriend")) {
+
+                    friends.removeFriend(friendToView, user.getUsername());
+
+                    try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "sFriends"))) {
+                        String friendUsername;
+                        while ((friendUsername = reader.readLine()) != null) {
+                            pw.println(friendUsername);
+                        }
+                        pw.println(" ");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+                else if (unfriendOption.equals("profile")) {
+
+                }
             }
             else if (response.equalsIgnoreCase("profile")) {
                 valid = true;
