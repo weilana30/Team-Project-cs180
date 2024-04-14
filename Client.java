@@ -73,7 +73,7 @@ public class Client {
                     } while (!invalidInformation);
                 }
             } while (!continueGoing);
-            boolean isUser = true;
+            boolean isUser;
             if (!newUser) {
                 do {
                     String username = enterUsername();
@@ -163,10 +163,12 @@ public class Client {
         pw.println();
         pw.flush();
         String friends = bfr.readLine();
+        ArrayList<String> allFriendsUsers = new ArrayList<>();
         ArrayList<String> allFriends = new ArrayList<>();
 
         while (!friends.equals(" ")) {
-            allFriends.add(friends.split(", ")[0]);
+            allFriendsUsers.add(friends.split(", ")[0]);
+            allFriends.add(friends);
             System.out.println(friends);
             friends = bfr.readLine();
         }
@@ -187,7 +189,7 @@ public class Client {
                     System.out.println("Which friend would you like to message?");
                     friendToMessage = scan.nextLine();
 
-                    if (allFriends.contains(friendToMessage)) {
+                    if (allFriendsUsers.contains(friendToMessage)) {
                         validFriend = true;
                     }
                     else {
@@ -229,9 +231,35 @@ public class Client {
 
                 valid = true;
             } else if (response.equalsIgnoreCase("view")) {
+                pw.write("view");
+                pw.println();
+                pw.flush();
+
+                boolean validFriend;
+                String friendToView;
+                do {
+                    System.out.println("Which friend would you like to view the profile of?");
+                    friendToView = scan.nextLine();
+
+                    if (allFriendsUsers.contains(friendToView)) {
+                        validFriend = true;
+                    }
+                    else {
+                        System.out.println("That person is not one of your friends!");
+                        validFriend = false;
+                    }
+                } while (!validFriend);
+
+                for (String friend : allFriends) {
+                    if (friend.split(", ")[0].equals(friendToView)) {
+                        showProfilePage(friend.split(", "));
+                        break;
+                    }
+                }
 
                 valid = true;
             } else if (response.equalsIgnoreCase("profile")) {
+                showProfilePage(userInfo);
                 boolean askQuestion;
                 do {
                     System.out.println("What would you like to do? (Type 'friends', 'search', or 'signout')");
