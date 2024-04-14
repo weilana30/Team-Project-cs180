@@ -146,7 +146,7 @@ public class Client {
                     searchUsers(pw, bfr, is);
                     validResponse = true;
                 } else if (response.equalsIgnoreCase("signout")) {
-
+                    System.out.println("Signing you out...");
                     validResponse = true;
                 } else {
                     validResponse = false;
@@ -165,6 +165,10 @@ public class Client {
         String friends = bfr.readLine();
         ArrayList<String> allFriendsUsers = new ArrayList<>();
         ArrayList<String> allFriends = new ArrayList<>();
+
+        if (friends.equals(" ")) {
+            System.out.println("No friends found!");
+        }
 
         while (!friends.equals(" ")) {
             allFriendsUsers.add(friends.split(", ")[0]);
@@ -250,11 +254,53 @@ public class Client {
                     }
                 } while (!validFriend);
 
+                pw.write(friendToView);
+                pw.println();
+                pw.flush();
+
                 for (String friend : allFriends) {
                     if (friend.split(", ")[0].equals(friendToView)) {
                         showProfilePage(friend.split(", "));
                         break;
                     }
+                }
+
+                boolean validOption;
+                String unfriendOption;
+                do {
+                    System.out.println("What would you like to do now? (Type 'unfriend' or 'profile')");
+                    unfriendOption = scan.nextLine();
+
+                    if (unfriendOption.equalsIgnoreCase("unfriend") || unfriendOption.equalsIgnoreCase("profile")) {
+                        validOption = true;
+                    }
+                    else {
+                        System.out.println("Not a valid response");
+                        validOption = false;
+                    }
+                } while (!validOption);
+
+                pw.write(unfriendOption);
+                pw.println();
+                pw.flush();
+
+                if (unfriendOption.equalsIgnoreCase("unfriend")) {
+
+                    System.out.println("Here is your new friend list:");
+                    String friend = bfr.readLine();
+
+                    if (friend.equals(" ")) {
+                        System.out.println("No friends found!");
+                    }
+
+                    while (friends != null) {
+                        System.out.println(friends);
+                        friends = bfr.readLine();
+                    }
+
+                }
+                else {
+
                 }
 
                 valid = true;
