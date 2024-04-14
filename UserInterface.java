@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * UserInterface.java
  * <p>
@@ -32,7 +34,8 @@ public interface UserInterface {
     String getPhoneNumber();
 
     void setPhoneNumber(String phoneNumber);
-    void addUserToFile();
+
+    void addUserToFile() throws IOException;
 
     boolean equals(Object o);
 
