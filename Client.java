@@ -171,6 +171,10 @@ public class Client {
                 pw.println(userToSearch);
 
                 ArrayList<String> users = new ArrayList<>();
+                String firstUser = bfr.readLine();
+                if (firstUser != null)  {
+                    users.add(firstUser);
+                }
                 while (is.available() > 0) {
                     String username = bfr.readLine();
                     users.add(username);
@@ -427,5 +431,3 @@ public class Client {
     }
 
 }
-
-
