@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Server implements Runnable {
@@ -133,7 +134,7 @@ public class Server implements Runnable {
         bfr.readLine();
         String response = bfr.readLine();
         System.out.println(response);
-        boolean valid = false;
+        boolean valid;
         do {
             if (response.equalsIgnoreCase("message")) {
                 String friendToMessage = bfr.readLine();
@@ -178,11 +179,9 @@ public class Server implements Runnable {
                 pw.write("yes");
                 valid = true;
             } else if (response.equalsIgnoreCase("view")) {
-
                 valid = true;
             }
             else if (response.equalsIgnoreCase("profile")) {
-
                 valid = true;
             }
             else {
