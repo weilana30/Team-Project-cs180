@@ -89,8 +89,10 @@ public class Server implements Runnable {
                 user.addUserToFile();
             }
             String userChoice = br.readLine();
+            System.out.println(userChoice);
             if ("friends".equalsIgnoreCase(userChoice)) {
-                handleFriends(user, br, pw);
+                System.out.println("Here are your friends:");
+                handleFriends(user, pw);
             } else if ("search".equalsIgnoreCase(userChoice)) {
                 //handleProfileSearch(br, pw);
             } else if ("signout".equalsIgnoreCase(userChoice)) {
@@ -119,9 +121,8 @@ public class Server implements Runnable {
         pw.println(userInfo);
     }
 
-    private void handleFriends(User user, BufferedReader br, PrintWriter pw) throws IOException {
-        pw.println("Here are your friends:");
-        try (BufferedReader reader = new BufferedReader(new FileReader("usernamesFriends.txt"))) {
+    private void handleFriends(User user, PrintWriter pw) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "sFriends"))) {
             String friendUsername;
             while ((friendUsername = reader.readLine()) != null) {
                 pw.println(friendUsername);
