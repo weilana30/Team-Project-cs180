@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * @author Ricardo Liu, lab section 15
  * @version March 31, 2024
  */
-public class Profile {
+public class Profile implements ProfileInterface {
     private ArrayList<User> users;
 
     public Profile() {
