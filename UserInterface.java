@@ -32,5 +32,9 @@ public interface UserInterface {
     String getPhoneNumber();
 
     void setPhoneNumber(String phoneNumber);
+    void addUserToFile();
 
+    boolean equals(Object o);
+
+    String toString();
 }
