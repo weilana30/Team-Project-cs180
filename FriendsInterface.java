@@ -2,9 +2,9 @@ import java.util.ArrayList;
 
 public interface FriendsInterface {
 
-    boolean addFriend(String friendUsername, String userUsername);
+    boolean addFriend(String friendUsername, String currentUserUsername);
 
-    boolean removeFriend(String friendUsername);
+    boolean removeFriend(String friendUsername, String currentUserUsername);
 
     boolean blockUser(String userToBlockUsername, String currentUserUsername);
 
