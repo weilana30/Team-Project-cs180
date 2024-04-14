@@ -1,5 +1,5 @@
 /**
- * viewerinterface
+ * ProfileViewerInterface
  *
  * <p>
  * Create a way to find a user
@@ -11,8 +11,5 @@ public interface ProfileViewerInterface {
     String displayUserInformationByUsername(String username);
     String displayUserInformationByPhoneNumber(String phoneNumber);
     String displayUserInformationByEmail(String email);
+    String displayUserInformation(User user);
 }
-
-
-
-
