@@ -44,23 +44,21 @@ public class Friends implements FriendsInterface {
         return true;
     }
 
-    public boolean removeFriend(String friendUsername) {
+    public boolean removeFriend(String friendUsername, String currentUserUsername) {
         User friend = profiles.getUserByUsername(friendUsername);
+        User currentUser = profiles.getUserByUsername(currentUserUsername);
 
-        // if friend username doesn't exist
-        if (friend == null) {
+        // if either friend or current user doesn't exist, return false
+        if (friend == null || currentUser == null) {
             return false;
         }
 
-        // if friend username is able to be removed from friend, return true
-        // else it means that friend is not on friends list and can't be removed
+        // if friend username is able to be removed from friends list, return true
+        // otherwise, it means that friend is not on the friends list and can't be removed
         if (friends.remove(friend)) {
-            updateFriendsFile(friend.getUsername()); // updates the [username]Friends.txt file
+            updateFriendsFile(currentUser.getUsername()); // updates the [username]Friends.txt file for the current user
             return true;
-        } else {
-            System.out.println(friendUsername + " is not on your friends list.");
         }
-
         return false;
     }
 
@@ -116,23 +114,23 @@ public class Friends implements FriendsInterface {
     public boolean unblockUser(String userToUnblockUsername, String currentUserUsername) {
         User userToUnblock = profiles.getUserByUsername(userToUnblockUsername);
         User currentUser = profiles.getUserByUsername(currentUserUsername);
-    
+
         // if both users don't exist, returns false
         if (userToUnblock == null || currentUser == null) {
             return false;
         }
-    
+
         // if user you want to unblock is not blocked, returns false
         if (!blocked.contains(userToUnblock)) {
             return false;
         }
-    
+
         // removes userToUnblock from the blocklist
         blocked.remove(userToUnblock);
         updateBlockedFile(currentUser.getUsername()); // updates the [username]Blocked.txt file
         return true;
     }
-    
+
 
     private void updateFriendsFile(String username) {
         try {
@@ -164,7 +162,7 @@ public class Friends implements FriendsInterface {
         }
         return blocked;
     }
-    
+
     private void readBlockedFromFile(String username) {
         // reads blocked users data from file specific to the given username and populate the blocked ArrayList
         try {
@@ -182,5 +180,5 @@ public class Friends implements FriendsInterface {
             e.printStackTrace();
         }
     }
-    
+
 }
