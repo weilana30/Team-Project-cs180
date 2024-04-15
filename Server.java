@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server implements Runnable {
+public class Server implements Runnable, ServerInterface {
     private Socket clientSocket;
     private static Profile profile = new Profile();
     private ProfileViewer profileViewer;
@@ -100,7 +100,7 @@ public class Server implements Runnable {
 
     }
 
-    private void returningUser(String username, BufferedReader br, PrintWriter pw) throws IOException {
+    public void returningUser(String username, BufferedReader br, PrintWriter pw) throws IOException {
         User user = profile.getUserByUsername(username);
         while (user == null) {
             pw.println("no");
@@ -113,7 +113,7 @@ public class Server implements Runnable {
         pw.println(userInfo);
     }
 
-    private void handleFriends(User user, BufferedReader bfr, PrintWriter pw) throws IOException {
+    public void handleFriends(User user, BufferedReader bfr, PrintWriter pw) throws IOException {
         File friendsFile = new File(user.getUsername() + "Friends.txt");
         if (!friendsFile.exists()) {
             friendsFile.createNewFile();
@@ -206,7 +206,7 @@ public class Server implements Runnable {
         }
     }
 
-    private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
+    public void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
         String choice = br.readLine();
         System.out.println(choice);
         if (choice.equals("yes")) {
