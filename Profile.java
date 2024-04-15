@@ -11,36 +11,42 @@ import java.util.ArrayList;
  * @version March 31, 2024
  */
 public class Profile implements ProfileInterface {
-    private ArrayList<User> users;
+    private ArrayList<User> allUsers;
 
     public Profile() {
-        this.users = new ArrayList<>();
+        this.allUsers = new ArrayList<>();
         try {
-            File users = new File("Users.txt");
             BufferedReader bfr = new BufferedReader(new FileReader("Users.txt"));
             String userString = bfr.readLine();
-            while(userString != null) {
+            while (userString != null) {
                 User user = new User(userString);
-                this.users.add(user);
+                this.allUsers.add(user);
                 userString = bfr.readLine();
             }
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
     public void addUser(User user) {
-        users.add(user);
+        allUsers.add(user);
     }
+
     public User getUserByUsername(String username) {
-        for (User user : users) {
+        for (User user : allUsers) {
             if (user.getUsername().equals(username)) {
                 return user;
             }
         }
         return null;
     }
+
+    public ArrayList<User> getUsers() {
+        return this.allUsers;
+    }
+
     public String getEmailByUsername(String username) {
         User user = getUserByUsername(username);
         if (user != null) {
@@ -49,6 +55,7 @@ public class Profile implements ProfileInterface {
             return null;
         }
     }
+
     public String getPhoneNumberByUsername(String username) {
         User user = getUserByUsername(username);
         if (user != null) {
@@ -57,6 +64,7 @@ public class Profile implements ProfileInterface {
             return null;
         }
     }
+
     public String getBirthdayByUsername(String username) {
         User user = getUserByUsername(username);
         if (user != null) {
@@ -65,6 +73,7 @@ public class Profile implements ProfileInterface {
             return null;
         }
     }
+
     public String getPasswordByUsername(String username) {
         User user = getUserByUsername(username);
         if (user != null) {
@@ -73,6 +82,7 @@ public class Profile implements ProfileInterface {
             return null;
         }
     }
+
     public String getNameByUsername(String username) {
         User user = getUserByUsername(username);
         if (user != null) {
@@ -81,12 +91,9 @@ public class Profile implements ProfileInterface {
             return null;
         }
     }
-    public ArrayList <User> getUsers() {
-        return this.users;
-    }
-    
+
     public User getUserByPhoneNumber(String phoneNumber) {
-        for (User user : users) {
+        for (User user : allUsers) {
             if (user.getPhoneNumber().equals(phoneNumber)) {
                 return user;
             }
@@ -95,7 +102,7 @@ public class Profile implements ProfileInterface {
     }
 
     public User getUserByEmail(String email) {
-        for (User user : users) {
+        for (User user : allUsers) {
             if (user.getEmail().equals(email)) {
                 return user;
             }
