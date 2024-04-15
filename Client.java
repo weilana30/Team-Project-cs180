@@ -391,7 +391,9 @@ public class Client implements ClientInterface {
                 } else {
                     System.out.println("Users Found:");
                     for (String username : users) {
-                        System.out.println(username);
+                        if (!username.equalsIgnoreCase(userName)) {
+                            System.out.println(username);
+                        }
                     }
                     boolean validUsername = false;
                     do {
