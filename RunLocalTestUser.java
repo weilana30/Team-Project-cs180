@@ -7,15 +7,7 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 
-/**
- * RunLocalTestUser.java
- * <p>
- * A test case file that will run different test cases
- * on User.java and its methods.
- *
- * @author Rishi Velma, lab section 15
- * @version April 1st, 2024
- */
+import java.io.IOException;
 
 @RunWith(Enclosed.class)
 public class RunLocalTestUser {
@@ -30,16 +22,6 @@ public class RunLocalTestUser {
         }
     }
 
-    /**
-     * TestCase
-     * <p>
-     * The test case class that contains all the different
-     * test cases for User.java.
-     *
-     * @author Rishi Velma, lab section 15
-     * @version April 1st, 2024
-     */
-
     public static class TestCase {
         @Test(timeout = 1000)
         public void userTest() {
@@ -47,11 +29,19 @@ public class RunLocalTestUser {
             User user3 = new User("tester", "Password1@");
             User user4 = new User("test", "Password1@");
 
-            assertTrue(user1.equals(user3));
-            assertFalse(user1.equals(user4));
-            assertEquals("Username: " + user4.getUsername() +
-                    ", Password: " + user4.getPassword(), user4.toString());
+            assertTrue("user1 and user3 should be equal", user1.equals(user3));
+            assertFalse("user1 and user4 should not be equal", user1.equals(user4));
 
+            assertEquals("Incorrect toString representation",
+                    "tester, null, Password1@, null, null, null",
+                    user1.toString());
+
+            // Test addUserToFile() - this assumes that the file "Users.txt" is empty or does not exist
+            try {
+                user1.addUserToFile();
+            } catch (IOException e) {
+                fail("IOException occurred while writing to file");
+            }
         }
     }
 }
