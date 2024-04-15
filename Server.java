@@ -189,6 +189,7 @@ public class Server implements Runnable {
                 System.out.println(unfriendOption);
 
                 if (unfriendOption.equals("unfriend")) {
+                    friends.updateFriendsFile(user.getUsername());
 
                     friends.removeFriend(friendToView, user.getUsername());
 
