@@ -16,7 +16,11 @@ public class Profile implements ProfileInterface {
     public Profile() {
         this.allUsers = new ArrayList<>();
         try {
-            BufferedReader bfr = new BufferedReader(new FileReader("Users.txt"));
+            File file = new File("Users.txt");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            BufferedReader bfr = new BufferedReader(new FileReader(file));
             String userString = bfr.readLine();
             while (userString != null) {
                 User user = new User(userString);
