@@ -46,9 +46,6 @@ public class Friends implements FriendsInterface {
 
     public boolean removeFriend(String friendUsername, String currentUserUsername) {
         readFriendsFromFile(currentUserUsername);
-        for (User user: ) {
-            System.out.println(user.getUsername());
-        }
         User friend = profiles.getUserByUsername(friendUsername);
         User currentUser = profiles.getUserByUsername(currentUserUsername);
 
