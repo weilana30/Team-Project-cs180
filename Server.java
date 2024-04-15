@@ -31,29 +31,21 @@ public class Server implements Runnable {
 
     public void run() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-             PrintWriter pw = new PrintWriter(this.clientSocket.getOutputStream(), true)) {
+             PrintWriter pw = new PrintWriter(this.clientSocket.getOutputStream(), true)) 
+             PrintWriter writer = new PrintWriter(this.clientSocket.getOutputStream(), false); {
 
             String newUser = br.readLine();
             User user;
 
             if ("yes".equalsIgnoreCase(newUser)) {
-                do {
+                 do {
                     String username = br.readLine();
                     user = profile.getUserByUsername(username);
+
                     if (user != null) {
                         pw.println("yes");
-                        boolean passwordCorrect = false;
                         pw.println(user);
-                        while (!passwordCorrect) {
-                            String password = br.readLine();
-                            if (user.getPassword().equals(password)) {
-                                passwordCorrect = true;
-                            } else {
-                                pw.println("incorrect_password");
-                            }
-                        }
-                        pw.println("Welcome, " + username + "! What would you like to do? (Type 'friends', 'search', or 'signout')");
-
+                        boolean passwordCorrect = false;
                     } else {
                         pw.println("no");
                     }
@@ -232,62 +224,65 @@ public class Server implements Runnable {
     }
 
     private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        String choice;
-        do {
-            // Prompt the user to initiate a search
-            System.out.print("Do you want to find a user? (yes/no): ");
-            choice = scanner.nextLine().trim().toLowerCase();
-            if (choice.equals("yes")) {
-                // Prompt the user to choose search criteria
-                System.out.print("Choose search criteria (username/phone number/email): ");
-                String searchCriteria = scanner.nextLine().trim().toLowerCase();
-                // Prompt the user to enter the value to search for
-                System.out.print("Enter the value to search for: ");
-                String searchValue = scanner.nextLine().trim();
-                // Perform search based on the chosen criteria
-                switch (searchCriteria) {
-                    case "username":
-                        if (profile.getUserByUsername(searchValue) == null) {
-                            System.out.println("Make sure you enter the correct username!");
-                        } else {
-                            System.out.println(profileViewer.displayUserInformationByUsername(searchValue));
-                            System.out.println("Do you want to add this user as your friend?(yes/no): ");
-                            String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
-                            if (addFriendAnswer == "yes") {
-                                friends.addFriend(profile.getUserByUsername(searchValue).getUsername(), user.getUsername());
-                            }
-                        }
-                        break;
-                    case "phone number":
-                        if (profile.getUserByPhoneNumber(searchValue) == null) {
-                            System.out.println("Make sure you enter the correct phone number!");
-                        } else {
-                            System.out.println(profileViewer.displayUserInformationByPhoneNumber(searchValue));
-                            System.out.println("Do you want to add this user as your friend?(yes/no): ");
-                            String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
-                            if (addFriendAnswer == "yes") {
-                                friends.addFriend(profile.getUserByPhoneNumber(searchValue).getUsername(), user.getUsername());
-                            }
-                        }
-                        break;
-                    case "email":
-                        if (profile.getUserByEmail(searchValue) == null) {
-                            System.out.println("Make sure you enter the correct email!");
-                        } else {
-                            System.out.println(profileViewer.displayUserInformationByEmail(searchValue));
-                            System.out.println("Do you want to add this user as your friend?(yes/no): ");
-                            String addFriendAnswer = scanner.nextLine().trim().toLowerCase();
-                            if (addFriendAnswer == "yes") {
-                                friends.addFriend(profile.getUserByEmail(searchValue).getUsername(), user.getUsername());
-                            }
-                        }
-                        break;
-                    default:
-                        System.out.println("Invalid search criteria!");
+        String choice = br.readLine();
+        System.out.println(choice);
+        if (choice.equals("yes")) {
+
+            boolean repeatSearch = false;
+            do {
+                System.out.println("beginning");
+                String searchValue = br.readLine();
+                System.out.println(searchValue);
+                int found = 0;
+                for (User user : profile.getUsers()) {
+                    if (user.getUsername().contains(searchValue)) {
+                        pw.println(user.getUsername());
+                        found++;
+                    } else if (user.getName().contains(searchValue)) {
+                        pw.println(user.getUsername());
+                        found++;
+                    } else if (user.getEmail().contains(searchValue)) {
+                        found++;
+                        pw.println(user.getUsername());
+                    }
                 }
-            }
-        } while (choice.equals("yes")); // Repeat the search process if the user wants to continue
-        System.out.println("Exiting search.");
+                if (found == 0) {
+                    pw.println("no");
+                }
+                pw.println("done");
+                pw.flush();
+                String response = br.readLine();
+                if (response.equalsIgnoreCase("search")) {
+                    repeatSearch = true;
+                } else {
+                    repeatSearch = false;
+                    User user = profile.getUserByUsername(response);
+                    if (user == null) {
+                        pw.println("no");
+                        pw.flush();
+                    } else {
+                        pw.println(user);
+                        pw.flush();
+                        System.out.println(user);
+                        String userChoice = br.readLine();
+                        if (userChoice.equalsIgnoreCase("block")) {
+                            String userName = br.readLine();
+                            File file = new File(userName + "Blocked.txt");
+                            PrintWriter blockWriter = new PrintWriter(new FileOutputStream(file));
+                            blockWriter.println(user);
+                            blockWriter.close();
+                        } else if (userChoice.equalsIgnoreCase("add")) {
+                            System.out.println("here");
+                            String userName = br.readLine();
+                            System.out.println(userName);
+                            File file = new File(userName + "Friends.txt");
+                            PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file));
+                            friendsWriter.println(user);
+                            friendsWriter.close();
+                        }
+                    }
+                }
+            } while(repeatSearch);
+        }
     }
 }
