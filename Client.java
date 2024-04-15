@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 /**
  * Client
  * <p>
@@ -55,7 +56,8 @@ public class Client implements ClientInterface {
                             continueGoing = true;
                             newUser = true;
                             invalidInformation = true;
-                            //userInformation = new String[]{accountInfo[0], accountInfo[1], accountInfo[2], accountInfo[3],}
+                            //userInformation = new String[]{accountInfo[0], accountInfo[1], 
+                            // accountInfo[2], accountInfo[3],}
                         } else {
                             if (validNewUser.equals("username")) {
                                 System.out.println("The username is already taken.");
@@ -82,7 +84,8 @@ public class Client implements ClientInterface {
                     //server returns whether or not they are a valid user
                     String validUser = bfr.readLine();
                     if (validUser.equals("no")) {
-                        System.out.println("The Username, email, or phone-Number you entered does not have an account");
+                        System.out.println("The Username, email, or phone-Number you " +
+                                "entered does not have an account");
                         isUser = false;
                     } else {
                         isUser = true;
@@ -90,7 +93,8 @@ public class Client implements ClientInterface {
                 } while (!isUser);
                 String userInfoString = bfr.readLine();
 
-                //receives the user information from the server if they are a valid user and splits it into each component
+                //receives the user information from the server if they are a valid user and splits it into 
+                // each component
                 String[] userInfo = userInfoString.split(", ");
 
                 //this should check if the password is correct after
@@ -100,7 +104,8 @@ public class Client implements ClientInterface {
                     String password = enterPassword();
 
                     if (!password.equals(userInfo[2])) {
-                        System.out.println("That is the wrong password. Please try again! You have " + (2 - attempts) + " attempts remaining.");
+                        System.out.println("That is the wrong password. Please try again! You have "
+                                + (2 - attempts) + " attempts remaining.");
                         attempts += 1;
                         validPassword = false;
                     } else {
@@ -109,7 +114,8 @@ public class Client implements ClientInterface {
                         validPassword = true;
                     }
                     if (attempts == 3 && !validPassword) {
-                        System.out.println("You have used your maximum attempts. You will now be logged out to prevent suspicious activity.");
+                        System.out.println("You have used your maximum attempts." +
+                                " You will now be logged out to prevent suspicious activity.");
                     }
                 } while (attempts < 3);
 
@@ -126,9 +132,12 @@ public class Client implements ClientInterface {
             do {
                 do {
                     showProfilePage(userInformation);
-                    System.out.println("Welcome to textogram. What would you like to do? (Type 'friends', 'search', or 'signout')");
+                    System.out.println("Welcome to textogram. What would you like to do? " +
+                            "(Type 'friends', 'search', or 'signout')");
                     response = scan.nextLine();
-                    if (!response.equalsIgnoreCase("friends") && !response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
+                    if (!response.equalsIgnoreCase("friends")
+                            && !response.equalsIgnoreCase("search")
+                            && !response.equalsIgnoreCase("signout")) {
                         System.out.println("Not a valid response");
                         askQuestion = true;
                     } else {
@@ -163,7 +172,8 @@ public class Client implements ClientInterface {
         }
     }
 
-    public static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
+    public static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan)
+            throws IOException {
         System.out.println("Here are your friends:");
         pw.write("friends");
         pw.println();
@@ -275,7 +285,8 @@ public class Client implements ClientInterface {
                         System.out.println("What would you like to do now? (Type 'unfriend' or 'profile')");
                         unfriendOption = scan.nextLine();
 
-                        if (unfriendOption.equalsIgnoreCase("unfriend") || unfriendOption.equalsIgnoreCase("profile")) {
+                        if (unfriendOption.equalsIgnoreCase("unfriend") ||
+                                unfriendOption.equalsIgnoreCase("profile")) {
                             validOption = true;
                         } else {
                             System.out.println("Not a valid response");
@@ -316,7 +327,8 @@ public class Client implements ClientInterface {
     }
 
 
-    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
+    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName)
+            throws IOException, InterruptedException {
         boolean validResponse = false;
         Scanner scan = new Scanner(System.in);
         String response;
@@ -358,7 +370,8 @@ public class Client implements ClientInterface {
                     boolean again = false;
                     do {
                         System.out.println("There were no results.\n" +
-                                "If you want to search again, type search. If you want to go back to your profile, type profile.");
+                                "If you want to search again, type search. " +
+                                "If you want to go back to your profile, type profile.");
                         String noResultsResponse = scan.nextLine();
                         if (noResultsResponse.equalsIgnoreCase("profile")) {
                             search = false;
@@ -377,7 +390,8 @@ public class Client implements ClientInterface {
                     boolean validUsername = false;
                     do {
                         System.out.println("If you want to view one of these users profiles enter their username.\n" +
-                                "If you want to search again, type search. If you want to go back to your profile, type profile.");
+                                "If you want to search again, type search. " +
+                                "If you want to go back to your profile, type profile.");
                         String nextResponse = scan.nextLine();
                         if (nextResponse.equalsIgnoreCase("profile")) {
                             search = false;
@@ -400,7 +414,8 @@ public class Client implements ClientInterface {
                                 boolean repeatFriend = false;
                                 do {
                                     //asks the user if they want to add them as a friend
-                                    System.out.println("Would you like to add the user as a friend or block them? Enter add " +
+                                    System.out.println("Would you like to add the user as a friend " +
+                                            "or block them? Enter add " +
                                             "or block, or entire profile to return to the profile");
                                     String friend = scan.nextLine();
 
@@ -448,7 +463,8 @@ public class Client implements ClientInterface {
         boolean validResponse = false;
         do {
             System.out.println("Welcome to TextOGram");
-            System.out.println("If you already have an account enter yes. If you want to create an account enter no.");
+            System.out.println("If you already have an account enter yes. " +
+                    "If you want to create an account enter no.");
             Scanner scan = new Scanner(System.in);
             String response = scan.nextLine();
 
@@ -572,7 +588,7 @@ public class Client implements ClientInterface {
         Scanner scan = new Scanner(System.in);
         return scan.nextLine();
     }
-    
+
 
     public static void showProfilePage(String[] profilePageThings) {
         //splits the user information;
@@ -584,7 +600,7 @@ public class Client implements ClientInterface {
         userInfo.append("Username: ").append(username).append("\n");
         userInfo.append("Name: ").append(name).append("\n");
         userInfo.append("Email: ").append(email).append("\n");
-        ;
+        
         userInfo.append("Birthday: ").append(birthday).append("\n");
         System.out.println(userInfo);
     }
