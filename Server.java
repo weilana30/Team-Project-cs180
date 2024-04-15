@@ -222,7 +222,7 @@ public class Server implements Runnable {
         } while (!valid);
     }
 
-    private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
+  private void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
         String choice = br.readLine();
         System.out.println(choice);
         if (choice.equals("yes")) {
@@ -250,37 +250,42 @@ public class Server implements Runnable {
                 }
                 pw.println("done");
                 pw.flush();
-                String response = br.readLine();
-                if (response.equalsIgnoreCase("search")) {
-                    repeatSearch = true;
-                } else {
-                    repeatSearch = false;
-                    User user = profile.getUserByUsername(response);
-                    if (user == null) {
-                        pw.println("no");
-                        pw.flush();
+                boolean doAgain = false;
+                do {
+                    String response = br.readLine();
+                    if (response.equalsIgnoreCase("search")) {
+                        repeatSearch = true;
                     } else {
-                        pw.println(user);
-                        pw.flush();
-                        System.out.println(user);
-                        String userChoice = br.readLine();
-                        if (userChoice.equalsIgnoreCase("block")) {
-                            String userName = br.readLine();
-                            File file = new File(userName + "Blocked.txt");
-                            PrintWriter blockWriter = new PrintWriter(new FileOutputStream(file));
-                            blockWriter.println(user);
-                            blockWriter.close();
-                        } else if (userChoice.equalsIgnoreCase("add")) {
-                            System.out.println("here");
-                            String userName = br.readLine();
-                            System.out.println(userName);
-                            File file = new File(userName + "Friends.txt");
-                            PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file));
-                            friendsWriter.println(user);
-                            friendsWriter.close();
+                        repeatSearch = false;
+                        User user = profile.getUserByUsername(response);
+
+                        if (user == null) {
+                            pw.println("no");
+                            pw.flush();
+                            doAgain = true;
+                        } else {
+                            pw.println(user);
+                            pw.flush();
+                            System.out.println(user);
+                            String userChoice = br.readLine();
+                            if (userChoice.equalsIgnoreCase("block")) {
+                                String userName = br.readLine();
+                                File file = new File(userName + "Blocked.txt");
+                                PrintWriter blockWriter = new PrintWriter(new FileOutputStream(file));
+                                blockWriter.println(user);
+                                blockWriter.close();
+                            } else if (userChoice.equalsIgnoreCase("add")) {
+                                System.out.println("here");
+                                String userName = br.readLine();
+                                System.out.println(userName);
+                                File file = new File(userName + "Friends.txt");
+                                PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file));
+                                friendsWriter.println(user);
+                                friendsWriter.close();
+                            }
                         }
                     }
-                }
+                } while(doAgain);
             } while(repeatSearch);
         }
     }
