@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.JUnit4;
 
-import java.io.IOException;
 import java.net.Socket;
 
 import static org.junit.Assert.assertEquals;
