@@ -10,12 +10,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 /**
- * RunLocalTestIndividualText
+ * RunLocalTestClient
  * <p>
- * Runs a test on the IndividualText class
+ * Runs a test on the methods in client
  *
  * @author Andrew Weiland, lab section 15
- * @version March 31, 2024
+ * @version April 15, 2024
  */
 @RunWith(Enclosed.class)
 public class RunLocalTestClient {
