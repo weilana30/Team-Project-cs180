@@ -1,8 +1,6 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Server implements Runnable {
     private Socket clientSocket;
@@ -31,14 +29,14 @@ public class Server implements Runnable {
 
     public void run() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-             PrintWriter pw = new PrintWriter(this.clientSocket.getOutputStream(), true)) 
-             PrintWriter writer = new PrintWriter(this.clientSocket.getOutputStream(), false); {
+             PrintWriter pw = new PrintWriter(this.clientSocket.getOutputStream(), true))
+         {
 
             String newUser = br.readLine();
             User user;
 
             if ("yes".equalsIgnoreCase(newUser)) {
-                 do {
+                do {
                     String username = br.readLine();
                     user = profile.getUserByUsername(username);
 
@@ -86,7 +84,8 @@ public class Server implements Runnable {
             if ("friends".equalsIgnoreCase(userChoice)) {
                 handleFriends(user, br, pw);
             } else if ("search".equalsIgnoreCase(userChoice)) {
-                //handleProfileSearch(br, pw);
+                PrintWriter writer = new PrintWriter(this.clientSocket.getOutputStream(), false);
+                handleProfileSearch(br, writer);
             } else if ("signout".equalsIgnoreCase(userChoice)) {
                 pw.println("Signing out...");
             } else {
@@ -170,7 +169,7 @@ public class Server implements Runnable {
                 String message = bfr.readLine();
 
                 try (PrintWriter pwr = new PrintWriter(new FileWriter(first + second + ".txt", true));
-                    BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
+                     BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
 
                     if (reader.readLine() != null) {
                         pwr.println();
