@@ -1,5 +1,5 @@
 /**
- *IndividualTextInterface
+ * IndividualTextInterface
  * <p>
  * An interface for the IndividualText class
  *
@@ -8,9 +8,14 @@
  */
 public interface IndividualTextInterface {
     User getUser();
+
     String getText();
+
     int getTextNumber();
+
     void setTextNumber(int textNumber);
+
     boolean equals(Object o);
+
     String toString();
 }
