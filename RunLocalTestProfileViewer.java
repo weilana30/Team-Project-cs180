@@ -1,38 +1,79 @@
-import org.junit.Assert;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.runner.notification.Failure;
+
 /**
- * runlocaltestviewer
- *
+ * RunLocalTestProfileViewer.java
  * <p>
- * Creates an object that examine viewer
+ * A test case file that will run different test cases
+ * on ProfileViewer.java and its methods.
  *
- * @author Ricardo Liu, lab section 15
- * @version March 31, 2024
+ * @author Chenjia Liu, lab section 15
+ * @version April 1st, 2024
  */
-@RunWith(JUnit4.class)
-public class RunLocalTestViewer {
 
-    @Test
-    public void testDisplayUserInformation() {
-        Profile profile = new Profile();
+@RunWith(Enclosed.class)
+public class RunLocalTestProfileViewer {
+    public static void main(String[] args) {
+        Result result = JUnitCore.runClasses(TestCase.class);
+        if (result.wasSuccessful()) {
+            System.out.println("Excellent - Test ran successfully");
+        } else {
+            for (Failure failure : result.getFailures()) {
+                System.out.println(failure.toString());
+            }
+        }
+    }
 
-        User user1 = new User("user1", "user1@example.com", "123456", "John Doe", "1980-01-01", "1234567890");
-        User user2 = new User("user2", "user2@example.com", "abcdef", "Jane Smith", "1990-05-15", "9876543210");
+    /**
+     * TestCase
+     * <p>
+     * The test case class that contains all the different
+     * test cases for ProfileViewer.java.
+     *
+     * @author Chenjia Liu, lab section 15
+     * @version April 1st, 2024
+     */
 
-        profile.addUser(user1);
-        profile.addUser(user2);
+    public static class TestCase {
+        // Create a Profile object
+        private Profile profile = new Profile();
 
-        Viewer viewer = new Viewer(profile);
+        // Create a ProfileViewer object with the Profile
+        private ProfileViewer profileViewer = new ProfileViewer(profile);
 
-        String expectedUserInfo1 = "Name: John Doe\nUsername: user1\nEmail: user1@example.com\nPhone Number: 1234567890\nBirthday: 1980-01-01\n";
-        Assert.assertEquals(expectedUserInfo1, viewer.displayUserInformation("user1"));
+        @Test(timeout = 1000)
+        public void displayUserInformationTest() {
+            User user1 = new User("alice, Alice, password1, alice@example.com, 1234567890, 1995-05-10");
+            User user2 = new User("bob, Bob, password2, bob@example.com, 0987654321, 1990-12-25");
 
-        String expectedUserInfo2 = "Name: Jane Smith\nUsername: user2\nEmail: user2@example.com\nPhone Number: 9876543210\nBirthday: 1990-05-15\n";
-        Assert.assertEquals(expectedUserInfo2, viewer.displayUserInformation("user2"));
+            profile.addUser(user1);
+            profile.addUser(user2);
 
-        String expectedUserNotFound = "User not found!";
-        Assert.assertEquals(expectedUserNotFound, viewer.displayUserInformation("nonexisting"));
+            String expectedUser1Info = "Username: alice\n" +
+                    "Email: alice@example.com\n" +
+                    "Phone Number: 1234567890\n" +
+                    "Birthday: 1995-05-10\n";
+            assertEquals(expectedUser1Info, profileViewer.displayUserInformationByUsername("alice"));
+            assertEquals(expectedUser1Info, profileViewer.displayUserInformationByPhoneNumber("1234567890"));
+            assertEquals(expectedUser1Info, profileViewer.displayUserInformationByEmail("alice@example.com"));
+
+            String expectedUser2Info = "Username: bob\n" +
+                    "Email: bob@example.com\n" +
+                    "Phone Number: 0987654321\n" +
+                    "Birthday: 1990-12-25\n";
+            assertEquals(expectedUser2Info, profileViewer.displayUserInformationByUsername("bob"));
+            assertEquals(expectedUser2Info, profileViewer.displayUserInformationByPhoneNumber("0987654321"));
+            assertEquals(expectedUser2Info, profileViewer.displayUserInformationByEmail("bob@example.com"));
+
+            assertEquals("User not found!", profileViewer.displayUserInformationByUsername("charlie"));
+            assertEquals("User not found!", profileViewer.displayUserInformationByPhoneNumber("1111111111"));
+            assertEquals("User not found!", profileViewer.displayUserInformationByEmail("dave@example.com"));
+        }
     }
 }
