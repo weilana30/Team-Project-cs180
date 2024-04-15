@@ -74,7 +74,6 @@ public class Client {
                     pw.println();
                     //server returns whether or not they are a valid user
                     String validUser = bfr.readLine();
-                    System.out.println(validUser);
                     if (validUser.equals("no")) {
                         System.out.println("The Username, email, or phone-Number you entered does not have an account");
                         isUser = false;
