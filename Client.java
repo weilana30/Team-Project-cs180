@@ -372,7 +372,7 @@ public class Client {
     }
 
 
-    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
+     public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
         boolean validResponse = false;
         Scanner scan = new Scanner(System.in);
         String response;
