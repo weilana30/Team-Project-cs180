@@ -5,6 +5,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
+
 /**
  * RunLocalTestIndividualText
  * <p>
@@ -25,6 +26,7 @@ public class RunLocalTestIndividualText {
             }
         }
     }
+
     /**
      * TestCases
      * <p>* Has tests for the method in IndividualText
