@@ -335,7 +335,7 @@ public class Client {
     }
 
 
-    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is) throws IOException {
+    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
         boolean validResponse = false;
         Scanner scan = new Scanner(System.in);
         String response;
@@ -354,21 +354,26 @@ public class Client {
             do {
                 System.out.println("Please enter the user you are searching for?");
                 String userToSearch = scan.nextLine();
-                System.out.println(userToSearch);
 
                 //sends the server the name they are searching for
                 pw.println(userToSearch);
 
+
                 ArrayList<String> users = new ArrayList<>();
+                String fUser = "";
+
                 String firstUser = bfr.readLine();
-                if (firstUser != null) {
-                    users.add(firstUser);
+                System.out.println(firstUser);
+                users.add(firstUser);
+
+                while (!fUser.equalsIgnoreCase("done")) {
+                    fUser = bfr.readLine();
+                    if (fUser.equalsIgnoreCase("done")) {
+                        break;
+                    }
+                    users.add(fUser);
                 }
-                while (is.available() > 0) {
-                    String username = bfr.readLine();
-                    users.add(username);
-                }
-                if (users.isEmpty()) {
+                if (users.get(0).equalsIgnoreCase("no")) {
                     boolean again = false;
                     do {
                         System.out.println("There were no results.\n" +
@@ -384,24 +389,24 @@ public class Client {
                         }
                     } while (again);
                 } else {
+                    System.out.println("Users Found:");
                     for (String username : users) {
                         System.out.println(username);
                     }
                     boolean validUsername = false;
                     do {
-                        System.out.println("If you want to view one of these users profiles enter their username.\n " +
+                        System.out.println("If you want to view one of these users profiles enter their username.\n" +
                                 "If you want to search again, type search. If you want to go back to your profile, type profile.");
                         String nextResponse = scan.nextLine();
                         if (nextResponse.equalsIgnoreCase("profile")) {
                             search = false;
                             validUsername = true;
-                        }
-                        if (!nextResponse.equalsIgnoreCase("search")) {
+                            pw.println("end");
+                        } else if (!nextResponse.equalsIgnoreCase("search")) {
                             //sends the username to open the profile
-                            pw.println(response);
+                            pw.println(nextResponse);
                             //should send back the users string
                             String profile = bfr.readLine();
-
                             //sends back no if it not a valid username
                             if (profile.equalsIgnoreCase("no")) {
                                 System.out.println("That username is not valid");
@@ -418,26 +423,37 @@ public class Client {
                                             "or block, or entire profile to return to the profile");
                                     String friend = scan.nextLine();
 
+
                                     //if block, add the user to the blocked list
                                     if (friend.equalsIgnoreCase("block")) {
                                         //blocks the user
                                         pw.println("block");
-
+                                        pw.println(userName);
+                                        System.out.println("User blocked Successfully. Returning to profile.");
+                                        search = false;
                                         //if add, adds the user to friends list
                                     } else if (friend.equalsIgnoreCase("add")) {
                                         //adds the user as a friend
                                         pw.println("add");
-
+                                        pw.println(userName);
+                                        System.out.println("Friend added Succesfully. Returning to profile.");
+                                        search = false;
+                                        repeatFriend = false;
                                         //if profile, returns to user profile
                                     } else if (friend.equalsIgnoreCase("profile")) {
                                         search = false;
+                                        pw.println("done");
+                                        repeatFriend = false;
                                     } else {
                                         System.out.println("Not a valid response");
                                         repeatFriend = true;
                                     }
                                 } while (repeatFriend);
-
                             }
+                        } else {
+                            pw.println("search");
+                            validUsername = true;
+                            search = true;
                         }
                     } while (!validUsername);
                 }
