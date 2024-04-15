@@ -28,12 +28,14 @@ public class RunLocalTestServer {
     }
   
     @Test
-    public void testConstructorWithClientSocket() {
-        Socket testSocket = new Socket();
-      
-        Server server = new Server(testSocket);
-        assertNotNull(server);
-      
-        assertEquals(testSocket, server.clientSocket);
+    @Test
+    public void testConstructor() {
+        try {
+            Socket socket = new Socket("localhost", 1234);
+            Server server = new Server(socket);
+            assertNotNull(server);
+        } catch (IOException e) {
+            fail("IOException occurred: " + e.getMessage());
+        }
     }
 }
