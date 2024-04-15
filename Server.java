@@ -8,6 +8,7 @@ public class Server implements Runnable {
     private ProfileViewer profileViewer;
     private Friends friends = new Friends(profile);
     private User user;
+
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
         this.profileViewer = new ProfileViewer(profile);
@@ -29,8 +30,7 @@ public class Server implements Runnable {
 
     public void run() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-             PrintWriter pw = new PrintWriter(this.clientSocket.getOutputStream(), true))
-         {
+             PrintWriter pw = new PrintWriter(this.clientSocket.getOutputStream(), true)) {
 
             String newUser = br.readLine();
             User user;
@@ -81,7 +81,6 @@ public class Server implements Runnable {
             }
             boolean signout = false;
             do {
-
                 String userChoice = br.readLine();
                 System.out.println(userChoice);
                 if ("friends".equalsIgnoreCase(userChoice)) {
@@ -93,7 +92,7 @@ public class Server implements Runnable {
                     pw.println("Signing out...");
                     signout = true;
                 }
-            } while(!signout);
+            } while (!signout);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -115,13 +114,12 @@ public class Server implements Runnable {
     }
 
     private void handleFriends(User user, BufferedReader bfr, PrintWriter pw) throws IOException {
-
         File friendsFile = new File(user.getUsername() + "Friends.txt");
         if (!friendsFile.exists()) {
             friendsFile.createNewFile();
         }
         boolean empty = true;
-        try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "Friend.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "Friends.txt"))) {
             String friendUsername;
             while ((friendUsername = reader.readLine()) != null) {
                 empty = false;
@@ -135,89 +133,76 @@ public class Server implements Runnable {
             bfr.readLine();
             String response = bfr.readLine();
             System.out.println(response);
-            boolean valid;
-            do {
-                if (response.equalsIgnoreCase("message")) {
-                    String friendToMessage = bfr.readLine();
-                    String userMessaging = bfr.readLine();
-                    String first = "";
-                    String second = "";
+            if (response.equalsIgnoreCase("message")) {
+                String friendToMessage = bfr.readLine();
+                String userMessaging = bfr.readLine();
+                String first = "";
+                String second = "";
 
-                    if (friendToMessage.compareTo(userMessaging) < 0) {
-                        first = friendToMessage;
-                        second = userMessaging;
-                    } else if (friendToMessage.compareTo(userMessaging) > 0) {
-                        first = userMessaging;
-                        second = friendToMessage;
+                if (friendToMessage.compareTo(userMessaging) < 0) {
+                    first = friendToMessage;
+                    second = userMessaging;
+                } else if (friendToMessage.compareTo(userMessaging) > 0) {
+                    first = userMessaging;
+                    second = friendToMessage;
+                }
+
+                File messageFile = new File(first + second + ".txt");
+                if (!messageFile.exists()) {
+                    messageFile.createNewFile();
+                }
+
+                try (BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
+
+                    String message = reader.readLine();
+
+                    while (message != null) {
+                        pw.println(message);
+                        message = reader.readLine();
                     }
+                    pw.println(" ");
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
 
-                    File messageFile = new File(first + second + ".txt");
-                    if (!messageFile.exists()) {
-                        messageFile.createNewFile();
+                String message = bfr.readLine();
+
+                try (PrintWriter pwr = new PrintWriter(new FileWriter(first + second + ".txt", true));
+                     BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
+
+                    if (reader.readLine() != null) {
+                        pwr.println();
+                        pwr.write(userMessaging + ": " + message);
+                        pwr.flush();
+                    } else if (reader.readLine() == null) {
+                        pwr.write(userMessaging + ": " + message);
+                        pwr.flush();
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                pw.println("yes");
+            } else if (response.equalsIgnoreCase("view")) {
+                String friendToView = bfr.readLine();
+                String unfriendOption = bfr.readLine();
 
-                    try (BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
+                System.out.println(unfriendOption);
 
-                        String message = reader.readLine();
+                if (unfriendOption.equals("unfriend")) {
 
-                        while (message != null) {
-                            pw.println(message);
-                            message = reader.readLine();
+                    friends.removeFriend(friendToView, user.getUsername());
+
+                    try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "Friends.txt"))) {
+                        String friendUsername;
+                        while ((friendUsername = reader.readLine()) != null) {
+                            pw.println(friendUsername);
                         }
                         pw.println(" ");
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                    String message = bfr.readLine();
-
-                    try (PrintWriter pwr = new PrintWriter(new FileWriter(first + second + ".txt", true));
-                         BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
-
-                        if (reader.readLine() != null) {
-                            pwr.println();
-                            pwr.write(userMessaging + ": " + message);
-                            pwr.flush();
-                        } else if (reader.readLine() == null) {
-                            pwr.write(userMessaging + ": " + message);
-                            pwr.flush();
-                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    pw.write("yes");
-                    valid = true;
-                } else if (response.equalsIgnoreCase("view")) {
-                    valid = true;
-                    String friendToView = bfr.readLine();
-                    String unfriendOption = bfr.readLine();
-
-                    System.out.println(unfriendOption);
-
-                    if (unfriendOption.equals("unfriend")) {
-
-                        friends.removeFriend(friendToView, user.getUsername());
-
-                        try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "sFriends"))) {
-                            String friendUsername;
-                            while ((friendUsername = reader.readLine()) != null) {
-                                pw.println(friendUsername);
-                            }
-                            pw.println(" ");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-
-                    } else if (unfriendOption.equals("profile")) {
-
-                    }
-                } else if (response.equalsIgnoreCase("profile")) {
-                    valid = true;
-                } else {
-                    valid = false;
                 }
-            } while (!valid);
+            }
         }
     }
 
@@ -255,40 +240,40 @@ public class Server implements Runnable {
                     String response = br.readLine();
                     if (response.equalsIgnoreCase("search")) {
                         repeatSearch = true;
-                    } else  if (response.equalsIgnoreCase("end")) {
+                    } else if (response.equalsIgnoreCase("end")) {
                         doAgain = false;
-                    }  else {
-                            repeatSearch = false;
-                            User user = profile.getUserByUsername(response);
+                    } else {
+                        repeatSearch = false;
+                        User user = profile.getUserByUsername(response);
 
-                            if (user == null) {
-                                pw.println("no");
-                                pw.flush();
-                                doAgain = true;
-                            } else {
-                                pw.println(user);
-                                pw.flush();
-                                System.out.println(user);
-                                String userChoice = br.readLine();
-                                if (userChoice.equalsIgnoreCase("block")) {
-                                    String userName = br.readLine();
-                                    File file = new File(userName + "Blocked.txt");
-                                    PrintWriter blockWriter = new PrintWriter(new FileOutputStream(file));
-                                    blockWriter.println(user);
-                                    blockWriter.close();
-                                } else if (userChoice.equalsIgnoreCase("add")) {
-                                    System.out.println("here");
-                                    String userName = br.readLine();
-                                    System.out.println(userName);
-                                    File file = new File(userName + "Friends");
-                                    PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file));
-                                    friendsWriter.println(user);
-                                    friendsWriter.close();
-                                }
+                        if (user == null) {
+                            pw.println("no");
+                            pw.flush();
+                            doAgain = true;
+                        } else {
+                            pw.println(user);
+                            pw.flush();
+                            System.out.println(user);
+                            String userChoice = br.readLine();
+                            if (userChoice.equalsIgnoreCase("block")) {
+                                String userName = br.readLine();
+                                File file = new File(userName + "Blocked.txt");
+                                PrintWriter blockWriter = new PrintWriter(new FileOutputStream(file));
+                                blockWriter.println(user);
+                                blockWriter.close();
+                            } else if (userChoice.equalsIgnoreCase("add")) {
+                                System.out.println("here");
+                                String userName = br.readLine();
+                                System.out.println(userName);
+                                File file = new File(userName + "Friends");
+                                PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file));
+                                friendsWriter.println(user);
+                                friendsWriter.close();
                             }
                         }
-                } while(doAgain);
-            } while(repeatSearch);
+                    }
+                } while (doAgain);
+            } while (repeatSearch);
         }
     }
 }
