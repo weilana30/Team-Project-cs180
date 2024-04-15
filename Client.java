@@ -459,6 +459,8 @@ public class Client {
                     } while (!validUsername);
                 }
             } while (search);
+        } else {
+            pw.println("no");
         }
     }
 
