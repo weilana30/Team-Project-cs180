@@ -168,7 +168,6 @@ public class Client implements ClientInterface {
         if (friends.equals(" ")) {
             System.out.println("No friends found!\n\n");
         } else {
-
             while (!friends.equals(" ")) {
                 allFriendsUsers.add(friends.split(", ")[0]);
                 allFriends.add(friends);
@@ -294,13 +293,15 @@ public class Client implements ClientInterface {
                                 friends = bfr.readLine();
                             }
                         }
-
                     }
                     valid = true;
                 } else if (!response.equalsIgnoreCase("profile")) {
                     System.out.println("Not a valid response");
                     valid = false;
                 } else {
+                    pw.write("profile");
+                    pw.println();
+                    pw.flush();
                     valid = true;
                 }
             } while (!valid);
