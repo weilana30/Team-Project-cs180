@@ -265,7 +265,7 @@ public class Server implements Runnable {
                                 System.out.println("here");
                                 String userName = br.readLine();
                                 System.out.println(userName);
-                                File file = new File(userName + "Friends");
+                                File file = new File(userName + "Friends.txt");
                                 PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file));
                                 friendsWriter.println(user);
                                 friendsWriter.close();
