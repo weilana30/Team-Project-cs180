@@ -46,6 +46,9 @@ public class Friends implements FriendsInterface {
 
     public boolean removeFriend(String friendUsername, String currentUserUsername) {
         readFriendsFromFile(currentUserUsername);
+        for (User user: ) {
+            System.out.println(user.getUsername());
+        }
         User friend = profiles.getUserByUsername(friendUsername);
         User currentUser = profiles.getUserByUsername(currentUserUsername);
 
@@ -54,10 +57,15 @@ public class Friends implements FriendsInterface {
             return false;
         }
 
+        for (User user : friends) {
+            System.out.println(user);
+        }
+
         // if friend username is able to be removed from friends list, return true
         // otherwise, it means that friend is not on the friends list and can't be removed
         if (friends.remove(friend)) {
-            updateFriendsFile(currentUser.getUsername()); // updates the [username]Friends.txt file for the current user
+            System.out.println("hello");
+            updateFriendsFile(currentUserUsername); // updates the [username]Friends.txt file for the current user
             return true;
         }
         return false;
