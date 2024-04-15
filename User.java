@@ -12,7 +12,7 @@ import java.io.PrintWriter;
  * @author Rishi Velma, lab section 15
  * @version April 1st, 2024
  */
-public class User implements UserInterface{
+public class User implements UserInterface {
     private String name;
     private String username;
     private String password;
@@ -33,7 +33,7 @@ public class User implements UserInterface{
     }
 
     public User(String userString) {
-        String [] information = userString.split(", ");
+        String[] information = userString.split(", ");
         this.username = information[0];
         this.name = information[1];
         this.password = information[2];
@@ -121,4 +121,3 @@ public class User implements UserInterface{
 
 
 }
-
