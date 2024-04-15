@@ -40,7 +40,7 @@ public class Friends implements FriendsInterface {
         }
 
         friends.add(friend);
-        updateFriendsFile(user.getUsername(), friend.getUsername()); // updates the [username]Friends.txt file
+        updateFriendsFile(user.getUsername()); // updates the [username]Friends.txt file
         return true;
     }
 
@@ -56,7 +56,7 @@ public class Friends implements FriendsInterface {
         // if friend username is able to be removed from friends list, return true
         // otherwise, it means that friend is not on the friends list and can't be removed
         if (friends.remove(friend)) {
-            updateFriendsFile(currentUser.getUsername(), friend.getUsername()); // updates the [username]Friends.txt file for the current user
+            updateFriendsFile(currentUser.getUsername()); // updates the [username]Friends.txt file for the current user
             return true;
         }
         return false;
@@ -132,23 +132,11 @@ public class Friends implements FriendsInterface {
     }
 
 
-    private void updateFriendsFile(String username, String friendToRemove) {
+    private void updateFriendsFile(String username) {
         try {
-            FileReader reader = new FileReader(username + "Friends.txt");
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            ArrayList<String> lines = new ArrayList<>();
-            String line;
-            // Read all lines from the file
-            while ((line = bufferedReader.readLine()) != null) {
-                if (!line.trim().equals(friendToRemove)) {
-                    lines.add(line); // Exclude the line corresponding to the friend being removed
-                }
-            }
-            bufferedReader.close();
-
             FileWriter writer = new FileWriter(username + "Friends.txt");
-            for (String friendLine : lines) {
-                writer.write(friendLine + "\n");
+            for (User friend : friends) {
+                writer.write(friend.getUsername() + "\n");
             }
             writer.close();
         } catch (IOException e) {
