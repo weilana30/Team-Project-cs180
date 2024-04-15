@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 /**
  * profileInterface
@@ -16,7 +17,7 @@ public interface ProfileInterface {
     String getBirthdayByUsername(String username);
     String getPasswordByUsername(String username);
     String getNameByUsername(String username);
+    ArrayList<User> getUsers();
     User getUserByPhoneNumber(String phoneNumber);
     User getUserByEmail(String email);
-        
 }
