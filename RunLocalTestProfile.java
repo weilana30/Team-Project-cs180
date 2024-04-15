@@ -1,11 +1,13 @@
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * RunLocalTestProfile
@@ -117,8 +119,7 @@ public class RunLocalTestProfile {
 
     @Test
     public void testAddUser() {
-        User newUser = new User("johnSmith, John Smith, pass789, john.smith@example.com, " +
-                "9876543210, 03/03/1995");
+        User newUser = new User("johnSmith, John Smith, pass789, john.smith@example.com, 9876543210, 03/03/1995");
         profile.addUser(newUser);
 
         User addedUser = profile.getUserByUsername("johnSmith");
