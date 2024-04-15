@@ -3,9 +3,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Client {
+public class Client implements ClientInterface {
 
-    public static void main(String[] args) throws IOException, NullPointerException {
+    public void main(String[] args) throws IOException, NullPointerException {
 
         try (Socket socket = new Socket("localhost", 1234);
              BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -82,7 +82,7 @@ public class Client {
                 } while (!isUser);
                 String userInfoString = bfr.readLine();
 
-                //recieves the user information from the server if they are a valid user and splits it into each component
+                //receives the user information from the server if they are a valid user and splits it into each component
                 String[] userInfo = userInfoString.split(", ");
 
                 //this should check if the password is correct after
@@ -150,12 +150,12 @@ public class Client {
                     }
                 } while (!validResponse);
             } while(!logout);
-            } catch(IOException e){
-                e.printStackTrace();
-            }
+        } catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
-    public static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
+    public void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
         System.out.println("Here are your friends:");
         pw.write("friends");
         pw.println();
@@ -168,147 +168,147 @@ public class Client {
             System.out.println("No friends found!\n\n");
         } else {
 
-        while (!friends.equals(" ")) {
-            allFriendsUsers.add(friends.split(", ")[0]);
-            allFriends.add(friends);
-            System.out.println(friends);
-            friends = bfr.readLine();
-        }
-        System.out.println(" ");
-        boolean valid;
-        do {
-            System.out.println("What would you like to do now? (Type 'message', 'view', or 'profile')");
-            String response = scan.nextLine();
+            while (!friends.equals(" ")) {
+                allFriendsUsers.add(friends.split(", ")[0]);
+                allFriends.add(friends);
+                System.out.println(friends);
+                friends = bfr.readLine();
+            }
+            System.out.println(" ");
+            boolean valid;
+            do {
+                System.out.println("What would you like to do now? (Type 'message', 'view', or 'profile')");
+                String response = scan.nextLine();
 
-            if (response.equalsIgnoreCase("message")) {
-                pw.write(response);
-                pw.println();
-                pw.flush();
+                if (response.equalsIgnoreCase("message")) {
+                    pw.write(response);
+                    pw.println();
+                    pw.flush();
 
-                boolean validFriend;
-                String friendToMessage;
-                do {
-                    System.out.println("Which friend would you like to message?");
-                    friendToMessage = scan.nextLine();
+                    boolean validFriend;
+                    String friendToMessage;
+                    do {
+                        System.out.println("Which friend would you like to message?");
+                        friendToMessage = scan.nextLine();
 
-                    if (allFriendsUsers.contains(friendToMessage)) {
-                        validFriend = true;
-                    } else {
-                        System.out.println("That person is not one of your friends!");
-                        validFriend = false;
+                        if (allFriendsUsers.contains(friendToMessage)) {
+                            validFriend = true;
+                        } else {
+                            System.out.println("That person is not one of your friends!");
+                            validFriend = false;
+                        }
+                    } while (!validFriend);
+
+                    pw.write(friendToMessage);
+                    pw.println();
+                    pw.flush();
+
+                    pw.write(userInfo[0]);
+                    pw.println();
+                    pw.flush();
+
+                    System.out.println("Opening message file...");
+                    String message = bfr.readLine();
+                    if (message.equals(" ")) {
+                        System.out.println("No previous message history!");
                     }
-                } while (!validFriend);
-
-                pw.write(friendToMessage);
-                pw.println();
-                pw.flush();
-
-                pw.write(userInfo[0]);
-                pw.println();
-                pw.flush();
-
-                System.out.println("Opening message file...");
-                String message = bfr.readLine();
-                if (message.equals(" ")) {
-                    System.out.println("No previous message history!");
-                }
-                while (!message.equals(" ")) {
-                    System.out.println(message);
-                    message = bfr.readLine();
-                }
-                System.out.println(" ");
-                System.out.println("What would you like to send to " + friendToMessage + "?");
-                String messageToSend = scan.nextLine();
-
-                pw.write(messageToSend);
-                pw.println();
-                pw.flush();
-
-                String outcome = bfr.readLine();
-
-                if (outcome.equals("yes")) {
-                    System.out.println("Message sent!");
-                    System.out.println("Returning to Profile...\n");
-                }
-
-                valid = true;
-            } else if (response.equalsIgnoreCase("view")) {
-                pw.write("view");
-                pw.println();
-                pw.flush();
-
-                boolean validFriend;
-                String friendToView;
-                do {
-                    System.out.println("Which friend would you like to view the profile of?");
-                    friendToView = scan.nextLine();
-
-                    if (allFriendsUsers.contains(friendToView)) {
-                        validFriend = true;
-                    } else {
-                        System.out.println("That person is not one of your friends!");
-                        validFriend = false;
+                    while (!message.equals(" ")) {
+                        System.out.println(message);
+                        message = bfr.readLine();
                     }
-                } while (!validFriend);
+                    System.out.println(" ");
+                    System.out.println("What would you like to send to " + friendToMessage + "?");
+                    String messageToSend = scan.nextLine();
 
-                pw.write(friendToView);
-                pw.println();
-                pw.flush();
+                    pw.write(messageToSend);
+                    pw.println();
+                    pw.flush();
 
-                for (String friend : allFriends) {
-                    if (friend.split(", ")[0].equals(friendToView)) {
-                        showProfilePage(friend.split(", "));
-                        break;
+                    String outcome = bfr.readLine();
+
+                    if (outcome.equals("yes")) {
+                        System.out.println("Message sent!");
+                        System.out.println("Returning to Profile...\n");
                     }
-                }
 
-                boolean validOption;
-                String unfriendOption;
-                do {
-                    System.out.println("What would you like to do now? (Type 'unfriend' or 'profile')");
-                    unfriendOption = scan.nextLine();
+                    valid = true;
+                } else if (response.equalsIgnoreCase("view")) {
+                    pw.write("view");
+                    pw.println();
+                    pw.flush();
 
-                    if (unfriendOption.equalsIgnoreCase("unfriend") || unfriendOption.equalsIgnoreCase("profile")) {
-                        validOption = true;
-                    } else {
-                        System.out.println("Not a valid response");
-                        validOption = false;
-                    }
-                } while (!validOption);
+                    boolean validFriend;
+                    String friendToView;
+                    do {
+                        System.out.println("Which friend would you like to view the profile of?");
+                        friendToView = scan.nextLine();
 
-                pw.write(unfriendOption);
-                pw.println();
-                pw.flush();
+                        if (allFriendsUsers.contains(friendToView)) {
+                            validFriend = true;
+                        } else {
+                            System.out.println("That person is not one of your friends!");
+                            validFriend = false;
+                        }
+                    } while (!validFriend);
 
-                if (unfriendOption.equalsIgnoreCase("unfriend")) {
+                    pw.write(friendToView);
+                    pw.println();
+                    pw.flush();
 
-                    System.out.println("Here is your new friend list:");
-                    String friend = bfr.readLine();
-
-                    if (friend.equals(" ")) {
-                        System.out.println("No friends found!");
-                    } else {
-                        while (friends != null) {
-                            System.out.println(friends);
-                            friends = bfr.readLine();
+                    for (String friend : allFriends) {
+                        if (friend.split(", ")[0].equals(friendToView)) {
+                            showProfilePage(friend.split(", "));
+                            break;
                         }
                     }
 
+                    boolean validOption;
+                    String unfriendOption;
+                    do {
+                        System.out.println("What would you like to do now? (Type 'unfriend' or 'profile')");
+                        unfriendOption = scan.nextLine();
+
+                        if (unfriendOption.equalsIgnoreCase("unfriend") || unfriendOption.equalsIgnoreCase("profile")) {
+                            validOption = true;
+                        } else {
+                            System.out.println("Not a valid response");
+                            validOption = false;
+                        }
+                    } while (!validOption);
+
+                    pw.write(unfriendOption);
+                    pw.println();
+                    pw.flush();
+
+                    if (unfriendOption.equalsIgnoreCase("unfriend")) {
+
+                        System.out.println("Here is your new friend list:");
+                        String friend = bfr.readLine();
+
+                        if (friend.equals(" ")) {
+                            System.out.println("No friends found!");
+                        } else {
+                            while (friends != null) {
+                                System.out.println(friends);
+                                friends = bfr.readLine();
+                            }
+                        }
+
+                    }
+                    valid = true;
+                } else if (!response.equalsIgnoreCase("profile")) {
+                    System.out.println("Not a valid response");
+                    valid = false;
+                } else {
+                    valid = true;
                 }
-                valid = true;
-            } else if (!response.equalsIgnoreCase("profile")) {
-                System.out.println("Not a valid response");
-                valid = false;
-            } else {
-                valid = true;
-            }
-        } while (!valid);
-    }
+            } while (!valid);
+        }
     }
 
 
 
-    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
+    public void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
         boolean validResponse = false;
         Scanner scan = new Scanner(System.in);
         String response;
@@ -436,7 +436,7 @@ public class Client {
         }
     }
 
-    public static boolean showLogInMessage() {
+    public boolean showLogInMessage() {
         boolean validResponse = false;
         do {
             System.out.println("Welcome to TextOGram");
@@ -458,7 +458,7 @@ public class Client {
     }
 
 
-    public static String createNewUsername() {
+    public String createNewUsername() {
         System.out.println("Please enter the username for your new account");
         Scanner scan = new Scanner(System.in);
         String username = scan.nextLine();
@@ -473,7 +473,7 @@ public class Client {
         return String.format("%s, %s, %s, %s, %s", username, name, email, phone, birthday);
     }
 
-    public static String createNewPassword() {
+    public String createNewPassword() {
         boolean same = false;
         String passwordOne;
         String passwordTwo;
@@ -498,7 +498,7 @@ public class Client {
     }
 
     // this method checks if the password inputted meets all the requirements for a secure password
-    public static boolean checkPassword(String password) {
+    public boolean checkPassword(String password) {
 
         // creating 3 different string representations of allowed symbols from a keyboard
         String chars = "~ ` ! @ # $ % ^ & * ( ) - _ + = { [ } ] | \\ ' ; : ? / > . < ,";
@@ -552,25 +552,25 @@ public class Client {
 
     }
 
-    public static String enterUsername() throws IOException {
+    public String enterUsername() throws IOException {
         System.out.println("Please enter your username, email, or phoneNumber");
         Scanner scan = new Scanner(System.in);
         String response = scan.nextLine();
         return response;
     }
 
-    public static String enterPassword() throws IOException {
+    public  String enterPassword() throws IOException {
         System.out.println("Please enter your password");
         Scanner scan = new Scanner(System.in);
         return scan.nextLine();
     }
 
-    public static void showMessage() {
+    public void showMessage() {
         System.out.println("Enter Message");
 
     }
 
-    public static void sendMessage(PrintWriter pw, BufferedReader bfr) throws IOException {
+    public void sendMessage(PrintWriter pw, BufferedReader bfr) throws IOException {
         System.out.println("Please enter your friend that you would like to send a message to.");
         Scanner scan = new Scanner(System.in);
         String username = scan.nextLine();
@@ -589,7 +589,7 @@ public class Client {
         }
     }
 
-    public static void showProfilePage(String[] profilePageThings) {
+    public void showProfilePage(String[] profilePageThings) {
         //splits the user information;
         String username = profilePageThings[0];
         String name = profilePageThings[1];
@@ -604,4 +604,3 @@ public class Client {
         System.out.println(userInfo);
     }
 }
-
