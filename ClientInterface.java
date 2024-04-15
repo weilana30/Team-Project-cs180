@@ -4,6 +4,14 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+/**
+ * ClientInterface
+ * <p>
+ * Interface for client
+ *
+ * @author Andrew Weiland, lab section 15
+ * @version April 15, 2024
+ */
 public interface ClientInterface {
 
     static boolean showLogInMessage() {
@@ -28,7 +36,6 @@ public interface ClientInterface {
         return false;
     }
 
-    ;
 
     static String enterUsername() throws IOException {
         return null;
