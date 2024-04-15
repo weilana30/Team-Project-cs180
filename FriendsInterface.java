@@ -6,6 +6,8 @@ public interface FriendsInterface {
 
     boolean removeFriend(String friendUsername, String currentUserUsername);
 
+    void updateFriendsFile(String username);
+
     boolean blockUser(String userToBlockUsername, String currentUserUsername);
 
     boolean unblockUser(String userToUnblockUsername, String currentUserUsername);
