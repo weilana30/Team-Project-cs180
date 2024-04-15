@@ -1,5 +1,3 @@
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.JUnitCore;
@@ -9,7 +7,18 @@ import org.junit.runner.notification.Failure;
 
 import java.io.IOException;
 
+import static org.junit.Assert.*;
+/**
+ * RunLocalTestUser
+ * <p>
+ * Test for the user class
+ *
+ * @author Andrew Weiland, lab section 15
+ * @version April 15, 2024
+ */
 @RunWith(Enclosed.class)
+
+
 public class RunLocalTestUser {
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(TestCase.class);
@@ -21,7 +30,14 @@ public class RunLocalTestUser {
             }
         }
     }
-
+    /**
+     * RunLocalTestUser
+     * <p>
+     * Test for the user class
+     *
+     * @author Andrew Weiland, lab section 15
+     * @version April 15, 2024
+     */
     public static class TestCase {
         @Test(timeout = 1000)
         public void userTest() {
