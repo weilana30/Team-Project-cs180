@@ -189,7 +189,6 @@ public class Server implements Runnable {
                 System.out.println(unfriendOption);
 
                 if (unfriendOption.equals("unfriend")) {
-                    friends.updateFriendsFile(user.getUsername());
 
                     friends.removeFriend(friendToView, user.getUsername());
 
@@ -267,7 +266,7 @@ public class Server implements Runnable {
                                 String userName = br.readLine();
                                 System.out.println(userName);
                                 File file = new File(userName + "Friends.txt");
-                                PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file));
+                                PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file, true));
                                 friendsWriter.println(user);
                                 friendsWriter.close();
                             }
