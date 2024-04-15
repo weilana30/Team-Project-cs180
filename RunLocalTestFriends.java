@@ -5,7 +5,14 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.JUnit4;
-
+/**
+ * RunLocalTestFriend
+ * <p>
+ * Runs a test on the Friends class
+ *
+ * @author Andrew Weiland, lab section 15
+ * @version March 31, 2024
+ */
 @RunWith(JUnit4.class)
 public class RunLocalTestFriends {
 
