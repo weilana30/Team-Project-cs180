@@ -355,7 +355,9 @@ public class Client implements ClientInterface {
                 String fUser = "";
 
                 String firstUser = bfr.readLine();
-                System.out.println(firstUser);
+                if (!firstUser.equalsIgnoreCase(userName) && !firstUser.equalsIgnoreCase(userName)) {
+                    System.out.println(firstUser);
+                }
                 users.add(firstUser);
 
                 while (!fUser.equalsIgnoreCase("done")) {
@@ -363,9 +365,12 @@ public class Client implements ClientInterface {
                     if (fUser.equalsIgnoreCase("done")) {
                         break;
                     }
-                    users.add(fUser);
+                    if (!fUser.equalsIgnoreCase(userName)) {
+                        users.add(fUser);
+                    }
                 }
-                if (users.get(0).equalsIgnoreCase("no")) {
+                if (users.get(0).equalsIgnoreCase("no") ||(users.size() == 1 &&
+                        users.get(0).equalsIgnoreCase(userName))) {
                     boolean again = false;
                     do {
                         System.out.println("There were no results.\n" +
