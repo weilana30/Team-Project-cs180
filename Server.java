@@ -11,7 +11,7 @@ import java.util.List;
  * @author Andrew Weiland, lab section 15
  * @version April 15, 2024
  */
-public class Server implements Runnable {
+public class Server implements Runnable, ServerInterface {
     private Socket clientSocket;
     private static Profile profile = new Profile();
 
