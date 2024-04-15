@@ -1,14 +1,13 @@
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class Client {
 
-    try (Socket socket = new Socket("localhost", 1234);
+    public static void main(String[] args) throws IOException, NullPointerException {
+
+        try (Socket socket = new Socket("localhost", 1234);
              BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              InputStream is = socket.getInputStream();
              PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
@@ -21,9 +20,7 @@ public class Client {
             do {
                 if (newOrReturning) {
                     //sends yes to the server if they are a returning user
-                    pw.write("yes");
-                    pw.println();
-                    pw.flush();
+                    pw.println("yes");
                     continueGoing = true;
                 } else {
                     //send server a no if they are a new user
@@ -44,11 +41,9 @@ public class Client {
                             String[] information = newUserInfo.split(", ");
                             String userString = information[0] + ", " + information[1] + ", " + password + ", " +
                                     information[2] + ", " + information[3] + ", " + information[4];
-                            pw.write(userString);
-                            pw.println();
+                            pw.println(userString);;
                             userInformation = new String[]{information[0], information[1], password,
                                     information[2], information[3], information[4]};
-
 
                             continueGoing = true;
                             newUser = true;
@@ -117,48 +112,15 @@ public class Client {
                 }
             }
 
-            showProfilePage(userInformation);
             //create a user object when logged in
 
             boolean askQuestion;
             String response;
+            boolean logout = false;
             do {
-                System.out.println("Welcome to textogram. What would you like to do? (Type 'friends', 'search', or 'signout')");
-                response = scan.nextLine();
-                if (!response.equalsIgnoreCase("friends") && !response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
-                    System.out.println("Not a valid response");
-                    askQuestion = true;
-                } else {
-                    askQuestion = false;
-                }
-            } while (askQuestion);
-            pw.write(response);
-            pw.println();
-            pw.flush();
-            boolean validResponse;
-            boolean exit;
-            do {
-                if (response.equalsIgnoreCase("friends")) {
-                    friendsOption(pw, bfr, userInformation, scan);
-                    validResponse = true;
-                    exit = false;
-                } else if (response.equalsIgnoreCase("search")) {
-                    searchUsers(pw, bfr, is);
-                    validResponse = true;
-                    exit = false;
-                } else if (response.equalsIgnoreCase("signout")) {
-                    System.out.println("Signing you out...");
-                    validResponse = true;
-                    exit = true;
-                } else {
-                    validResponse = false;
-                    exit = false;
-                }
-            } while (!validResponse);
-
-            while (!exit) {
                 do {
-                    System.out.println("What would you like to do? (Type 'friends', 'search', or 'signout')");
+                    showProfilePage(userInformation);
+                    System.out.println("Welcome to textogram. What would you like to do? (Type 'friends', 'search', or 'signout')");
                     response = scan.nextLine();
                     if (!response.equalsIgnoreCase("friends") && !response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
                         System.out.println("Not a valid response");
@@ -170,30 +132,31 @@ public class Client {
                 pw.write(response);
                 pw.println();
                 pw.flush();
+                boolean validResponse = false;
                 do {
                     if (response.equalsIgnoreCase("friends")) {
                         friendsOption(pw, bfr, userInformation, scan);
                         validResponse = true;
-                        exit = false;
                     } else if (response.equalsIgnoreCase("search")) {
-                        searchUsers(pw, bfr, is);
-                        validResponse = true;
-                        exit = false;
+                        try {
+                            searchUsers(pw, bfr, is, userInformation[0]);
+                            validResponse = true;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     } else if (response.equalsIgnoreCase("signout")) {
-                        System.out.println("Signing you out...");
+                        logout = true;
                         validResponse = true;
-                        exit = true;
                     } else {
                         validResponse = false;
-                        exit = false;
                     }
                 } while (!validResponse);
+            } while(!logout);
+            } catch(IOException e){
+                e.printStackTrace();
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
+
     public static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
         System.out.println("Here are your friends:");
         pw.write("friends");
@@ -372,7 +335,8 @@ public class Client {
     }
 
 
-     public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
+
+    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
         boolean validResponse = false;
         Scanner scan = new Scanner(System.in);
         String response;
@@ -665,6 +629,5 @@ public class Client {
         userInfo.append("Birthday: ").append(birthday).append("\n");
         System.out.println(userInfo);
     }
-
-
 }
+
