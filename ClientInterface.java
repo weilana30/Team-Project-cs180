@@ -55,13 +55,15 @@ public interface ClientInterface {
 
     ;
 
-    static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
+    static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan)
+            throws IOException {
 
     }
 
     ;
 
-    static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
+    static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName)
+            throws IOException, InterruptedException {
 
     }
 
