@@ -92,7 +92,7 @@ public class Server implements Runnable {
                     handleFriends(user, br, pw);
                 } else if ("search".equalsIgnoreCase(userChoice)) {
                     PrintWriter writer = new PrintWriter(this.clientSocket.getOutputStream(), false);
-                    handleProfileSearch(br, writer);
+                    handleProfileSearch(br, writer, user);
                 } else if ("signout".equalsIgnoreCase(userChoice)) {
                     pw.println("Signing out...");
                     signout = true;
@@ -247,7 +247,7 @@ public class Server implements Runnable {
         }
     }
 
-    public void handleProfileSearch(BufferedReader br, PrintWriter pw) throws IOException {
+    public void handleProfileSearch(BufferedReader br, PrintWriter pw, User currentUser) throws IOException {
         String choice = br.readLine();
         System.out.println(choice);
         if (choice.equals("yes")) {
@@ -260,15 +260,17 @@ public class Server implements Runnable {
                 System.out.println("here");
                 int found = 0;
                 for (User user : profile.getUsers()) {
-                    if (user.getUsername().contains(searchValue)) {
-                        pw.println(user.getUsername());
-                        found++;
-                    } else if (user.getName().contains(searchValue)) {
-                        pw.println(user.getUsername());
-                        found++;
-                    } else if (user.getEmail().contains(searchValue)) {
-                        found++;
-                        pw.println(user.getUsername());
+                    if (!user.getUsername().equals(currentUser.getUsername())) {
+                        if (user.getUsername().contains(searchValue)) {
+                            pw.println(user.getUsername());
+                            found++;
+                        } else if (user.getName().contains(searchValue)) {
+                            pw.println(user.getUsername());
+                            found++;
+                        } else if (user.getEmail().contains(searchValue)) {
+                            found++;
+                            pw.println(user.getUsername());
+                        }
                     }
                 }
                 if (found == 0) {
