@@ -18,19 +18,16 @@ public interface ClientInterface {
         return false;
     }
 
-    ;
-
+    
     static String createNewUsername() {
         return null;
     }
 
-    ;
 
     static String createNewPassword() {
         return null;
     }
 
-    ;
 
     static boolean checkPassword(String password) {
         return false;
@@ -41,43 +38,32 @@ public interface ClientInterface {
         return null;
     }
 
-    ;
-
     static String enterPassword() throws IOException {
         return null;
     }
-
-    ;
 
     static void showProfilePage(String[] profilePageThings) {
 
     }
 
-    ;
-
-    static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan)
-            throws IOException {
+    static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
 
     }
 
-    ;
 
     static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName)
             throws IOException, InterruptedException {
 
     }
 
-    ;
 
     static void sendMessage(PrintWriter pw, BufferedReader bfr) throws IOException {
 
     }
 
-    ;
 
     static void showMessage() {
 
     }
 
-    ;
 }
