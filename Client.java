@@ -166,8 +166,8 @@ public class Client {
         ArrayList<String> allFriends = new ArrayList<>();
 
         if (friends.equals(" ")) {
-            System.out.println("No friends found!");
-        }
+            System.out.println("No friends found!\n\n");
+        } else {
 
         while (!friends.equals(" ")) {
             allFriendsUsers.add(friends.split(", ")[0]);
@@ -194,8 +194,7 @@ public class Client {
 
                     if (allFriendsUsers.contains(friendToMessage)) {
                         validFriend = true;
-                    }
-                    else {
+                    } else {
                         System.out.println("That person is not one of your friends!");
                         validFriend = false;
                     }
@@ -230,6 +229,7 @@ public class Client {
 
                 if (outcome.equals("yes")) {
                     System.out.println("Message sent!");
+                    System.out.println("Returning to Profile...\n");
                 }
 
                 valid = true;
@@ -246,8 +246,7 @@ public class Client {
 
                     if (allFriendsUsers.contains(friendToView)) {
                         validFriend = true;
-                    }
-                    else {
+                    } else {
                         System.out.println("That person is not one of your friends!");
                         validFriend = false;
                     }
@@ -272,8 +271,7 @@ public class Client {
 
                     if (unfriendOption.equalsIgnoreCase("unfriend") || unfriendOption.equalsIgnoreCase("profile")) {
                         validOption = true;
-                    }
-                    else {
+                    } else {
                         System.out.println("Not a valid response");
                         validOption = false;
                     }
@@ -290,47 +288,23 @@ public class Client {
 
                     if (friend.equals(" ")) {
                         System.out.println("No friends found!");
-                    }
-
-                    while (friends != null) {
-                        System.out.println(friends);
-                        friends = bfr.readLine();
-                    }
-
-                }
-                else {
-
-                }
-
-                valid = true;
-            } else if (response.equalsIgnoreCase("profile")) {
-                showProfilePage(userInfo);
-                boolean askQuestion;
-                do {
-                    System.out.println("What would you like to do? (Type 'friends', 'search', or 'signout')");
-                    response = scan.nextLine();
-                    if (!response.equalsIgnoreCase("friends") && !response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
-                        System.out.println("Not a valid response");
-                        askQuestion = true;
                     } else {
-                        askQuestion = false;
+                        while (friends != null) {
+                            System.out.println(friends);
+                            friends = bfr.readLine();
+                        }
                     }
-                } while (askQuestion);
-                pw.write(response);
-                pw.println();
-                pw.flush();
-                valid = true;
-                if (response.equalsIgnoreCase("friends")) {
-                    friendsOption(pw, bfr, userInfo, scan);
-                } else if (response.equalsIgnoreCase("search")) {
 
                 }
-            } else {
+                valid = true;
+            } else if (!response.equalsIgnoreCase("profile")) {
                 System.out.println("Not a valid response");
                 valid = false;
+            } else {
+                valid = true;
             }
         } while (!valid);
-
+    }
     }
 
 
