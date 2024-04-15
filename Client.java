@@ -3,6 +3,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Client
+ * <p>
+ * Client which interacts with the server so the user can use the app
+ *
+ * @author Andrew Weiland, lab section 15
+ * @version April 15, 2024
+ */
 public class Client implements ClientInterface {
 
     public static void main(String[] args) throws IOException, NullPointerException {
