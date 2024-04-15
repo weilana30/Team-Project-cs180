@@ -9,7 +9,10 @@
  */
 public interface ProfileViewerInterface {
     String displayUserInformationByUsername(String username);
+
     String displayUserInformationByPhoneNumber(String phoneNumber);
+
     String displayUserInformationByEmail(String email);
+
     String displayUserInformation(User user);
 }
