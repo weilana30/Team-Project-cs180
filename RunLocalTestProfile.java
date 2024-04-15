@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.ArrayList;
+
 /**
  * RunLocalTestProfile
  *
@@ -116,7 +117,8 @@ public class RunLocalTestProfile {
 
     @Test
     public void testAddUser() {
-        User newUser = new User("johnSmith, John Smith, pass789, john.smith@example.com, 9876543210, 03/03/1995");
+        User newUser = new User("johnSmith, John Smith, pass789, john.smith@example.com, " +
+                "9876543210, 03/03/1995");
         profile.addUser(newUser);
 
         User addedUser = profile.getUserByUsername("johnSmith");
