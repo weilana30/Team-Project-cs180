@@ -76,8 +76,8 @@ public class Server implements Runnable {
                 }
                 String userInfo = br.readLine();
                 user = new User(userInfo);
-                System.out.println("Hello");
                 user.addUserToFile();
+                profile.addUser(user);
             }
             boolean signout = false;
             do {
