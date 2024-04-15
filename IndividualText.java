@@ -11,11 +11,13 @@ public class IndividualText implements IndividualTextInterface {
     private final User user;
     private final String text;
     private int textNumber;
+
     public IndividualText(User user, String text, int lineNumber) {
         this.user = user;
         this.text = text;
         this.textNumber = lineNumber;
     }
+
     public IndividualText(User user, String text) {
         this.user = user;
         this.text = text;
@@ -44,12 +46,13 @@ public class IndividualText implements IndividualTextInterface {
             return false;
         }
         if (this.user.getUsername().equals(((IndividualText) o).getUser().getUsername()) &&
-            this.text.equals(((IndividualText) o).getText()) &&
+                this.text.equals(((IndividualText) o).getText()) &&
                 (this.textNumber == ((IndividualText) o).getTextNumber())) {
             return true;
         }
         return false;
     }
+
     public String toString() {
         return user.getUsername() + ":   " + text;
     }
