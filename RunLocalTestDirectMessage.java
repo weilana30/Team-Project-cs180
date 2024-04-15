@@ -30,6 +30,7 @@ public class RunLocalTestDirectMessage {
             }
         }
     }
+
     /**
      * TestCase
      * <p>
@@ -45,7 +46,8 @@ public class RunLocalTestDirectMessage {
             User user2 = new User("The-Salty-Salzmann46", "LetsGoBoilers!@");
             DirectMessage message = new DirectMessage(user1, user2);
             User[] users = message.getUsers();
-            Assert.assertArrayEquals("Make sure the user array is correct.", users, new User[]{user1, user2});
+            Assert.assertArrayEquals("Make sure the user array is correct.", users
+                    , new User[]{user1, user2});
         }
 
         @Test(timeout = 1000)
@@ -60,7 +62,8 @@ public class RunLocalTestDirectMessage {
                     user2.getUsername() + ":   " + textMessage + "\n", message.toString());
             String textMessage2 = "It was excellent. I went to the mall with my mom!!";
             message.addMessage(user1, textMessage2);
-            Assert.assertEquals("Ensure that it adds a new message correctly even if you already have a message in it.",
+            Assert.assertEquals("Ensure that it adds a new message correctly even" +
+                            " if you already have a message in it.",
                     user2.getUsername() + ":   " + textMessage + "\n" + user1.getUsername() + ":   "
                             + textMessage2 + "\n", message.toString());
         }
@@ -103,7 +106,8 @@ public class RunLocalTestDirectMessage {
             } catch (IOException a) {
                 Assert.assertTrue("An IO exception was encountered while reading dataOut.txt", false);
             } catch (Exception e) {
-                Assert.assertTrue("An unknown exception was encountered while reading dataOut.txt", false);
+                Assert.assertTrue("An unknown exception was encountered while reading dataOut.txt"
+                        , false);
             }
             Assert.assertEquals("Make sure your FoundationDatabase is writing the outputfile correctly",
                     expectedOutput.trim(), actualOutput.trim());
