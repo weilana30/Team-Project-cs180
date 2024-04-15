@@ -33,7 +33,6 @@ public class Client {
                         pw.write(newUserInfo);
                         pw.println();
                         String validNewUser = bfr.readLine();
-                        System.out.println(validNewUser);
                         //if the username, email, and number are not taken
                         if (validNewUser.equals("yes")) {
                             //creates a new password
