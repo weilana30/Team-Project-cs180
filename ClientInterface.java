@@ -6,25 +6,69 @@ import java.util.Scanner;
 
 public interface ClientInterface {
 
-    boolean showLogInMessage();
+    static boolean showLogInMessage() {
+        return false;
+    }
 
-    String createNewUsername();
+    ;
 
-    String createNewPassword();
+    static String createNewUsername() {
+        return null;
+    }
 
-    boolean checkPassword(String password);
+    ;
 
-    String enterUsername() throws IOException;
+    static String createNewPassword() {
+        return null;
+    }
 
-    String enterPassword() throws IOException;
+    ;
 
-    void showProfilePage(String[] profilePageThings);
+    static boolean checkPassword(String password) {
+        return false;
+    }
 
-    void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException;
+    ;
 
-    void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException;
+    static String enterUsername() throws IOException {
+        return null;
+    }
 
-    void sendMessage(PrintWriter pw, BufferedReader bfr) throws IOException;
+    ;
 
-    void showMessage();
+    static String enterPassword() throws IOException {
+        return null;
+    }
+
+    ;
+
+    static void showProfilePage(String[] profilePageThings) {
+
+    }
+
+    ;
+
+    static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
+
+    }
+
+    ;
+
+    static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
+
+    }
+
+    ;
+
+    static void sendMessage(PrintWriter pw, BufferedReader bfr) throws IOException {
+
+    }
+
+    ;
+
+    static void showMessage() {
+
+    }
+
+    ;
 }
