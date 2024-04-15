@@ -1,4 +1,3 @@
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -6,11 +5,19 @@ import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.JUnit4;
 
+import java.io.IOException;
 import java.net.Socket;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
+import static org.junit.Assert.fail;
+/**
+ * RunLocalTestServer
+ * <p>
+ * Test for Server. Server must be running for this test to work
+ *
+ * @author Andrew Weiland, lab section 15
+ * @version April 15, 2024
+ */
 @RunWith(JUnit4.class)
 public class RunLocalTestServer {
 
@@ -26,8 +33,7 @@ public class RunLocalTestServer {
             }
         }
     }
-  
-    @Test
+
     @Test
     public void testConstructor() {
         try {
