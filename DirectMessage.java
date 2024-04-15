@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class DirectMessage {
     private String fileName;
-    private User [] users;
+    private User[] users;
     private int textNumber;
     private ArrayList<IndividualText> messages;
 
@@ -56,6 +56,7 @@ public class DirectMessage {
         messages.add(newText);
         return true;
     }
+
     //updates the file with the current contents of messages
     public boolean updateFile() {
         try {
@@ -73,6 +74,7 @@ public class DirectMessage {
         }
         return true;
     }
+
     //deletes a message if the user who sent it is the one trying to delete it
     public boolean deleteMessage(IndividualText text, User user) {
         //Checks if the message is actually in the messages list
@@ -85,13 +87,12 @@ public class DirectMessage {
         }
         return messages.remove(text);
     }
+
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (IndividualText text: messages) {
+        for (IndividualText text : messages) {
             stringBuilder.append(text.toString() + "\n");
         }
         return stringBuilder.toString();
     }
 }
-
-
