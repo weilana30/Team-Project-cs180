@@ -1,22 +1,19 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-/**
- * Server
- * <p>
- * Interacts with client so the user can use the functions of the platform
- *
- * @author Andrew Weiland, lab section 15
- * @version April 15, 2024
- */
+import java.util.ArrayList;
+import java.util.List;
 
-public class Server implements Runnable, ServerInterface {
+public class Server implements Runnable {
     private Socket clientSocket;
     private static Profile profile = new Profile();
+    private ProfileViewer profileViewer;
     private Friends friends = new Friends(profile);
+    private User user;
 
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
+        this.profileViewer = new ProfileViewer(profile);
     }
 
     public static void main(String[] args) throws IOException {
@@ -114,8 +111,8 @@ public class Server implements Runnable, ServerInterface {
         }
         // Once a valid username is found, send user information
         String userInfo = String.format("Username: %s, Name: %s, Password: %s, Email: %s, Phone: %s, Birthday: %s",
-                user.getUsername(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(),
-                user.getBirthday());
+                user.getUsername(), user.getName(), user.getPassword(), user.getEmail(),
+                user.getPhoneNumber(), user.getBirthday());
         pw.println(userInfo);
     }
 
@@ -125,7 +122,8 @@ public class Server implements Runnable, ServerInterface {
             friendsFile.createNewFile();
         }
         boolean empty = true;
-        try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "Friends.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername()
+                + "Friends.txt"))) {
             String friendUsername;
             while ((friendUsername = reader.readLine()) != null) {
                 empty = false;
@@ -196,17 +194,49 @@ public class Server implements Runnable, ServerInterface {
 
                 if (unfriendOption.equals("unfriend")) {
 
-                    friends.removeFriend(friendToView, user.getUsername());
+                    boolean friendRemoved;
 
-                    try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() +
-                            "Friends.txt"))) {
-                        String friendUsername;
-                        while ((friendUsername = reader.readLine()) != null) {
-                            pw.println(friendUsername);
+                    try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "Friends.txt"))) {
+
+                        List<String> lines = new ArrayList<>();
+                        String friendInfo = reader.readLine();
+
+                        while (friendInfo != null) {
+                            String friend = friendInfo.split(", ")[0];
+                            if (!friend.equals(friendToView)) {
+                                lines.add(friendInfo);
+                            }
+                            friendInfo = reader.readLine();
                         }
-                        pw.println(" ");
+
+                        try (PrintWriter pwr = new PrintWriter(new FileWriter(user.getUsername() + "Friends.txt", false))) {
+                            for (String line : lines) {
+                                pwr.println(line);
+                            }
+                        }
+
+                        friendRemoved = true;
                     } catch (IOException e) {
+                        friendRemoved = false;
                         e.printStackTrace();
+                    }
+
+
+                    if (friendRemoved) {
+                        try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername()
+                                + "Friends.txt"))) {
+                            String friendUsername;
+                            while ((friendUsername = reader.readLine()) != null) {
+                                pw.println(friendUsername);
+                            }
+                            pw.println(" ");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else {
+                        pw.println("Sorry, there was an error retrieving your friends!");
+                        pw.println(" ");
                     }
                 }
             }
