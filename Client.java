@@ -572,30 +572,7 @@ public class Client implements ClientInterface {
         Scanner scan = new Scanner(System.in);
         return scan.nextLine();
     }
-
-    public static void showMessage() {
-        System.out.println("Enter Message");
-
-    }
-
-    public static void sendMessage(PrintWriter pw, BufferedReader bfr) throws IOException {
-        System.out.println("Please enter your friend that you would like to send a message to.");
-        Scanner scan = new Scanner(System.in);
-        String username = scan.nextLine();
-        pw.write(username);
-        pw.println();
-        pw.flush();
-        String friend = bfr.readLine();
-        if (friend.equals("yes")) {
-            System.out.println("Please enter the message you would like to send");
-            String message = scan.nextLine();
-            pw.write(message);
-            pw.println();
-            pw.flush();
-        } else {
-            System.out.println("Your are not friends with that user");
-        }
-    }
+    
 
     public static void showProfilePage(String[] profilePageThings) {
         //splits the user information;
