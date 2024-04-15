@@ -29,6 +29,7 @@ public class RunLocalTestClient {
             }
         }
     }
+
     /**
      * TestCases
      * <p>* Has tests for the method in IndividualText
@@ -43,12 +44,14 @@ public class RunLocalTestClient {
             String password = Client.createNewPassword();
             Assert.assertEquals(password, "Me!1");
         }
+
         @Test(timeout = 1000)
         public void createNewUsernameTest() {
             provideInput("AndrewMan!\nandyman@gmail.com\n1234567890\n02-24-2006\nJohn Joe\n");
             String userString = Client.createNewUsername();
             Assert.assertEquals(userString, "AndrewMan!, John Joe, andyman@gmail.com, 1234567890, 02-24-2006");
         }
+
         @Test(timeout = 1000)
         public void loginMessageTest() {
             provideInput("yes\n");
@@ -58,19 +61,22 @@ public class RunLocalTestClient {
             Boolean no = Client.showLogInMessage();
             Assert.assertEquals(no, false);
         }
-        @Test(timeout =  1000)
+
+        @Test(timeout = 1000)
         public void checkPasswordTest() {
             Boolean yes = Client.checkPassword("Password123!");
             Assert.assertEquals(yes, true);
             Boolean no = Client.checkPassword("p");
             Assert.assertEquals(no, false);
         }
+
         @Test(timeout = 1000)
         public void checkEnterUsername() throws IOException {
             provideInput("andrew123\n");
             String username = Client.enterUsername();
             Assert.assertEquals(username, "andrew123");
         }
+
         @Test(timeout = 1000)
         public void checkEnterPassword() throws IOException {
             provideInput("Password123!\n");
