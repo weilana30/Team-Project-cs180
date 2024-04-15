@@ -81,6 +81,10 @@ public class Profile implements ProfileInterface {
             return null;
         }
     }
+    public ArrayList <User> getUsers() {
+        return this.users;
+    }
+    
     public User getUserByPhoneNumber(String phoneNumber) {
         for (User user : users) {
             if (user.getPhoneNumber().equals(phoneNumber)) {
