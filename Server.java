@@ -1,17 +1,22 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+/**
+ * Server
+ * <p>
+ * Interacts with client so the user can use the functions of the platform
+ *
+ * @author Andrew Weiland, lab section 15
+ * @version April 15, 2024
+ */
 
 public class Server implements Runnable, ServerInterface {
     private Socket clientSocket;
     private static Profile profile = new Profile();
-    private ProfileViewer profileViewer;
     private Friends friends = new Friends(profile);
-    private User user;
 
     public Server(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        this.profileViewer = new ProfileViewer(profile);
     }
 
     public static void main(String[] args) throws IOException {
@@ -109,8 +114,8 @@ public class Server implements Runnable, ServerInterface {
         }
         // Once a valid username is found, send user information
         String userInfo = String.format("Username: %s, Name: %s, Password: %s, Email: %s, Phone: %s, Birthday: %s",
-                user.getUsername(), user.getName(), user.getPassword(), user.getEmail(),
-                user.getPhoneNumber(), user.getBirthday());
+                user.getUsername(), user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber(),
+                user.getBirthday());
         pw.println(userInfo);
     }
 
@@ -120,8 +125,7 @@ public class Server implements Runnable, ServerInterface {
             friendsFile.createNewFile();
         }
         boolean empty = true;
-        try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername()
-                + "Friends.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() + "Friends.txt"))) {
             String friendUsername;
             while ((friendUsername = reader.readLine()) != null) {
                 empty = false;
@@ -194,8 +198,8 @@ public class Server implements Runnable, ServerInterface {
 
                     friends.removeFriend(friendToView, user.getUsername());
 
-                    try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername()
-                            + "Friends.txt"))) {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername() +
+                            "Friends.txt"))) {
                         String friendUsername;
                         while ((friendUsername = reader.readLine()) != null) {
                             pw.println(friendUsername);
