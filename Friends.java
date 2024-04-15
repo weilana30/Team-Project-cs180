@@ -45,6 +45,7 @@ public class Friends implements FriendsInterface {
     }
 
     public boolean removeFriend(String friendUsername, String currentUserUsername) {
+        readFriendsFromFile(currentUserUsername);
         User friend = profiles.getUserByUsername(friendUsername);
         User currentUser = profiles.getUserByUsername(currentUserUsername);
 
@@ -132,7 +133,7 @@ public class Friends implements FriendsInterface {
     }
 
 
-    private void updateFriendsFile(String username) {
+    public void updateFriendsFile(String username) {
         try {
             FileWriter writer = new FileWriter(username + "Friends.txt");
             for (User friend : friends) {
