@@ -11,7 +11,7 @@ import java.util.Scanner;
  * @author Andrew Weiland, lab section 15
  * @version April 15, 2024
  */
-public class Client {
+public class Client implements ClientInterface {
 
     public static void main(String[] args) throws IOException, NullPointerException {
 
@@ -49,23 +49,24 @@ public class Client {
                             String userString = information[0] + ", " + information[1] + ", " + password + ", " +
                                     information[2] + ", " + information[3] + ", " + information[4];
                             pw.println(userString);
-                            ;
                             userInformation = new String[]{information[0], information[1], password,
                                     information[2], information[3], information[4]};
 
                             continueGoing = true;
                             newUser = true;
                             invalidInformation = true;
-                            //userInformation = new String[]{accountInfo[0], accountInfo[1],
-                            // accountInfo[2], accountInfo[3],}
                         } else {
                             if (validNewUser.equals("username")) {
                                 System.out.println("The username is already taken.");
-                                validNewUser = bfr.readLine();
+                                if (is.available() > 0) {
+                                    validNewUser = bfr.readLine();
+                                }
                             }
                             if (validNewUser.equals("email")) {
                                 System.out.println("There is already an account with that email.");
-                                validNewUser = bfr.readLine();
+                                if (is.available() > 0) {
+                                    validNewUser = bfr.readLine();
+                                }
                             }
                             if (validNewUser.equals("phoneNumber")) {
                                 System.out.println("There is already an account with that phoneNumber.");
@@ -84,8 +85,7 @@ public class Client {
                     //server returns whether or not they are a valid user
                     String validUser = bfr.readLine();
                     if (validUser.equals("no")) {
-                        System.out.println("The Username, email, or phone-Number you " +
-                                "entered does not have an account");
+                        System.out.println("The Username, email, or phone-Number you entered does not have an account");
                         isUser = false;
                     } else {
                         isUser = true;
@@ -93,8 +93,8 @@ public class Client {
                 } while (!isUser);
                 String userInfoString = bfr.readLine();
 
-                //receives the user information from the server if they are a valid user and splits it into
-                // each component
+                //receives the user information from the server
+                // if they are a valid user and splits it into each component
                 String[] userInfo = userInfoString.split(", ");
 
                 //this should check if the password is correct after
@@ -104,8 +104,8 @@ public class Client {
                     String password = enterPassword();
 
                     if (!password.equals(userInfo[2])) {
-                        System.out.println("That is the wrong password. Please try again! You have "
-                                + (2 - attempts) + " attempts remaining.");
+                        System.out.println("That is the wrong password. Please try again! You have " +
+                                (2 - attempts) + " attempts remaining.");
                         attempts += 1;
                         validPassword = false;
                     } else {
@@ -114,8 +114,8 @@ public class Client {
                         validPassword = true;
                     }
                     if (attempts == 3 && !validPassword) {
-                        System.out.println("You have used your maximum attempts." +
-                                " You will now be logged out to prevent suspicious activity.");
+                        System.out.println("You have used your maximum attempts. " +
+                                "You will now be logged out to prevent suspicious activity.");
                     }
                 } while (attempts < 3);
 
@@ -135,9 +135,9 @@ public class Client {
                     System.out.println("Welcome to textogram. What would you like to do? " +
                             "(Type 'friends', 'search', or 'signout')");
                     response = scan.nextLine();
-                    if (!response.equalsIgnoreCase("friends")
-                            && !response.equalsIgnoreCase("search")
-                            && !response.equalsIgnoreCase("signout")) {
+                    if (!response.equalsIgnoreCase("friends") &&
+                            !response.equalsIgnoreCase("search") &&
+                            !response.equalsIgnoreCase("signout")) {
                         System.out.println("Not a valid response");
                         askQuestion = true;
                     } else {
@@ -172,8 +172,8 @@ public class Client {
         }
     }
 
-    public static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan)
-            throws IOException {
+    public static void friendsOption(PrintWriter pw, BufferedReader bfr,
+                                     String[] userInfo, Scanner scan) throws IOException {
         System.out.println("Here are your friends:");
         pw.write("friends");
         pw.println();
@@ -285,8 +285,7 @@ public class Client {
                         System.out.println("What would you like to do now? (Type 'unfriend' or 'profile')");
                         unfriendOption = scan.nextLine();
 
-                        if (unfriendOption.equalsIgnoreCase("unfriend") ||
-                                unfriendOption.equalsIgnoreCase("profile")) {
+                        if (unfriendOption.equalsIgnoreCase("unfriend") || unfriendOption.equalsIgnoreCase("profile")) {
                             validOption = true;
                         } else {
                             System.out.println("Not a valid response");
@@ -312,7 +311,6 @@ public class Client {
                             }
                         }
                     }
-                    System.out.println(" ");
                     valid = true;
                 } else if (!response.equalsIgnoreCase("profile")) {
                     System.out.println("Not a valid response");
@@ -376,11 +374,13 @@ public class Client {
                         String noResultsResponse = scan.nextLine();
                         if (noResultsResponse.equalsIgnoreCase("profile")) {
                             search = false;
+                            pw.println("end");
                         } else if (!noResultsResponse.equalsIgnoreCase("search")) {
                             System.out.println("Not a valid response");
                             again = true;
-                        } else if (noResultsResponse.equals(search)) {
+                        } else if (noResultsResponse.equals("search")) {
                             again = false;
+                            pw.println("search");
                         }
                     } while (again);
                 } else {
@@ -415,8 +415,8 @@ public class Client {
                                 boolean repeatFriend = false;
                                 do {
                                     //asks the user if they want to add them as a friend
-                                    System.out.println("Would you like to add the user as a friend " +
-                                            "or block them? Enter add " +
+                                    System.out.println("Would you like to add the user as a friend or " +
+                                            "block them? Enter add " +
                                             "or block, or entire profile to return to the profile");
                                     String friend = scan.nextLine();
 
@@ -464,8 +464,7 @@ public class Client {
         boolean validResponse = false;
         do {
             System.out.println("Welcome to TextOGram");
-            System.out.println("If you already have an account enter yes. " +
-                    "If you want to create an account enter no.");
+            System.out.println("If you already have an account enter yes. If you want to create an account enter no.");
             Scanner scan = new Scanner(System.in);
             String response = scan.nextLine();
 
@@ -601,7 +600,6 @@ public class Client {
         userInfo.append("Username: ").append(username).append("\n");
         userInfo.append("Name: ").append(name).append("\n");
         userInfo.append("Email: ").append(email).append("\n");
-
         userInfo.append("Birthday: ").append(birthday).append("\n");
         System.out.println(userInfo);
     }
