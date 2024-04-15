@@ -8,9 +8,7 @@ import java.io.InputStreamReader;
 
 public class Client {
 
-    public static void main(String[] args) throws IOException, NullPointerException {
-
-        try (Socket socket = new Socket("localhost", 1234);
+    try (Socket socket = new Socket("localhost", 1234);
              BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              InputStream is = socket.getInputStream();
              PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
@@ -138,25 +136,64 @@ public class Client {
             pw.println();
             pw.flush();
             boolean validResponse;
+            boolean exit;
             do {
                 if (response.equalsIgnoreCase("friends")) {
                     friendsOption(pw, bfr, userInformation, scan);
                     validResponse = true;
+                    exit = false;
                 } else if (response.equalsIgnoreCase("search")) {
                     searchUsers(pw, bfr, is);
                     validResponse = true;
+                    exit = false;
                 } else if (response.equalsIgnoreCase("signout")) {
                     System.out.println("Signing you out...");
                     validResponse = true;
+                    exit = true;
                 } else {
                     validResponse = false;
+                    exit = false;
                 }
             } while (!validResponse);
+
+            while (!exit) {
+                do {
+                    System.out.println("What would you like to do? (Type 'friends', 'search', or 'signout')");
+                    response = scan.nextLine();
+                    if (!response.equalsIgnoreCase("friends") && !response.equalsIgnoreCase("search") && !response.equalsIgnoreCase("signout")) {
+                        System.out.println("Not a valid response");
+                        askQuestion = true;
+                    } else {
+                        askQuestion = false;
+                    }
+                } while (askQuestion);
+                pw.write(response);
+                pw.println();
+                pw.flush();
+                do {
+                    if (response.equalsIgnoreCase("friends")) {
+                        friendsOption(pw, bfr, userInformation, scan);
+                        validResponse = true;
+                        exit = false;
+                    } else if (response.equalsIgnoreCase("search")) {
+                        searchUsers(pw, bfr, is);
+                        validResponse = true;
+                        exit = false;
+                    } else if (response.equalsIgnoreCase("signout")) {
+                        System.out.println("Signing you out...");
+                        validResponse = true;
+                        exit = true;
+                    } else {
+                        validResponse = false;
+                        exit = false;
+                    }
+                } while (!validResponse);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
     public static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
         System.out.println("Here are your friends:");
         pw.write("friends");
