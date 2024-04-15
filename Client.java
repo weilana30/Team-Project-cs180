@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Client implements ClientInterface {
 
-    public void main(String[] args) throws IOException, NullPointerException {
+    public static void main(String[] args) throws IOException, NullPointerException {
 
         try (Socket socket = new Socket("localhost", 1234);
              BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -40,7 +40,8 @@ public class Client implements ClientInterface {
                             String[] information = newUserInfo.split(", ");
                             String userString = information[0] + ", " + information[1] + ", " + password + ", " +
                                     information[2] + ", " + information[3] + ", " + information[4];
-                            pw.println(userString);;
+                            pw.println(userString);
+                            ;
                             userInformation = new String[]{information[0], information[1], password,
                                     information[2], information[3], information[4]};
 
@@ -149,13 +150,13 @@ public class Client implements ClientInterface {
                         validResponse = false;
                     }
                 } while (!validResponse);
-            } while(!logout);
-        } catch(IOException e){
+            } while (!logout);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
+    public static void friendsOption(PrintWriter pw, BufferedReader bfr, String[] userInfo, Scanner scan) throws IOException {
         System.out.println("Here are your friends:");
         pw.write("friends");
         pw.println();
@@ -307,8 +308,7 @@ public class Client implements ClientInterface {
     }
 
 
-
-    public void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
+    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName) throws IOException, InterruptedException {
         boolean validResponse = false;
         Scanner scan = new Scanner(System.in);
         String response;
@@ -436,7 +436,7 @@ public class Client implements ClientInterface {
         }
     }
 
-    public boolean showLogInMessage() {
+    public static boolean showLogInMessage() {
         boolean validResponse = false;
         do {
             System.out.println("Welcome to TextOGram");
@@ -458,7 +458,7 @@ public class Client implements ClientInterface {
     }
 
 
-    public String createNewUsername() {
+    public static String createNewUsername() {
         System.out.println("Please enter the username for your new account");
         Scanner scan = new Scanner(System.in);
         String username = scan.nextLine();
@@ -473,7 +473,7 @@ public class Client implements ClientInterface {
         return String.format("%s, %s, %s, %s, %s", username, name, email, phone, birthday);
     }
 
-    public String createNewPassword() {
+    public static String createNewPassword() {
         boolean same = false;
         String passwordOne;
         String passwordTwo;
@@ -498,7 +498,7 @@ public class Client implements ClientInterface {
     }
 
     // this method checks if the password inputted meets all the requirements for a secure password
-    public boolean checkPassword(String password) {
+    public static boolean checkPassword(String password) {
 
         // creating 3 different string representations of allowed symbols from a keyboard
         String chars = "~ ` ! @ # $ % ^ & * ( ) - _ + = { [ } ] | \\ ' ; : ? / > . < ,";
@@ -552,25 +552,25 @@ public class Client implements ClientInterface {
 
     }
 
-    public String enterUsername() throws IOException {
+    public static String enterUsername() throws IOException {
         System.out.println("Please enter your username, email, or phoneNumber");
         Scanner scan = new Scanner(System.in);
         String response = scan.nextLine();
         return response;
     }
 
-    public  String enterPassword() throws IOException {
+    public static String enterPassword() throws IOException {
         System.out.println("Please enter your password");
         Scanner scan = new Scanner(System.in);
         return scan.nextLine();
     }
 
-    public void showMessage() {
+    public static void showMessage() {
         System.out.println("Enter Message");
 
     }
 
-    public void sendMessage(PrintWriter pw, BufferedReader bfr) throws IOException {
+    public static void sendMessage(PrintWriter pw, BufferedReader bfr) throws IOException {
         System.out.println("Please enter your friend that you would like to send a message to.");
         Scanner scan = new Scanner(System.in);
         String username = scan.nextLine();
@@ -589,7 +589,7 @@ public class Client implements ClientInterface {
         }
     }
 
-    public void showProfilePage(String[] profilePageThings) {
+    public static void showProfilePage(String[] profilePageThings) {
         //splits the user information;
         String username = profilePageThings[0];
         String name = profilePageThings[1];
