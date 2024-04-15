@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 /**
  * Client
  * <p>
@@ -296,9 +295,9 @@ public class Client implements ClientInterface {
                         if (friend.equals(" ")) {
                             System.out.println("No friends found!");
                         } else {
-                            while (friends != null) {
-                                System.out.println(friends);
-                                friends = bfr.readLine();
+                            while (!friend.equals(" ")) {
+                                System.out.println(friend);
+                                friend = bfr.readLine();
                             }
                         }
                     }
