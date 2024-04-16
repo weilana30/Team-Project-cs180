@@ -2,6 +2,10 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Client
@@ -11,7 +15,7 @@ import java.util.Scanner;
  * @author Andrew Weiland, lab section 15
  * @version April 15, 2024
  */
-public class Client implements ClientInterface {
+public class Client {
 
     public static void main(String[] args) throws IOException, NullPointerException {
 
@@ -192,6 +196,77 @@ public class Client implements ClientInterface {
                 friends = bfr.readLine();
             }
             System.out.println(" ");
+
+            JFrame frame = new JFrame("TextOGram - Friends");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(400, 300);
+            frame.setLayout(new BorderLayout());
+
+            JPanel friendsPanel = new JPanel(new BorderLayout());
+            JLabel friendsLabel = new JLabel("Here are your friends:");
+            friendsPanel.add(friendsLabel, BorderLayout.NORTH);
+
+            DefaultListModel<String> friendsListModel = new DefaultListModel<>();
+
+            for (String friend : allFriendsUsers) {
+                friendsListModel.addElement(friend);
+            }
+
+            JList<String> friendsList = new JList<>(friendsListModel);
+
+            friendsPanel.add(new JScrollPane(friendsList), BorderLayout.CENTER);
+
+            JPanel buttonPanel = new JPanel(new FlowLayout());
+            JButton messageButton = new JButton("Message");
+            messageButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String selectedFriend = friendsList.getSelectedValue();
+                    if (selectedFriend != null) {
+                        System.out.println(selectedFriend);
+                    } else {
+                        System.out.println("Error");
+                    }
+                }
+            });
+
+            JButton viewButton = new JButton("View");
+            viewButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String selectedFriend = friendsList.getSelectedValue();
+                    if (selectedFriend != null) {
+                        System.out.println(selectedFriend);
+                    } else {
+                        System.out.println("Error");
+                    }
+                }
+            });
+
+
+            JButton profileButton = new JButton("Profile");
+            profileButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String selectedFriend = friendsList.getSelectedValue();
+                    if (selectedFriend != null) {
+                        System.out.println(selectedFriend);
+                    } else {
+                        System.out.println("Error");
+                    }
+                }
+            });
+
+            buttonPanel.add(messageButton);
+            buttonPanel.add(viewButton);
+            buttonPanel.add(profileButton);
+
+            frame.add(friendsPanel, BorderLayout.CENTER);
+            frame.add(buttonPanel, BorderLayout.SOUTH);
+
+            frame.setVisible(true);
+
+
             boolean valid;
             do {
                 System.out.println("What would you like to do now? (Type 'message', 'view', or 'profile')");
@@ -369,7 +444,7 @@ public class Client implements ClientInterface {
                         users.add(fUser);
                     }
                 }
-                if (users.get(0).equalsIgnoreCase("no") ||(users.size() == 1 &&
+                if (users.get(0).equalsIgnoreCase("no") || (users.size() == 1 &&
                         users.get(0).equalsIgnoreCase(userName))) {
                     boolean again = false;
                     do {
