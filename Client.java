@@ -200,6 +200,7 @@ public class Client {
             JFrame frame = new JFrame("TextOGram - Friends");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 300);
+            frame.setResizable(true);
             frame.setLayout(new BorderLayout());
 
             JPanel friendsPanel = new JPanel(new BorderLayout());
@@ -223,9 +224,27 @@ public class Client {
                 public void actionPerformed(ActionEvent e) {
                     String selectedFriend = friendsList.getSelectedValue();
                     if (selectedFriend != null) {
-                        System.out.println(selectedFriend);
+                        pw.write("message");
+                        pw.println();
+                        pw.flush();
+
+                        pw.write(selectedFriend);
+                        pw.println();
+                        pw.flush();
+
+                        pw.write(userInfo[0]);
+                        pw.println();
+                        pw.flush();
+
+                        try {
+                            openMessageWindow(selectedFriend, pw, bfr);
+                            frame.setVisible(false);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
                     } else {
-                        System.out.println("Error");
+                        JOptionPane.showMessageDialog(frame, "Please select a friend to message.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
@@ -236,9 +255,16 @@ public class Client {
                 public void actionPerformed(ActionEvent e) {
                     String selectedFriend = friendsList.getSelectedValue();
                     if (selectedFriend != null) {
-                        System.out.println(selectedFriend);
+                        pw.write("view");
+                        pw.println();
+                        pw.flush();
+
+                        pw.write(selectedFriend);
+                        pw.println();
+                        pw.flush();
                     } else {
-                        System.out.println("Error");
+                        JOptionPane.showMessageDialog(frame, "Please select a friend to view.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
@@ -250,9 +276,11 @@ public class Client {
                 public void actionPerformed(ActionEvent e) {
                     String selectedFriend = friendsList.getSelectedValue();
                     if (selectedFriend != null) {
-                        System.out.println(selectedFriend);
-                    } else {
-                        System.out.println("Error");
+                        pw.write("profile");
+                        pw.println();
+                        pw.flush();
+
+
                     }
                 }
             });
@@ -265,7 +293,6 @@ public class Client {
             frame.add(buttonPanel, BorderLayout.SOUTH);
 
             frame.setVisible(true);
-
 
             boolean valid;
             do {
@@ -397,6 +424,61 @@ public class Client {
                     valid = true;
                 }
             } while (!valid);
+        }
+    }
+
+    private static void openMessageWindow(String friendUsername, PrintWriter pw, BufferedReader bfr) throws IOException {
+        JFrame messageFrame = new JFrame("Message to " + friendUsername);
+        messageFrame.setSize(400, 300);
+        messageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        messageFrame.setLayout(new BorderLayout());
+
+        JTextArea messageHistoryArea = new JTextArea();
+
+        String message = bfr.readLine();
+        String fullMessageHistory = messageHistoryArea.getText();
+
+        while (!message.equals(" ")) {
+            if (!fullMessageHistory.isEmpty()) {
+                fullMessageHistory += "\n";
+            }
+            fullMessageHistory += message;
+            message = bfr.readLine();
+        }
+
+        messageHistoryArea.setText(fullMessageHistory);
+        messageHistoryArea.setEditable(false);
+        JScrollPane historyScrollPane = new JScrollPane(messageHistoryArea);
+        messageFrame.add(historyScrollPane, BorderLayout.CENTER);
+
+        JPanel inputPanel = new JPanel(new BorderLayout());
+        JTextArea messageInputArea = new JTextArea();
+        inputPanel.add(messageInputArea, BorderLayout.CENTER);
+
+        JButton sendButton = new JButton("Send");
+        sendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendMessage(pw, messageInputArea);
+                messageFrame.setVisible(false);
+                JOptionPane.showMessageDialog(null, "Message sent!",
+                        "TextOGram", JOptionPane.PLAIN_MESSAGE);
+            }
+        });
+        inputPanel.add(sendButton, BorderLayout.SOUTH);
+
+        messageFrame.add(inputPanel, BorderLayout.SOUTH);
+
+        messageFrame.setVisible(true);
+    }
+
+    private static void sendMessage(PrintWriter pw, JTextArea messageArea) {
+        String message = messageArea.getText();
+        if (!message.isEmpty()) {
+            pw.println(message);
+            messageArea.setText("");
+        } else {
+            JOptionPane.showMessageDialog(null, "Please enter a message.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
