@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
  * @author Andrew Weiland, lab section 15
  * @version April 15, 2024
  */
-public class NewClient {
+public class Client {
 
     static JFrame loginFrame = new JFrame("Login");
     static JFrame usernameFrame = new JFrame("Enter Username");
