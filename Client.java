@@ -633,7 +633,7 @@ public class Client {
 
     public static boolean showLogInMessage(PrintWriter pw) {
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        loginFrame.setSize(400, 300);
+        loginFrame.setSize(400, 100);
         loginFrame.setResizable(true);
         loginFrame.setLayout(new BorderLayout());
 
@@ -763,7 +763,7 @@ public class Client {
 
     public static void enterUsername(PrintWriter pw) throws IOException {
         usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        usernameFrame.setSize(300, 150);
+        usernameFrame.setSize(700, 150);
         usernameFrame.setLayout(new BorderLayout());
 
         JPanel panel = new JPanel(new GridLayout(2, 1));
