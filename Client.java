@@ -15,7 +15,12 @@ import java.awt.event.ActionListener;
  * @author Andrew Weiland, lab section 15
  * @version April 15, 2024
  */
-public class Client {
+public class NewClient {
+
+    static JFrame loginFrame = new JFrame("Login");
+    static JFrame usernameFrame = new JFrame("Enter Username");
+    static JFrame passwordFrame = new JFrame("Enter Password");
+
 
     public static void main(String[] args) throws IOException, NullPointerException {
 
@@ -25,7 +30,7 @@ public class Client {
              PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
              Scanner scan = new Scanner(System.in)) {
 
-            boolean newOrReturning = showLogInMessage();
+            boolean newOrReturning = showLogInMessage(pw);
             boolean continueGoing = false;
             boolean newUser = false;
             String[] userInformation = new String[0];
@@ -83,15 +88,13 @@ public class Client {
             boolean isUser;
             if (!newUser) {
                 do {
-                    String username = enterUsername();
-                    pw.write(username);
-                    pw.println();
-                    //server returns whether or not they are a valid user
                     String validUser = bfr.readLine();
                     if (validUser.equals("no")) {
-                        System.out.println("The Username, email, or phone-Number you entered does not have an account");
+                        JOptionPane.showMessageDialog(null, "The Username, email, or phone-Number you entered does not have an account", "Search Database",
+                                JOptionPane.ERROR_MESSAGE);
                         isUser = false;
                     } else {
+                        usernameFrame.dispose();
                         isUser = true;
                     }
                 } while (!isUser);
@@ -105,21 +108,25 @@ public class Client {
                 int attempts = 0;
                 boolean validPassword;
                 do {
-                    String password = enterPassword();
+                    enterPassword(pw);
+
+                    String password = bfr.readLine();
 
                     if (!password.equals(userInfo[2])) {
-                        System.out.println("That is the wrong password. Please try again! You have " +
-                                (2 - attempts) + " attempts remaining.");
+                        JOptionPane.showMessageDialog(null, "That is the wrong password. Please try again! You have \" +\n" +
+                                        "                                (2 - attempts) + \" attempts remaining.", "Search Database",
+                                JOptionPane.ERROR_MESSAGE);
                         attempts += 1;
                         validPassword = false;
                     } else {
-                        System.out.println("Login successful!");
+                        passwordFrame.dispose();
+                        JOptionPane.showMessageDialog(null, "Login Successful!");
                         attempts = 3;
                         validPassword = true;
                     }
                     if (attempts == 3 && !validPassword) {
-                        System.out.println("You have used your maximum attempts. " +
-                                "You will now be logged out to prevent suspicious activity.");
+                        JOptionPane.showMessageDialog(null, "\"You have used your maximum attempts. \" +\n" +
+                                "                                \"You will now be logged out to prevent suspicious activity.\"");
                     }
                 } while (attempts < 3);
 
@@ -624,25 +631,39 @@ public class Client {
         }
     }
 
-    public static boolean showLogInMessage() {
-        boolean validResponse = false;
-        do {
-            System.out.println("Welcome to TextOGram");
-            System.out.println("If you already have an account enter yes. If you want to create an account enter no.");
-            Scanner scan = new Scanner(System.in);
-            String response = scan.nextLine();
+    public static boolean showLogInMessage(PrintWriter pw) {
+        loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        loginFrame.setSize(400, 300);
+        loginFrame.setResizable(true);
+        loginFrame.setLayout(new BorderLayout());
 
-            //returns old if it is an old user
-            if (response.equals("yes")) {
-                validResponse = true;
-                return true;
-                //returns new if it is a new user
-            } else if (response.equals("no")) {
-                validResponse = true;
-                return false;
+
+        JPanel buttonPanel = new JPanel();
+        JButton newUserButton = new JButton("New User");
+        JButton returningUserButton = new JButton("Returning User");
+        buttonPanel.add(newUserButton);
+        buttonPanel.add(returningUserButton);
+        loginFrame.add(buttonPanel, BorderLayout.NORTH);
+
+        newUserButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
             }
-        } while (!validResponse);
-        return false;
+        });
+
+        returningUserButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    enterUsername(pw);
+                    loginFrame.dispose();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        loginFrame.setVisible(true);
+        return true;
     }
 
 
@@ -740,17 +761,62 @@ public class Client {
 
     }
 
-    public static String enterUsername() throws IOException {
-        System.out.println("Please enter your username, email, or phoneNumber");
-        Scanner scan = new Scanner(System.in);
-        String response = scan.nextLine();
-        return response;
+    public static void enterUsername(PrintWriter pw) throws IOException {
+        usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        usernameFrame.setSize(300, 150);
+        usernameFrame.setLayout(new BorderLayout());
+
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+
+        JTextField usernameField = new JTextField();
+        JButton submitButton = new JButton("Submit");
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                pw.println(username);
+            }
+        });
+
+        panel.add(new JLabel("Enter your username, email, or phone number:"));
+        panel.add(usernameField);
+        panel.add(submitButton);
+
+        usernameFrame.add(panel, BorderLayout.CENTER);
+        usernameFrame.setVisible(true);
     }
 
-    public static String enterPassword() throws IOException {
-        System.out.println("Please enter your password");
-        Scanner scan = new Scanner(System.in);
-        return scan.nextLine();
+    public static void enterPassword(PrintWriter pw) throws IOException {
+
+        passwordFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        passwordFrame.setSize(300, 150);
+        passwordFrame.setLayout(new BorderLayout());
+
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+
+        JPasswordField passwordField = new JPasswordField();
+        JButton submitButton = new JButton("Submit");
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String password = passwordField.getText();
+
+                // Perform action with the entered username
+                // For example, send it to the server
+                pw.print(password);
+                pw.println();
+                pw.flush();
+            }
+        });
+
+        panel.add(new JLabel("Enter your password:"));
+        panel.add(passwordField);
+        panel.add(submitButton);
+
+        passwordFrame.add(panel, BorderLayout.CENTER);
+        passwordFrame.setVisible(true);
     }
 
 
