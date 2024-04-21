@@ -967,15 +967,12 @@ public class Client {
         JFrame newUserFrame = new JFrame("New User Registration");
         newUserFrame.setSize(400, 300);
         newUserFrame.setLayout(new BorderLayout());
-
         JPanel userInfoPanel = new JPanel(new GridLayout(5, 2));
-
         JTextField usernameField = new JTextField();
         JTextField emailField = new JTextField();
         JTextField phoneField = new JTextField();
         JTextField birthdayField = new JTextField();
         JTextField nameField = new JTextField();
-
         userInfoPanel.add(new JLabel("Username:"));
         userInfoPanel.add(usernameField);
         userInfoPanel.add(new JLabel("Email:"));
@@ -986,11 +983,11 @@ public class Client {
         userInfoPanel.add(birthdayField);
         userInfoPanel.add(new JLabel("Name:"));
         userInfoPanel.add(nameField);
-
         JButton registerButton = new JButton("Register");
         newUserFrame.add(userInfoPanel, BorderLayout.CENTER);
         newUserFrame.add(registerButton, BorderLayout.SOUTH);
-
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        newUserFrame.setLocation(dim.width/2-newUserFrame.getSize().width/2, dim.height/2-newUserFrame.getSize().height/2);
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String newUserInfo = String.format("%s, %s, %s, %s, %s",
@@ -999,10 +996,23 @@ public class Client {
 
                 pw.write(newUserInfo);
                 pw.println();
-                newUserFrame.dispose();
+                try (Socket socket = new Socket("localhost", 1234);
+                        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                    String response = bfr.readLine();
+                    if ("success".equals(response)) {
+                        newUserFrame.dispose();
+                    } else if ("username".equals(response)) {
+                        JOptionPane.showMessageDialog(null, "The username is already taken.");
+                    } else if ("email".equals(response)) {
+                        JOptionPane.showMessageDialog(null, "There is already an account with that email.");
+                    } else if ("phoneNumber".equals(response)) {
+                        JOptionPane.showMessageDialog(null, "There is already an account with that phone number.");
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
-
         newUserFrame.setVisible(true);
     }
     public static void showProfilePage(String[] profilePageThings, PrintWriter pw, BufferedReader bfr) {
