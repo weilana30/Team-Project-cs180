@@ -542,7 +542,7 @@ public class Client {
                     try {
                         String userString = bfr.readLine();
                         System.out.println(userString);
-                       // searchedUserProfile(pw, bfr, userString);
+                        // searchedUserProfile(pw, bfr, userString);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -789,6 +789,7 @@ public class Client {
     public static boolean showLogInMessage(PrintWriter pw) {
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(400, 100);
+        loginFrame.setLocationRelativeTo(null);
         loginFrame.setResizable(true);
         loginFrame.setLayout(new BorderLayout());
         JPanel buttonPanel = new JPanel();
@@ -907,6 +908,7 @@ public class Client {
     public static void enterUsername(PrintWriter pw) throws IOException {
         usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         usernameFrame.setSize(300, 150);
+        usernameFrame.setLocationRelativeTo(null);
         usernameFrame.setLayout(new BorderLayout());
 
         JPanel panel = new JPanel(new GridLayout(2, 1));
@@ -933,6 +935,7 @@ public class Client {
 
         passwordFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         passwordFrame.setSize(300, 150);
+        passwordFrame.setLocationRelativeTo(null);
         passwordFrame.setLayout(new BorderLayout());
 
         JPanel panel = new JPanel(new GridLayout(2, 1));
