@@ -1,12 +1,11 @@
-import java.io.*;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Scanner;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.io.*;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Scanner;
 /**
  * Client
  * <p>
@@ -16,20 +15,15 @@ import java.awt.event.ActionListener;
  * @version April 15, 2024
  */
 public class Client {
-
     static JFrame loginFrame = new JFrame("Login");
     static JFrame usernameFrame = new JFrame("Enter Username");
     static JFrame passwordFrame = new JFrame("Enter Password");
-
-
     public static void main(String[] args) throws IOException, NullPointerException {
-
         try (Socket socket = new Socket("localhost", 1234);
              BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              InputStream is = socket.getInputStream();
              PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
              Scanner scan = new Scanner(System.in)) {
-
             boolean newOrReturning = showLogInMessage(pw);
             boolean continueGoing = false;
             boolean newUser = false;
@@ -46,6 +40,7 @@ public class Client {
                     boolean invalidInformation = false;
                     do {
                         String newUserInfo = createNewUsername();
+                        //sends a string of the new users username, email, number, and birthday
                         pw.write(newUserInfo);
                         pw.println();
                         String validNewUser = bfr.readLine();
@@ -59,11 +54,10 @@ public class Client {
                             pw.println(userString);
                             userInformation = new String[]{information[0], information[1], password,
                                     information[2], information[3], information[4]};
-
                             continueGoing = true;
                             newUser = true;
                             invalidInformation = true;
-                        }  else {
+                        } else {
                             if (validNewUser.equals("username")) {
                                 System.out.println("The username is already taken.");
                                 if (is.available() > 0) {
@@ -98,11 +92,9 @@ public class Client {
                     }
                 } while (!isUser);
                 String userInfoString = bfr.readLine();
-
                 //receives the user information from the server
                 // if they are a valid user and splits it into each component
                 String[] userInfo = userInfoString.split(", ");
-
                 //this should check if the password is correct after
                 int attempts = 0;
                 boolean validPassword;
@@ -141,7 +133,7 @@ public class Client {
             boolean logout = false;
             do {
                 do {
-                    showProfilePage(userInformation);
+                    showProfilePage(userInformation, pw, bfr);
                     System.out.println("Welcome to textogram. What would you like to do? " +
                             "(Type 'friends', 'search', or 'signout')");
                     response = scan.nextLine();
@@ -160,11 +152,11 @@ public class Client {
                 boolean validResponse = false;
                 do {
                     if (response.equalsIgnoreCase("friends")) {
-                        friendsOption(pw, bfr, userInformation, scan);
+                        friendsOption(pw, bfr, userInformation);
                         validResponse = true;
                     } else if (response.equalsIgnoreCase("search")) {
                         try {
-                            searchUsers(pw, bfr, is, userInformation[0]);
+                            searchUsers(pw, bfr, userInformation);
                             validResponse = true;
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -181,9 +173,8 @@ public class Client {
             e.printStackTrace();
         }
     }
-
     public static void friendsOption(PrintWriter pw, BufferedReader bfr,
-                                     String[] userInfo, Scanner scan) throws IOException {
+                                     String[] userInfo) throws IOException {
         System.out.println("Here are your friends:");
         pw.write("friends");
         pw.println();
@@ -191,7 +182,6 @@ public class Client {
         String friends = bfr.readLine();
         ArrayList<String> allFriendsUsers = new ArrayList<>();
         ArrayList<String> allFriends = new ArrayList<>();
-
         if (friends.equals(" ")) {
             System.out.println("No friends found!\n\n");
         } else {
@@ -202,7 +192,6 @@ public class Client {
                 friends = bfr.readLine();
             }
             System.out.println(" ");
-
             JFrame frame = new JFrame("TextOGram - Friends");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 300);
@@ -212,17 +201,12 @@ public class Client {
             JPanel friendsPanel = new JPanel(new BorderLayout());
             JLabel friendsLabel = new JLabel("Here are your friends:");
             friendsPanel.add(friendsLabel, BorderLayout.NORTH);
-
             DefaultListModel<String> friendsListModel = new DefaultListModel<>();
-
             for (String friend : allFriendsUsers) {
                 friendsListModel.addElement(friend);
             }
-
             JList<String> friendsList = new JList<>(friendsListModel);
-
             friendsPanel.add(new JScrollPane(friendsList), BorderLayout.CENTER);
-
             JPanel buttonPanel = new JPanel(new FlowLayout());
             JButton messageButton = new JButton("Message");
             messageButton.addActionListener(new ActionListener() {
@@ -230,6 +214,7 @@ public class Client {
                 public void actionPerformed(ActionEvent e) {
                     String selectedFriend = friendsList.getSelectedValue();
                     if (selectedFriend != null) {
+                        System.out.println(selectedFriend);
                         pw.write("message");
                         pw.println();
                         pw.flush();
@@ -249,18 +234,19 @@ public class Client {
                             ex.printStackTrace();
                         }
                     } else {
+                        System.out.println("Error");
                         JOptionPane.showMessageDialog(frame, "Please select a friend to message.",
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
-
             JButton viewButton = new JButton("View");
             viewButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     String selectedFriend = friendsList.getSelectedValue();
                     if (selectedFriend != null) {
+                        System.out.println(selectedFriend);
                         pw.write("view");
                         pw.println();
                         pw.flush();
@@ -269,19 +255,21 @@ public class Client {
                         pw.println();
                         pw.flush();
                     } else {
+                        System.out.println("Error");
                         JOptionPane.showMessageDialog(frame, "Please select a friend to view.",
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
-
-
             JButton profileButton = new JButton("Profile");
             profileButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     String selectedFriend = friendsList.getSelectedValue();
                     if (selectedFriend != null) {
+                        System.out.println(selectedFriend);
+                    } else {
+                        System.out.println("Error");
                         pw.write("profile");
                         pw.println();
                         pw.flush();
@@ -290,146 +278,126 @@ public class Client {
                     }
                 }
             });
-
             buttonPanel.add(messageButton);
             buttonPanel.add(viewButton);
             buttonPanel.add(profileButton);
-
             frame.add(friendsPanel, BorderLayout.CENTER);
             frame.add(buttonPanel, BorderLayout.SOUTH);
 
             frame.setVisible(true);
 
-            boolean valid;
-            do {
-                System.out.println("What would you like to do now? (Type 'message', 'view', or 'profile')");
-                String response = scan.nextLine();
 
-                if (response.equalsIgnoreCase("message")) {
-                    pw.write(response);
-                    pw.println();
-                    pw.flush();
-
-                    boolean validFriend;
-                    String friendToMessage;
-                    do {
-                        System.out.println("Which friend would you like to message?");
-                        friendToMessage = scan.nextLine();
-
-                        if (allFriendsUsers.contains(friendToMessage)) {
-                            validFriend = true;
-                        } else {
-                            System.out.println("That person is not one of your friends!");
-                            validFriend = false;
-                        }
-                    } while (!validFriend);
-
-                    pw.write(friendToMessage);
-                    pw.println();
-                    pw.flush();
-
-                    pw.write(userInfo[0]);
-                    pw.println();
-                    pw.flush();
-
-                    System.out.println("Opening message file...");
-                    String message = bfr.readLine();
-                    if (message.equals(" ")) {
-                        System.out.println("No previous message history!");
-                    }
-                    while (!message.equals(" ")) {
-                        System.out.println(message);
-                        message = bfr.readLine();
-                    }
-                    System.out.println(" ");
-                    System.out.println("What would you like to send to " + friendToMessage + "?");
-                    String messageToSend = scan.nextLine();
-
-                    pw.write(messageToSend);
-                    pw.println();
-                    pw.flush();
-
-                    String outcome = bfr.readLine();
-
-                    if (outcome.equals("yes")) {
-                        System.out.println("Message sent!");
-                        System.out.println("Returning to Profile...\n");
-                    }
-
-                    valid = true;
-                } else if (response.equalsIgnoreCase("view")) {
-                    pw.write("view");
-                    pw.println();
-                    pw.flush();
-
-                    boolean validFriend;
-                    String friendToView;
-                    do {
-                        System.out.println("Which friend would you like to view the profile of?");
-                        friendToView = scan.nextLine();
-
-                        if (allFriendsUsers.contains(friendToView)) {
-                            validFriend = true;
-                        } else {
-                            System.out.println("That person is not one of your friends!");
-                            validFriend = false;
-                        }
-                    } while (!validFriend);
-
-                    pw.write(friendToView);
-                    pw.println();
-                    pw.flush();
-
-                    for (String friend : allFriends) {
-                        if (friend.split(", ")[0].equals(friendToView)) {
-                            showProfilePage(friend.split(", "));
-                            break;
-                        }
-                    }
-
-                    boolean validOption;
-                    String unfriendOption;
-                    do {
-                        System.out.println("What would you like to do now? (Type 'unfriend' or 'profile')");
-                        unfriendOption = scan.nextLine();
-
-                        if (unfriendOption.equalsIgnoreCase("unfriend") || unfriendOption.equalsIgnoreCase("profile")) {
-                            validOption = true;
-                        } else {
-                            System.out.println("Not a valid response");
-                            validOption = false;
-                        }
-                    } while (!validOption);
-
-                    pw.write(unfriendOption);
-                    pw.println();
-                    pw.flush();
-
-                    if (unfriendOption.equalsIgnoreCase("unfriend")) {
-
-                        System.out.println("Here is your new friend list:");
-                        String friend = bfr.readLine();
-
-                        if (friend.equals(" ")) {
-                            System.out.println("No friends found!");
-                        } else {
-                            while (!friend.equals(" ")) {
-                                System.out.println(friend);
-                                friend = bfr.readLine();
-                            }
-                        }
-                    }
-                    valid = true;
-                } else if (!response.equalsIgnoreCase("profile")) {
-                    System.out.println("Not a valid response");
-                    valid = false;
-                } else {
-                    pw.write("profile");
-                    pw.println();
-                    pw.flush();
-                    valid = true;
-                }
-            } while (!valid);
+//            boolean valid;
+//            do {
+//                System.out.println("What would you like to do now? (Type 'message', 'view', or 'profile')");
+//                String response = scan.nextLine();
+//                if (response.equalsIgnoreCase("message")) {
+//                    pw.write(response);
+//                    pw.println();
+//                    pw.flush();
+//                    boolean validFriend;
+//                    String friendToMessage;
+//                    do {
+//                        System.out.println("Which friend would you like to message?");
+//                        friendToMessage = scan.nextLine();
+//                        if (allFriendsUsers.contains(friendToMessage)) {
+//                            validFriend = true;
+//                        } else {
+//                            System.out.println("That person is not one of your friends!");
+//                            validFriend = false;
+//                        }
+//                    } while (!validFriend);
+//                    pw.write(friendToMessage);
+//                    pw.println();
+//                    pw.flush();
+//                    pw.write(userInfo[0]);
+//                    pw.println();
+//                    pw.flush();
+//                    System.out.println("Opening message file...");
+//                    String message = bfr.readLine();
+//                    if (message.equals(" ")) {
+//                        System.out.println("No previous message history!");
+//                    }
+//                    while (!message.equals(" ")) {
+//                        System.out.println(message);
+//                        message = bfr.readLine();
+//                    }
+//                    System.out.println(" ");
+//                    System.out.println("What would you like to send to " + friendToMessage + "?");
+//                    String messageToSend = scan.nextLine();
+//                    pw.write(messageToSend);
+//                    pw.println();
+//                    pw.flush();
+//                    String outcome = bfr.readLine();
+//                    if (outcome.equals("yes")) {
+//                        System.out.println("Message sent!");
+//                        System.out.println("Returning to Profile...\n");
+//                    }
+//                    valid = true;
+//                } else if (response.equalsIgnoreCase("view")) {
+//                    pw.write("view");
+//                    pw.println();
+//                    pw.flush();
+//                    boolean validFriend;
+//                    String friendToView;
+//                    do {
+//                        System.out.println("Which friend would you like to view the profile of?");
+//                        friendToView = scan.nextLine();
+//                        if (allFriendsUsers.contains(friendToView)) {
+//                            validFriend = true;
+//                        } else {
+//                            System.out.println("That person is not one of your friends!");
+//                            validFriend = false;
+//                        }
+//                    } while (!validFriend);
+//                    pw.write(friendToView);
+//                    pw.println();
+//                    pw.flush();
+//                    for (String friend : allFriends) {
+//                        if (friend.split(", ")[0].equals(friendToView)) {
+//                            showProfilePage(friend.split(", "));
+//                            break;
+//                        }
+//                    }
+//                    boolean validOption;
+//                    String unfriendOption;
+//                    do {
+//                        System.out.println("What would you like to do now? (Type 'unfriend' or 'profile')");
+//                        unfriendOption = scan.nextLine();
+//                        if (unfriendOption.equalsIgnoreCase("unfriend") || unfriendOption.equalsIgnoreCase("profile")) {
+//                            validOption = true;
+//                        } else {
+//                            System.out.println("Not a valid response");
+//                            validOption = false;
+//                        }
+//                    } while (!validOption);
+//                    pw.write(unfriendOption);
+//                    pw.println();
+//                    pw.flush();
+//                    if (unfriendOption.equalsIgnoreCase("unfriend")) {
+//                        System.out.println("Here is your new friend list:");
+//                        String friend = bfr.readLine();
+//                        if (friend.equals(" ")) {
+//                            System.out.println("No friends found!");
+//                        } else {
+//                            while (!friend.equals(" ")) {
+//                                System.out.println(friend);
+//                                friend = bfr.readLine();
+//                            }
+//                        }
+//                    }
+//                    valid = true;
+//                } else if (!response.equalsIgnoreCase("profile")) {
+//                    System.out.println("Not a valid response");
+//                    valid = false;
+//                } else {
+//                    pw.write("profile");
+//                    pw.println();
+//                    pw.flush();
+//                    valid = true;
+//                }
+//            } while (!valid);
+//        }
         }
     }
 
@@ -489,154 +457,340 @@ public class Client {
     }
 
 
-    public static void searchUsers(PrintWriter pw, BufferedReader bfr, InputStream is, String userName)
+    public static void searchUsers(PrintWriter pw, BufferedReader bfr, String[] userInfo)
             throws IOException, InterruptedException {
         boolean validResponse = false;
         Scanner scan = new Scanner(System.in);
         String response;
-        do {
-            System.out.println("Would you like to search for a user? yes or no");
-            response = scan.nextLine();
-            if (!response.equalsIgnoreCase("yes") && !response.equalsIgnoreCase("no")) {
-                System.out.println("Not a valid response");
-            } else {
-                validResponse = true;
+        JFrame frame = new JFrame("User Search");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setResizable(true);
+        frame.setLayout(new BorderLayout());
+
+        JButton backToProfile = new JButton("Profile");
+        JButton search = new JButton("Search");
+        JTextField searchText = new JTextField("", 5);
+        JComboBox<String> userDropdown = new JComboBox<>();
+        userDropdown.setPreferredSize(new Dimension(200, 50));
+        backToProfile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == backToProfile) {
+                    pw.println("no");
+                    frame.setVisible(false);
+                    showProfilePage(userInfo, pw, bfr);
+                }
             }
-        } while (!validResponse);
-        if (response.equalsIgnoreCase("yes")) {
-            pw.println(response);
-            boolean search = true;
-            do {
-                System.out.println("Please enter the user you are searching for?");
-                String userToSearch = scan.nextLine();
+        });
 
-                //sends the server the name they are searching for
-                pw.println(userToSearch);
+        search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == search) {
+                    pw.println("yes");
+                    String search = searchText.getText();
+                    pw.println(search);
 
+                    ArrayList<String> users = new ArrayList<>();
+                    String fUser = "";
+                    try {
+                        String firstUser = bfr.readLine();
+                        users.add(firstUser);
+                        System.out.println(firstUser);
 
-                ArrayList<String> users = new ArrayList<>();
-                String fUser = "";
-
-                String firstUser = bfr.readLine();
-                if (!firstUser.equalsIgnoreCase(userName) && !firstUser.equalsIgnoreCase(userName)) {
-                    System.out.println(firstUser);
-                }
-                users.add(firstUser);
-
-                while (!fUser.equalsIgnoreCase("done")) {
-                    fUser = bfr.readLine();
-                    if (fUser.equalsIgnoreCase("done")) {
-                        break;
-                    }
-                    if (!fUser.equalsIgnoreCase(userName)) {
-                        users.add(fUser);
-                    }
-                }
-                if (users.get(0).equalsIgnoreCase("no") || (users.size() == 1 &&
-                        users.get(0).equalsIgnoreCase(userName))) {
-                    boolean again = false;
-                    do {
-                        System.out.println("There were no results.\n" +
-                                "If you want to search again, type search. " +
-                                "If you want to go back to your profile, type profile.");
-                        String noResultsResponse = scan.nextLine();
-                        if (noResultsResponse.equalsIgnoreCase("profile")) {
-                            search = false;
-                            pw.println("end");
-                        } else if (!noResultsResponse.equalsIgnoreCase("search")) {
-                            System.out.println("Not a valid response");
-                            again = true;
-                        } else if (noResultsResponse.equals("search")) {
-                            again = false;
-                            pw.println("search");
-                        }
-                    } while (again);
-                } else {
-                    System.out.println("Users Found:");
-                    for (String username : users) {
-                        if (!username.equalsIgnoreCase(userName)) {
-                            System.out.println(username);
-                        }
-                    }
-                    boolean validUsername = false;
-                    do {
-                        System.out.println("If you want to view one of these users profiles enter their username.\n" +
-                                "If you want to search again, type search. " +
-                                "If you want to go back to your profile, type profile.");
-                        String nextResponse = scan.nextLine();
-                        if (nextResponse.equalsIgnoreCase("profile")) {
-                            search = false;
-                            validUsername = true;
-                            pw.println("end");
-                        } else if (!nextResponse.equalsIgnoreCase("search")) {
-                            //sends the username to open the profile
-                            pw.println(nextResponse);
-                            //should send back the users string
-                            String profile = bfr.readLine();
-                            //sends back no if it not a valid username
-                            if (profile.equalsIgnoreCase("no")) {
-                                System.out.println("That username is not valid");
-                            } else {
-                                validUsername = true;
-                                String[] info = profile.split(", ");
-                                //prints the profile of the user
-                                showProfilePage(info);
-
-                                boolean repeatFriend = false;
-                                do {
-                                    //asks the user if they want to add them as a friend
-                                    System.out.println("Would you like to add the user as a friend or " +
-                                            "block them? Enter add " +
-                                            "or block, or entire profile to return to the profile");
-                                    String friend = scan.nextLine();
-
-
-                                    //if block, add the user to the blocked list
-                                    if (friend.equalsIgnoreCase("block")) {
-                                        //blocks the user
-                                        pw.println("block");
-                                        pw.println(userName);
-                                        System.out.println("User blocked Successfully. Returning to profile.");
-                                        search = false;
-                                        //if add, adds the user to friends list
-                                    } else if (friend.equalsIgnoreCase("add")) {
-                                        //adds the user as a friend
-                                        pw.println("add");
-                                        pw.println(userName);
-                                        System.out.println("Friend added Succesfully. Returning to profile.");
-                                        search = false;
-                                        repeatFriend = false;
-                                        //if profile, returns to user profile
-                                    } else if (friend.equalsIgnoreCase("profile")) {
-                                        search = false;
-                                        pw.println("done");
-                                        repeatFriend = false;
-                                    } else {
-                                        System.out.println("Not a valid response");
-                                        repeatFriend = true;
-                                    }
-                                } while (repeatFriend);
+                        while (!fUser.equalsIgnoreCase("done")) {
+                            fUser = bfr.readLine();
+                            if (fUser.equalsIgnoreCase("done")) {
+                                break;
                             }
-                        } else {
-                            pw.println("search");
-                            validUsername = true;
-                            search = true;
+                            if (!fUser.equalsIgnoreCase(userInfo[0])) {
+                                users.add(fUser);
+                            }
+                            for (String user : users) {
+                                System.out.println(user);
+                            }
+                            userDropdown.removeAllItems();
+
                         }
-                    } while (!validUsername);
+                        System.out.println("hello");
+                        for(String user: users) {
+                            System.out.println(user);
+                        }
+                        if(!users.getFirst().equalsIgnoreCase("no")) {
+                            System.out.println("here");
+                            userDropdown.setModel(new DefaultComboBoxModel<String>(users.toArray(new String[0])));
+                            frame.setVisible(false);
+                            openFoundUsers(users, pw, bfr, userInfo);
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "No users found.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception er) {
+                        System.out.println("An error occurred");
+                    }
                 }
-            } while (search);
-        } else {
-            pw.println("no");
+            }
+        });
+        userDropdown.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == userDropdown) {
+                    String selectedUser = (String) userDropdown.getSelectedItem();
+                    //open profile of that user
+                    pw.write(selectedUser);
+                    try {
+                        String userString = bfr.readLine();
+                        System.out.println(userString);
+                       // searchedUserProfile(pw, bfr, userString);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+
+        JPanel panel = new JPanel();
+
+        panel.add(backToProfile);
+        panel.add(search);
+        panel.add(searchText);
+        panel.add(userDropdown);
+        frame.add(panel, BorderLayout.NORTH);
+
+        frame.setSize(800, 400);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+//        do {
+//            System.out.println("Would you like to search for a user? yes or no");
+//            response = scan.nextLine();
+//            if (!response.equalsIgnoreCase("yes") && !response.equalsIgnoreCase("no")) {
+//                System.out.println("Not a valid response");
+//            } else {
+//                validResponse = true;
+//            }
+//        } while (!validResponse);
+//        if (response.equalsIgnoreCase("yes")) {
+//            pw.println(response);
+//            boolean searchUser = true;
+//            do {
+//                System.out.println("Please enter the user you are searching for?");
+//                String userToSearch = scan.nextLine();
+//                //sends the server the name they are searching for
+//                pw.println(userToSearch);
+//                ArrayList<String> users = new ArrayList<>();
+//                String fUser = "";
+//                String firstUser = bfr.readLine();
+//                if (!firstUser.equalsIgnoreCase(userName) && !firstUser.equalsIgnoreCase(userName)) {
+//                    System.out.println(firstUser);
+//                }
+//                users.add(firstUser);
+//                while (!fUser.equalsIgnoreCase("done")) {
+//                    fUser = bfr.readLine();
+//                    if (fUser.equalsIgnoreCase("done")) {
+//                        break;
+//                    }
+//                    if (!fUser.equalsIgnoreCase(userName)) {
+//                        users.add(fUser);
+//                    }
+//                }
+//                if (users.get(0).equalsIgnoreCase("no") || (users.size() == 1 &&
+//                        users.get(0).equalsIgnoreCase(userName))) {
+//                    boolean again = false;
+//                    do {
+//                        System.out.println("There were no results.\n" +
+//                                "If you want to search again, type search. " +
+//                                "If you want to go back to your profile, type profile.");
+//                        String noResultsResponse = scan.nextLine();
+//                        if (noResultsResponse.equalsIgnoreCase("profile")) {
+//                            searchUser = false;
+//                            pw.println("end");
+//                        } else if (!noResultsResponse.equalsIgnoreCase("search")) {
+//                            System.out.println("Not a valid response");
+//                            again = true;
+//                        } else if (noResultsResponse.equals("search")) {
+//                            again = false;
+//                            pw.println("search");
+//                        }
+//                    } while (again);
+//                } else {
+//                    System.out.println("Users Found:");
+//                    for (String username : users) {
+//                        if (!username.equalsIgnoreCase(userName)) {
+//                            System.out.println(username);
+//                        }
+//                    }
+//                    boolean validUsername = false;
+//                    do {
+//                        System.out.println("If you want to view one of these users profiles enter their username.\n" +
+//                                "If you want to search again, type search. " +
+//                                "If you want to go back to your profile, type profile.");
+//                        String nextResponse = scan.nextLine();
+//                        if (nextResponse.equalsIgnoreCase("profile")) {
+//                            searchUser = false;
+//                            validUsername = true;
+//                            pw.println("end");
+//                        } else if (!nextResponse.equalsIgnoreCase("search")) {
+//                            //sends the username to open the profile
+//                            pw.println(nextResponse);
+//                            //should send back the users string
+//                            String profile = bfr.readLine();
+//                            //sends back no if it not a valid username
+//                            if (profile.equalsIgnoreCase("no")) {
+//                                System.out.println("That username is not valid");
+//                            } else {
+//                                validUsername = true;
+//                                String[] info = profile.split(", ");
+//                                //prints the profile of the user
+//                                showProfilePage(info);
+//                                boolean repeatFriend = false;
+//                                do {
+//                                    //asks the user if they want to add them as a friend
+//                                    System.out.println("Would you like to add the user as a friend or " +
+//                                            "block them? Enter add " +
+//                                            "or block, or entire profile to return to the profile");
+//                                    String friend = scan.nextLine();
+//                                    //if block, add the user to the blocked list
+//                                    if (friend.equalsIgnoreCase("block")) {
+//                                        //blocks the user
+//                                        pw.println("block");
+//                                        pw.println(userName);
+//                                        System.out.println("User blocked Successfully. Returning to profile.");
+//                                        searchUser = false;
+//                                        //if add, adds the user to friends list
+//                                    } else if (friend.equalsIgnoreCase("add")) {
+//                                        //adds the user as a friend
+//                                        pw.println("add");
+//                                        pw.println(userName);
+//                                        System.out.println("Friend added Succesfully. Returning to profile.");
+//                                        searchUser = false;
+//                                        repeatFriend = false;
+//                                        //if profile, returns to user profile
+//                                    } else if (friend.equalsIgnoreCase("profile")) {
+//                                        searchUser = false;
+//                                        pw.println("done");
+//                                        repeatFriend = false;
+//                                    } else {
+//                                        System.out.println("Not a valid response");
+//                                        repeatFriend = true;
+//                                    }
+//                                } while (repeatFriend);
+//                            }
+//                        } else {
+//                            pw.println("search");
+//                            validUsername = true;
+//                            searchUser = true;
+//                        }
+//                    } while (!validUsername);
+//                }
+//            } while (searchUser);
+//        } else {
+//            pw.println("no");
+//        }
+    }
+    public static void openFoundUsers(ArrayList<String> users, PrintWriter pw, BufferedReader bfr, String[] userInfo) {
+        JFrame foundUsers = new JFrame("Here are the found users");
+        foundUsers.setSize(800, 400);
+        foundUsers.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        foundUsers.setLayout(new BorderLayout());
+        DefaultListModel<String> foundListModel = new DefaultListModel<>();
+        for (String user: users) {
+            foundListModel.addElement(user);
         }
+        JList<String> foundList = new JList<>(foundListModel);
+        foundUsers.add(new JScrollPane(foundList), BorderLayout.CENTER);
+        foundUsers.setLocationRelativeTo(null);
+        JButton viewUser = new JButton("View User");
+        viewUser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedUser = foundList.getSelectedValue();
+                pw.println(selectedUser);
+                try {
+                    String userString = bfr.readLine();
+                    foundUsers.setVisible(false);
+                    searchedUserProfile(pw, bfr, userString, userInfo);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
+        });
+        foundUsers.add(viewUser, BorderLayout.SOUTH);
+        foundUsers.setVisible(true);
     }
 
+
+
+    public static void searchedUserProfile(PrintWriter pw, BufferedReader bfr, String user, String[] userInfoSplit) {
+        String [] profilePageThings = user.split(", ");
+        String username = profilePageThings[0];
+        String name = profilePageThings[1];
+        String email = profilePageThings[3];
+        String birthday = profilePageThings[5];
+        StringBuilder userInfo = new StringBuilder();
+        userInfo.append("Username: ").append(username).append("\n");
+        userInfo.append("Name: ").append(name).append("\n");
+        userInfo.append("Email: ").append(email).append("\n");
+        userInfo.append("Birthday: ").append(birthday).append("\n");
+        System.out.println("fuck");
+        JFrame frame = new JFrame(String.valueOf(profilePageThings[0]));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JTextArea description = new JTextArea(String.valueOf(userInfo));
+        description.setEditable(false);
+        frame.setSize(400, 300);
+        JButton addFriend = new JButton("Add Friend");
+        addFriend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == addFriend) {
+                    pw.println("add");
+                    pw.println("end");
+                    JOptionPane.showMessageDialog(frame, "User Successfully added as friend.",
+                            "User added", JOptionPane.PLAIN_MESSAGE);
+                    frame.setVisible(false);
+                    showProfilePage(userInfoSplit, pw, bfr);
+                }
+            }
+        });
+        JButton block = new JButton("Block");
+        block.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == block) {
+                    pw.println("block");
+                    pw.println("end");
+                    JOptionPane.showMessageDialog(frame, "User Successfully blocked.",
+                            "User blocked", JOptionPane.PLAIN_MESSAGE);
+                    frame.setVisible(false);
+                    showProfilePage(userInfoSplit, pw, bfr);
+                }
+            }
+        });
+        JButton profile = new JButton("Return to Profile");
+        profile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pw.println("profile");
+                pw.println("end");
+            }
+        });
+        JPanel panel = new JPanel();
+        panel.add(block);
+        panel.add(addFriend);
+        panel.add(profile);
+        frame.setLayout(new BorderLayout());
+        frame.add(description, BorderLayout.CENTER);
+        frame.setLocationRelativeTo(null);
+        frame.add(panel, BorderLayout.SOUTH);
+        frame.setVisible(true);
+    }
     public static boolean showLogInMessage(PrintWriter pw) {
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(400, 100);
         loginFrame.setResizable(true);
         loginFrame.setLayout(new BorderLayout());
-
-
         JPanel buttonPanel = new JPanel();
         JButton newUserButton = new JButton("New User");
         JButton returningUserButton = new JButton("Returning User");
@@ -646,10 +800,12 @@ public class Client {
 
         newUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
                 loginFrame.dispose();
                 createNewUserGUI(pw);
             }
         });
+
         returningUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -660,8 +816,149 @@ public class Client {
                 }
             }
         });
+
         loginFrame.setVisible(true);
         return true;
+    }
+
+
+    public static String createNewUsername() {
+        System.out.println("Please enter the username for your new account");
+        Scanner scan = new Scanner(System.in);
+        String username = scan.nextLine();
+        System.out.println("Please enter the email for your new account");
+        String email = scan.nextLine();
+        System.out.println("Please enter the phone number for your new account");
+        String phone = scan.nextLine();
+        System.out.println("Please enter your birthday in the format MM-DD-YYYY");
+        String birthday = scan.nextLine();
+        System.out.println("Please enter your first and last name");
+        String name = scan.nextLine();
+        return String.format("%s, %s, %s, %s, %s", username, name, email, phone, birthday);
+    }
+    public static String createNewPassword() {
+        boolean same = false;
+        String passwordOne;
+        String passwordTwo;
+        do {
+            do {
+                System.out.println("Please enter your password for your new account");
+                System.out.println("The password must contain at least one uppercase letter, lowercase");
+                System.out.println("letter, number, and special character");
+                Scanner scan = new Scanner(System.in);
+                passwordOne = scan.nextLine();
+                System.out.println("Please re-enter your new password");
+                passwordTwo = scan.nextLine();
+                if (passwordOne.equals(passwordTwo)) {
+                    same = true;
+                }
+            } while (!same);
+            if (!checkPassword(passwordOne)) {
+                System.out.println("The password does not include all of the required characters");
+            }
+        } while (!checkPassword(passwordOne));
+        return passwordOne;
+    }
+    // this method checks if the password inputted meets all the requirements for a secure password
+    public static boolean checkPassword(String password) {
+        // creating 3 different string representations of allowed symbols from a keyboard
+        String chars = "~ ` ! @ # $ % ^ & * ( ) - _ + = { [ } ] | \\ ' ; : ? / > . < ,";
+        String ints = "1 2 3 4 5 6 7 8 9 0";
+        String letters = "a b c d e f g h i j k l m n o p q r s t u v w x y z";
+        // splitting these different strings into string arrays, so they are iterable
+        String[] requiredChars = chars.split(" ");
+        String[] requiredInts = ints.split(" ");
+        String[] requiredLetters = letters.split(" ");
+        // initializing 4 boolean conditions that must be met by the end to be successful
+        boolean hasChar = false;
+        boolean hasInt = false;
+        boolean hasUpper = false;
+        boolean hasLower = false;
+        // iterating through each symbol array and making sure the password to check has
+        // at least one of the necessary symbols for each required symbol
+        for (String character : requiredChars) {
+            if (password.contains(character)) {
+                hasChar = true;
+                break;
+            }
+        }
+        for (String number : requiredInts) {
+            if (password.contains(number)) {
+                hasInt = true;
+                break;
+            }
+        }
+        for (String letter : requiredLetters) {
+            if (password.contains(letter.toUpperCase())) {
+                hasUpper = true;
+                break;
+            }
+        }
+        for (String letter : requiredLetters) {
+            if (password.contains(letter)) {
+                hasLower = true;
+                break;
+            }
+        }
+        // returns true if all boolean conditions are met
+        // otherwise returns false
+        return hasChar & hasInt & hasUpper & hasLower;
+    }
+    public static void enterUsername(PrintWriter pw) throws IOException {
+        usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        usernameFrame.setSize(300, 150);
+        usernameFrame.setLayout(new BorderLayout());
+
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+
+        JTextField usernameField = new JTextField();
+        JButton submitButton = new JButton("Submit");
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                pw.println(username);
+            }
+        });
+
+        panel.add(new JLabel("Enter your username, email, or phone number:"));
+        panel.add(usernameField);
+        panel.add(submitButton);
+
+        usernameFrame.add(panel, BorderLayout.CENTER);
+        usernameFrame.setVisible(true);
+    }
+    public static void enterPassword(PrintWriter pw) throws IOException {
+
+        passwordFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        passwordFrame.setSize(300, 150);
+        passwordFrame.setLayout(new BorderLayout());
+
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+
+        JPasswordField passwordField = new JPasswordField();
+        JButton submitButton = new JButton("Submit");
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String password = passwordField.getText();
+
+                // Perform action with the entered username
+                // For example, send it to the server
+                pw.print(password);
+                pw.println();
+                pw.flush();
+            }
+        });
+
+        panel.add(new JLabel("Enter your password:"));
+        panel.add(passwordField);
+        panel.add(submitButton);
+
+        passwordFrame.add(panel, BorderLayout.CENTER);
+        passwordFrame.setVisible(true);
     }
     public static void createNewUserGUI(PrintWriter pw) {
         JFrame newUserFrame = new JFrame("New User Registration");
@@ -705,161 +1002,7 @@ public class Client {
 
         newUserFrame.setVisible(true);
     }
-
-    public static String createNewUsername() {
-        System.out.println("Please enter the username for your new account");
-        Scanner scan = new Scanner(System.in);
-        String username = scan.nextLine();
-        System.out.println("Please enter the email for your new account");
-        String email = scan.nextLine();
-        System.out.println("Please enter the phone number for your new account");
-        String phone = scan.nextLine();
-        System.out.println("Please enter your birthday in the format MM-DD-YYYY");
-        String birthday = scan.nextLine();
-        System.out.println("Please enter your first and last name");
-        String name = scan.nextLine();
-        return String.format("%s, %s, %s, %s, %s", username, name, email, phone, birthday);
-    }
-
-    public static String createNewPassword() {
-        boolean same = false;
-        String passwordOne;
-        String passwordTwo;
-        do {
-            do {
-                System.out.println("Please enter your password for your new account");
-                System.out.println("The password must contain at least one uppercase letter, lowercase");
-                System.out.println("letter, number, and special character");
-                Scanner scan = new Scanner(System.in);
-                passwordOne = scan.nextLine();
-                System.out.println("Please re-enter your new password");
-                passwordTwo = scan.nextLine();
-                if (passwordOne.equals(passwordTwo)) {
-                    same = true;
-                }
-            } while (!same);
-            if (!checkPassword(passwordOne)) {
-                System.out.println("The password does not include all of the required characters");
-            }
-        } while (!checkPassword(passwordOne));
-        return passwordOne;
-    }
-
-    // this method checks if the password inputted meets all the requirements for a secure password
-    public static boolean checkPassword(String password) {
-
-        // creating 3 different string representations of allowed symbols from a keyboard
-        String chars = "~ ` ! @ # $ % ^ & * ( ) - _ + = { [ } ] | \\ ' ; : ? / > . < ,";
-        String ints = "1 2 3 4 5 6 7 8 9 0";
-        String letters = "a b c d e f g h i j k l m n o p q r s t u v w x y z";
-
-        // splitting these different strings into string arrays, so they are iterable
-        String[] requiredChars = chars.split(" ");
-        String[] requiredInts = ints.split(" ");
-        String[] requiredLetters = letters.split(" ");
-
-        // initializing 4 boolean conditions that must be met by the end to be successful
-        boolean hasChar = false;
-        boolean hasInt = false;
-        boolean hasUpper = false;
-        boolean hasLower = false;
-
-        // iterating through each symbol array and making sure the password to check has
-        // at least one of the necessary symbols for each required symbol
-        for (String character : requiredChars) {
-            if (password.contains(character)) {
-                hasChar = true;
-                break;
-            }
-        }
-
-        for (String number : requiredInts) {
-            if (password.contains(number)) {
-                hasInt = true;
-                break;
-            }
-        }
-
-        for (String letter : requiredLetters) {
-            if (password.contains(letter.toUpperCase())) {
-                hasUpper = true;
-                break;
-            }
-        }
-
-        for (String letter : requiredLetters) {
-            if (password.contains(letter)) {
-                hasLower = true;
-                break;
-            }
-        }
-
-        // returns true if all boolean conditions are met
-        // otherwise returns false
-        return hasChar & hasInt & hasUpper & hasLower;
-
-    }
-
-    public static void enterUsername(PrintWriter pw) throws IOException {
-        usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        usernameFrame.setSize(700, 150);
-        usernameFrame.setLayout(new BorderLayout());
-
-        JPanel panel = new JPanel(new GridLayout(2, 1));
-
-        JTextField usernameField = new JTextField();
-        JButton submitButton = new JButton("Submit");
-
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                pw.println(username);
-            }
-        });
-
-        panel.add(new JLabel("Enter your username, email, or phone number:"));
-        panel.add(usernameField);
-        panel.add(submitButton);
-
-        usernameFrame.add(panel, BorderLayout.CENTER);
-        usernameFrame.setVisible(true);
-    }
-
-    public static void enterPassword(PrintWriter pw) throws IOException {
-
-        passwordFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        passwordFrame.setSize(300, 150);
-        passwordFrame.setLayout(new BorderLayout());
-
-        JPanel panel = new JPanel(new GridLayout(2, 1));
-
-        JPasswordField passwordField = new JPasswordField();
-        JButton submitButton = new JButton("Submit");
-
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String password = passwordField.getText();
-
-                // Perform action with the entered username
-                // For example, send it to the server
-                pw.print(password);
-                pw.println();
-                pw.flush();
-            }
-        });
-
-        panel.add(new JLabel("Enter your password:"));
-        panel.add(passwordField);
-        panel.add(submitButton);
-
-        passwordFrame.add(panel, BorderLayout.CENTER);
-        passwordFrame.setVisible(true);
-    }
-
-
-    public static void showProfilePage(String[] profilePageThings) {
+    public static void showProfilePage(String[] profilePageThings, PrintWriter pw, BufferedReader bfr) {
         //splits the user information;
         String username = profilePageThings[0];
         String name = profilePageThings[1];
@@ -870,7 +1013,58 @@ public class Client {
         userInfo.append("Name: ").append(name).append("\n");
         userInfo.append("Email: ").append(email).append("\n");
         userInfo.append("Birthday: ").append(birthday).append("\n");
-        System.out.println(userInfo);
+        JFrame frame = new JFrame(String.valueOf(profilePageThings[0]));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JTextArea description = new JTextArea(String.valueOf(userInfo));
+        frame.setSize(400, 300);
+        JButton search = new JButton("Search");
+        search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == search) {
+                    pw.println("search");
+                    frame.setVisible(false);
+                    try {
+                        searchUsers(pw, bfr, profilePageThings);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+        JButton friends = new JButton("Friends");
+        friends.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == friends) {
+                    pw.println("friends");
+                    frame.setVisible(false);
+                    try {
+                        friendsOption(pw, bfr, profilePageThings);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+        JButton signout = new JButton("Sign out");
+        signout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //signout
+            }
+        });
+        JPanel panel = new JPanel();
+        description.setEditable(false);
+        panel.add(search);
+        panel.add(friends);
+        panel.add(signout);
+        frame.setLayout(new BorderLayout());
+        frame.add(description, BorderLayout.CENTER);
+        frame.setLocationRelativeTo(null);
+        frame.add(panel, BorderLayout.SOUTH);
+        frame.setVisible(true);
     }
-
 }
