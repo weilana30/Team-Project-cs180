@@ -46,7 +46,6 @@ public class Client {
                     boolean invalidInformation = false;
                     do {
                         String newUserInfo = createNewUsername();
-                        //sends a string of the new users username, email, number, and birthday
                         pw.write(newUserInfo);
                         pw.println();
                         String validNewUser = bfr.readLine();
@@ -64,7 +63,7 @@ public class Client {
                             continueGoing = true;
                             newUser = true;
                             invalidInformation = true;
-                        } else {
+                        }  else {
                             if (validNewUser.equals("username")) {
                                 System.out.println("The username is already taken.");
                                 if (is.available() > 0) {
@@ -647,10 +646,10 @@ public class Client {
 
         newUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
+                loginFrame.dispose();
+                createNewUserGUI(pw);
             }
         });
-
         returningUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -661,11 +660,51 @@ public class Client {
                 }
             }
         });
-
         loginFrame.setVisible(true);
         return true;
     }
+    public static void createNewUserGUI(PrintWriter pw) {
+        JFrame newUserFrame = new JFrame("New User Registration");
+        newUserFrame.setSize(400, 300);
+        newUserFrame.setLayout(new BorderLayout());
 
+        JPanel userInfoPanel = new JPanel(new GridLayout(5, 2));
+
+        JTextField usernameField = new JTextField();
+        JTextField emailField = new JTextField();
+        JTextField phoneField = new JTextField();
+        JTextField birthdayField = new JTextField();
+        JTextField nameField = new JTextField();
+
+        userInfoPanel.add(new JLabel("Username:"));
+        userInfoPanel.add(usernameField);
+        userInfoPanel.add(new JLabel("Email:"));
+        userInfoPanel.add(emailField);
+        userInfoPanel.add(new JLabel("Phone Number:"));
+        userInfoPanel.add(phoneField);
+        userInfoPanel.add(new JLabel("Birthday (MM-DD-YYYY):"));
+        userInfoPanel.add(birthdayField);
+        userInfoPanel.add(new JLabel("Name:"));
+        userInfoPanel.add(nameField);
+
+        JButton registerButton = new JButton("Register");
+        newUserFrame.add(userInfoPanel, BorderLayout.CENTER);
+        newUserFrame.add(registerButton, BorderLayout.SOUTH);
+
+        registerButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String newUserInfo = String.format("%s, %s, %s, %s, %s",
+                        usernameField.getText(), nameField.getText(),
+                        emailField.getText(), phoneField.getText(), birthdayField.getText());
+
+                pw.write(newUserInfo);
+                pw.println();
+                newUserFrame.dispose();
+            }
+        });
+
+        newUserFrame.setVisible(true);
+    }
 
     public static String createNewUsername() {
         System.out.println("Please enter the username for your new account");
@@ -833,4 +872,5 @@ public class Client {
         userInfo.append("Birthday: ").append(birthday).append("\n");
         System.out.println(userInfo);
     }
+
 }
