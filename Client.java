@@ -675,7 +675,7 @@ public class Client {
     }
     public static void openFoundUsers(ArrayList<String> users, PrintWriter pw, BufferedReader bfr, String[] userInfo) {
         JFrame foundUsers = new JFrame("Here are the found users");
-        foundUsers.setSize(800, 400);
+        foundUsers.setSize(400, 200);
         foundUsers.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         foundUsers.setLayout(new BorderLayout());
         DefaultListModel<String> foundListModel = new DefaultListModel<>();
@@ -693,8 +693,13 @@ public class Client {
                 pw.println(selectedUser);
                 try {
                     String userString = bfr.readLine();
-                    foundUsers.setVisible(false);
-                    searchedUserProfile(pw, bfr, userString, userInfo);
+                    if (userString.equalsIgnoreCase("no")) {
+                        JOptionPane.showMessageDialog(foundUsers, "Please select a user.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        foundUsers.setVisible(false);
+                        searchedUserProfile(pw, bfr, userString, userInfo);
+                    }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
