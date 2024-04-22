@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 /**
  * Client
  * <p>
@@ -18,6 +19,7 @@ public class Client {
     static JFrame loginFrame = new JFrame("Login");
     static JFrame usernameFrame = new JFrame("Enter Username");
     static JFrame passwordFrame = new JFrame("Enter Password");
+
     public static void main(String[] args) throws IOException, NullPointerException {
         try (Socket socket = new Socket("localhost", 1234);
              BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -173,40 +175,46 @@ public class Client {
             e.printStackTrace();
         }
     }
+
     public static void friendsOption(PrintWriter pw, BufferedReader bfr,
                                      String[] userInfo) throws IOException {
-        System.out.println("Here are your friends:");
         pw.write("friends");
         pw.println();
         pw.flush();
         String friends = bfr.readLine();
         ArrayList<String> allFriendsUsers = new ArrayList<>();
         ArrayList<String> allFriends = new ArrayList<>();
+
         if (friends.equals(" ")) {
             System.out.println("No friends found!\n\n");
         } else {
             while (!friends.equals(" ")) {
                 allFriendsUsers.add(friends.split(", ")[0]);
                 allFriends.add(friends);
-                System.out.println(friends);
                 friends = bfr.readLine();
             }
-            System.out.println(" ");
+
             JFrame frame = new JFrame("TextOGram - Friends");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 300);
             frame.setResizable(true);
+            frame.setLocationRelativeTo(null);
             frame.setLayout(new BorderLayout());
 
             JPanel friendsPanel = new JPanel(new BorderLayout());
             JLabel friendsLabel = new JLabel("Here are your friends:");
             friendsPanel.add(friendsLabel, BorderLayout.NORTH);
+
             DefaultListModel<String> friendsListModel = new DefaultListModel<>();
+
             for (String friend : allFriendsUsers) {
                 friendsListModel.addElement(friend);
             }
+
             JList<String> friendsList = new JList<>(friendsListModel);
+
             friendsPanel.add(new JScrollPane(friendsList), BorderLayout.CENTER);
+
             JPanel buttonPanel = new JPanel(new FlowLayout());
             JButton messageButton = new JButton("Message");
             messageButton.addActionListener(new ActionListener() {
@@ -214,7 +222,6 @@ public class Client {
                 public void actionPerformed(ActionEvent e) {
                     String selectedFriend = friendsList.getSelectedValue();
                     if (selectedFriend != null) {
-                        System.out.println(selectedFriend);
                         pw.write("message");
                         pw.println();
                         pw.flush();
@@ -228,25 +235,24 @@ public class Client {
                         pw.flush();
 
                         try {
-                            openMessageWindow(selectedFriend, pw, bfr);
+                            openMessageWindow(selectedFriend, pw, bfr, frame);
                             frame.setVisible(false);
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
                     } else {
-                        System.out.println("Error");
                         JOptionPane.showMessageDialog(frame, "Please select a friend to message.",
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
+
             JButton viewButton = new JButton("View");
             viewButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     String selectedFriend = friendsList.getSelectedValue();
                     if (selectedFriend != null) {
-                        System.out.println(selectedFriend);
                         pw.write("view");
                         pw.println();
                         pw.flush();
@@ -254,22 +260,24 @@ public class Client {
                         pw.write(selectedFriend);
                         pw.println();
                         pw.flush();
+
+                        openViewWindow(selectedFriend, pw, bfr, frame, allFriendsUsers);
+                        frame.setVisible(false);
+
                     } else {
-                        System.out.println("Error");
                         JOptionPane.showMessageDialog(frame, "Please select a friend to view.",
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
+
+
             JButton profileButton = new JButton("Profile");
             profileButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     String selectedFriend = friendsList.getSelectedValue();
                     if (selectedFriend != null) {
-                        System.out.println(selectedFriend);
-                    } else {
-                        System.out.println("Error");
                         pw.write("profile");
                         pw.println();
                         pw.flush();
@@ -278,133 +286,23 @@ public class Client {
                     }
                 }
             });
+
             buttonPanel.add(messageButton);
             buttonPanel.add(viewButton);
             buttonPanel.add(profileButton);
+
             frame.add(friendsPanel, BorderLayout.CENTER);
             frame.add(buttonPanel, BorderLayout.SOUTH);
 
             frame.setVisible(true);
-
-
-//            boolean valid;
-//            do {
-//                System.out.println("What would you like to do now? (Type 'message', 'view', or 'profile')");
-//                String response = scan.nextLine();
-//                if (response.equalsIgnoreCase("message")) {
-//                    pw.write(response);
-//                    pw.println();
-//                    pw.flush();
-//                    boolean validFriend;
-//                    String friendToMessage;
-//                    do {
-//                        System.out.println("Which friend would you like to message?");
-//                        friendToMessage = scan.nextLine();
-//                        if (allFriendsUsers.contains(friendToMessage)) {
-//                            validFriend = true;
-//                        } else {
-//                            System.out.println("That person is not one of your friends!");
-//                            validFriend = false;
-//                        }
-//                    } while (!validFriend);
-//                    pw.write(friendToMessage);
-//                    pw.println();
-//                    pw.flush();
-//                    pw.write(userInfo[0]);
-//                    pw.println();
-//                    pw.flush();
-//                    System.out.println("Opening message file...");
-//                    String message = bfr.readLine();
-//                    if (message.equals(" ")) {
-//                        System.out.println("No previous message history!");
-//                    }
-//                    while (!message.equals(" ")) {
-//                        System.out.println(message);
-//                        message = bfr.readLine();
-//                    }
-//                    System.out.println(" ");
-//                    System.out.println("What would you like to send to " + friendToMessage + "?");
-//                    String messageToSend = scan.nextLine();
-//                    pw.write(messageToSend);
-//                    pw.println();
-//                    pw.flush();
-//                    String outcome = bfr.readLine();
-//                    if (outcome.equals("yes")) {
-//                        System.out.println("Message sent!");
-//                        System.out.println("Returning to Profile...\n");
-//                    }
-//                    valid = true;
-//                } else if (response.equalsIgnoreCase("view")) {
-//                    pw.write("view");
-//                    pw.println();
-//                    pw.flush();
-//                    boolean validFriend;
-//                    String friendToView;
-//                    do {
-//                        System.out.println("Which friend would you like to view the profile of?");
-//                        friendToView = scan.nextLine();
-//                        if (allFriendsUsers.contains(friendToView)) {
-//                            validFriend = true;
-//                        } else {
-//                            System.out.println("That person is not one of your friends!");
-//                            validFriend = false;
-//                        }
-//                    } while (!validFriend);
-//                    pw.write(friendToView);
-//                    pw.println();
-//                    pw.flush();
-//                    for (String friend : allFriends) {
-//                        if (friend.split(", ")[0].equals(friendToView)) {
-//                            showProfilePage(friend.split(", "));
-//                            break;
-//                        }
-//                    }
-//                    boolean validOption;
-//                    String unfriendOption;
-//                    do {
-//                        System.out.println("What would you like to do now? (Type 'unfriend' or 'profile')");
-//                        unfriendOption = scan.nextLine();
-//                        if (unfriendOption.equalsIgnoreCase("unfriend") || unfriendOption.equalsIgnoreCase("profile")) {
-//                            validOption = true;
-//                        } else {
-//                            System.out.println("Not a valid response");
-//                            validOption = false;
-//                        }
-//                    } while (!validOption);
-//                    pw.write(unfriendOption);
-//                    pw.println();
-//                    pw.flush();
-//                    if (unfriendOption.equalsIgnoreCase("unfriend")) {
-//                        System.out.println("Here is your new friend list:");
-//                        String friend = bfr.readLine();
-//                        if (friend.equals(" ")) {
-//                            System.out.println("No friends found!");
-//                        } else {
-//                            while (!friend.equals(" ")) {
-//                                System.out.println(friend);
-//                                friend = bfr.readLine();
-//                            }
-//                        }
-//                    }
-//                    valid = true;
-//                } else if (!response.equalsIgnoreCase("profile")) {
-//                    System.out.println("Not a valid response");
-//                    valid = false;
-//                } else {
-//                    pw.write("profile");
-//                    pw.println();
-//                    pw.flush();
-//                    valid = true;
-//                }
-//            } while (!valid);
-//        }
         }
     }
 
-    private static void openMessageWindow(String friendUsername, PrintWriter pw, BufferedReader bfr) throws IOException {
+    private static void openMessageWindow(String friendUsername, PrintWriter pw, BufferedReader bfr, JFrame frame) throws IOException {
         JFrame messageFrame = new JFrame("Message to " + friendUsername);
         messageFrame.setSize(400, 300);
         messageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        messageFrame.setLocationRelativeTo(null);
         messageFrame.setLayout(new BorderLayout());
 
         JTextArea messageHistoryArea = new JTextArea();
@@ -433,29 +331,153 @@ public class Client {
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sendMessage(pw, messageInputArea);
-                messageFrame.setVisible(false);
-                JOptionPane.showMessageDialog(null, "Message sent!",
-                        "TextOGram", JOptionPane.PLAIN_MESSAGE);
+                if (!messageInputArea.getText().isEmpty()) {
+                    sendMessage(pw, messageInputArea);
+                    messageFrame.setVisible(false);
+                    JOptionPane.showMessageDialog(null, "Message sent!",
+                            "TextOGram", JOptionPane.PLAIN_MESSAGE);
+                    frame.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please enter a message.",
+                            "TextOGram", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
-        inputPanel.add(sendButton, BorderLayout.SOUTH);
 
+        inputPanel.add(sendButton, BorderLayout.SOUTH);
         messageFrame.add(inputPanel, BorderLayout.SOUTH);
 
         messageFrame.setVisible(true);
     }
 
+
     private static void sendMessage(PrintWriter pw, JTextArea messageArea) {
         String message = messageArea.getText();
-        if (!message.isEmpty()) {
-            pw.println(message);
-            messageArea.setText("");
-        } else {
-            JOptionPane.showMessageDialog(null, "Please enter a message.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+
+        pw.println(message);
+        messageArea.setText("");
     }
 
+    private static void openViewWindow(String friendUsername, PrintWriter pw, BufferedReader bfr, JFrame frame, ArrayList<String> users) {
+        JFrame viewFrame = new JFrame(friendUsername + "'s Profile");
+        viewFrame.setSize(400, 300);
+        viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        viewFrame.setLocationRelativeTo(null);
+        viewFrame.setLayout(new GridLayout(4, 1));
+
+        JPanel usernamePanel = new JPanel(new BorderLayout());
+        JPanel namePanel = new JPanel(new BorderLayout());
+        JPanel emailPanel = new JPanel(new BorderLayout());
+        JPanel birthdayPanel = new JPanel(new BorderLayout());
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+
+        String name = "";
+        String email = "";
+        String birthday = "";
+
+        try {
+            name = bfr.readLine();
+            email = bfr.readLine();
+            birthday = bfr.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        JLabel usernameLabel = new JLabel("Username: " + friendUsername);
+        JLabel nameLabel = new JLabel("Name: " + name);
+        JLabel emailLabel = new JLabel("Email: " + email);
+        JLabel birthdayLabel = new JLabel("Birthday: " + birthday);
+
+        usernamePanel.add(usernameLabel, BorderLayout.CENTER);
+        namePanel.add(nameLabel, BorderLayout.CENTER);
+        emailPanel.add(emailLabel, BorderLayout.CENTER);
+        birthdayPanel.add(birthdayLabel, BorderLayout.CENTER);
+
+        viewFrame.add(usernamePanel);
+        viewFrame.add(namePanel);
+        viewFrame.add(emailPanel);
+        viewFrame.add(birthdayPanel);
+
+        JButton unfriendButton = new JButton("Unfriend");
+        JButton leaveButton = new JButton("Leave");
+
+        unfriendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pw.write("unfriend");
+                pw.println();
+                pw.flush();
+
+                ArrayList<String> users = new ArrayList<>();
+
+                String result = "";
+
+                try {
+                    result = bfr.readLine();
+                    String friend = bfr.readLine();
+                    while (!friend.equals(" ")) {
+                        users.add(friend);
+                        friend = bfr.readLine();
+                    }
+                    System.out.println(result);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                System.out.println(users);
+
+                viewFrame.setVisible(false);
+
+                if (result.equals("yes")) {
+                    JOptionPane.showMessageDialog(null, "Friend successfully removed!",
+                            "TextOGram", JOptionPane.PLAIN_MESSAGE);
+                    updateFrame(frame, users);
+                    frame.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Sorry, there was an error!",
+                            "TextOGram", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        leaveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        buttonPanel.add(unfriendButton);
+        buttonPanel.add(leaveButton);
+
+        viewFrame.add(buttonPanel);
+
+        viewFrame.setVisible(true);
+    }
+
+    private static void updateFrame(JFrame frame, ArrayList<String> users) {
+        frame.getContentPane().removeAll();
+        frame.setLocationRelativeTo(null);
+
+        JPanel friendsPanel = new JPanel(new BorderLayout());
+        JLabel friendsLabel = new JLabel("Here are your friends:");
+        friendsPanel.add(friendsLabel, BorderLayout.NORTH);
+
+        DefaultListModel<String> friendsListModel = new DefaultListModel<>();
+
+        for (String user : users) {
+            friendsListModel.addElement(user);
+        }
+
+        JList<String> friendsList = new JList<>(friendsListModel);
+
+        friendsPanel.add(new JScrollPane(friendsList), BorderLayout.CENTER);
+
+        frame.getContentPane().add(friendsPanel, BorderLayout.CENTER);
+
+        frame.revalidate();
+        frame.repaint();
+    }
 
     public static void searchUsers(PrintWriter pw, BufferedReader bfr, String[] userInfo)
             throws IOException, InterruptedException {
@@ -511,10 +533,10 @@ public class Client {
 
                         }
                         System.out.println("hello");
-                        for(String user: users) {
+                        for (String user : users) {
                             System.out.println(user);
                         }
-                        if(!users.getFirst().equalsIgnoreCase("no")) {
+                        if (!users.get(0).equalsIgnoreCase("no")) {
                             System.out.println("here");
                             frame.setVisible(false);
                             openFoundUsers(users, pw, bfr, userInfo);
@@ -673,13 +695,14 @@ public class Client {
 //            pw.println("no");
 //        }
     }
+
     public static void openFoundUsers(ArrayList<String> users, PrintWriter pw, BufferedReader bfr, String[] userInfo) {
         JFrame foundUsers = new JFrame("Here are the found users");
         foundUsers.setSize(400, 200);
         foundUsers.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         foundUsers.setLayout(new BorderLayout());
         DefaultListModel<String> foundListModel = new DefaultListModel<>();
-        for (String user: users) {
+        for (String user : users) {
             foundListModel.addElement(user);
         }
         JList<String> foundList = new JList<>(foundListModel);
@@ -711,9 +734,8 @@ public class Client {
     }
 
 
-
     public static void searchedUserProfile(PrintWriter pw, BufferedReader bfr, String user, String[] userInfoSplit) {
-        String [] profilePageThings = user.split(", ");
+        String[] profilePageThings = user.split(", ");
         String username = profilePageThings[0];
         String name = profilePageThings[1];
         String email = profilePageThings[3];
@@ -777,6 +799,7 @@ public class Client {
         frame.add(panel, BorderLayout.SOUTH);
         frame.setVisible(true);
     }
+
     public static boolean showLogInMessage(PrintWriter pw) {
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(400, 100);
@@ -828,6 +851,7 @@ public class Client {
         String name = scan.nextLine();
         return String.format("%s, %s, %s, %s, %s", username, name, email, phone, birthday);
     }
+
     public static String createNewPassword() {
         boolean same = false;
         String passwordOne;
@@ -851,6 +875,7 @@ public class Client {
         } while (!checkPassword(passwordOne));
         return passwordOne;
     }
+
     // this method checks if the password inputted meets all the requirements for a secure password
     public static boolean checkPassword(String password) {
         // creating 3 different string representations of allowed symbols from a keyboard
@@ -896,6 +921,7 @@ public class Client {
         // otherwise returns false
         return hasChar & hasInt & hasUpper & hasLower;
     }
+
     public static void enterUsername(PrintWriter pw) throws IOException {
         usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         usernameFrame.setSize(300, 150);
@@ -922,6 +948,7 @@ public class Client {
         usernameFrame.add(panel, BorderLayout.CENTER);
         usernameFrame.setVisible(true);
     }
+
     public static void enterPassword(PrintWriter pw) throws IOException {
 
         passwordFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -954,6 +981,7 @@ public class Client {
         passwordFrame.add(panel, BorderLayout.CENTER);
         passwordFrame.setVisible(true);
     }
+
     public static void createNewUserGUI(PrintWriter pw) {
         JFrame newUserFrame = new JFrame("New User Registration");
         newUserFrame.setSize(400, 300);
@@ -978,7 +1006,7 @@ public class Client {
         newUserFrame.add(userInfoPanel, BorderLayout.CENTER);
         newUserFrame.add(registerButton, BorderLayout.SOUTH);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        newUserFrame.setLocation(dim.width/2-newUserFrame.getSize().width/2, dim.height/2-newUserFrame.getSize().height/2);
+        newUserFrame.setLocation(dim.width / 2 - newUserFrame.getSize().width / 2, dim.height / 2 - newUserFrame.getSize().height / 2);
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String newUserInfo = String.format("%s, %s, %s, %s, %s",
@@ -1006,6 +1034,7 @@ public class Client {
         });
         newUserFrame.setVisible(true);
     }
+
     public static void showProfilePage(String[] profilePageThings, PrintWriter pw, BufferedReader bfr) {
         //splits the user information;
         String username = profilePageThings[0];
