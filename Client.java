@@ -6,7 +6,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 /**
  * Client
  * <p>
@@ -106,20 +105,26 @@ public class Client {
                     String password = bfr.readLine();
 
                     if (!password.equals(userInfo[2])) {
-                        JOptionPane.showMessageDialog(null, "That is the wrong password. Please try again! You have \" +\n" +
-                                        "                                (2 - attempts) + \" attempts remaining.", "Search Database",
+                        JOptionPane.showMessageDialog(null, "That is the wrong password. Please try again! You have " + (2 - attempts) + " attempts remaining.", "Incorrect Password",
                                 JOptionPane.ERROR_MESSAGE);
+                        pw.print("no");
+                        pw.println();
+                        pw.flush();
                         attempts += 1;
                         validPassword = false;
                     } else {
+                        pw.print("yes");
+                        pw.println();
+                        pw.flush();
                         passwordFrame.dispose();
                         JOptionPane.showMessageDialog(null, "Login Successful!");
                         attempts = 3;
                         validPassword = true;
                     }
                     if (attempts == 3 && !validPassword) {
-                        JOptionPane.showMessageDialog(null, "\"You have used your maximum attempts. \" +\n" +
-                                "                                \"You will now be logged out to prevent suspicious activity.\"");
+                        passwordFrame.dispose();
+                        JOptionPane.showMessageDialog(null, "You have used your maximum attempts. " +
+                                "You will now be logged out to prevent suspicious activity");
                     }
                 } while (attempts < 3);
 
@@ -175,7 +180,6 @@ public class Client {
             e.printStackTrace();
         }
     }
-
     public static void friendsOption(PrintWriter pw, BufferedReader bfr,
                                      String[] userInfo) throws IOException {
         pw.write("friends");
@@ -799,7 +803,6 @@ public class Client {
         frame.add(panel, BorderLayout.SOUTH);
         frame.setVisible(true);
     }
-
     public static boolean showLogInMessage(PrintWriter pw) {
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(400, 100);
@@ -851,7 +854,6 @@ public class Client {
         String name = scan.nextLine();
         return String.format("%s, %s, %s, %s, %s", username, name, email, phone, birthday);
     }
-
     public static String createNewPassword() {
         boolean same = false;
         String passwordOne;
@@ -875,7 +877,6 @@ public class Client {
         } while (!checkPassword(passwordOne));
         return passwordOne;
     }
-
     // this method checks if the password inputted meets all the requirements for a secure password
     public static boolean checkPassword(String password) {
         // creating 3 different string representations of allowed symbols from a keyboard
@@ -921,7 +922,6 @@ public class Client {
         // otherwise returns false
         return hasChar & hasInt & hasUpper & hasLower;
     }
-
     public static void enterUsername(PrintWriter pw) throws IOException {
         usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         usernameFrame.setSize(300, 150);
@@ -948,7 +948,6 @@ public class Client {
         usernameFrame.add(panel, BorderLayout.CENTER);
         usernameFrame.setVisible(true);
     }
-
     public static void enterPassword(PrintWriter pw) throws IOException {
 
         passwordFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -971,6 +970,7 @@ public class Client {
                 pw.print(password);
                 pw.println();
                 pw.flush();
+                passwordField.setText("");
             }
         });
 
@@ -981,17 +981,19 @@ public class Client {
         passwordFrame.add(panel, BorderLayout.CENTER);
         passwordFrame.setVisible(true);
     }
-
     public static void createNewUserGUI(PrintWriter pw) {
         JFrame newUserFrame = new JFrame("New User Registration");
         newUserFrame.setSize(400, 300);
         newUserFrame.setLayout(new BorderLayout());
+
         JPanel userInfoPanel = new JPanel(new GridLayout(5, 2));
+
         JTextField usernameField = new JTextField();
         JTextField emailField = new JTextField();
         JTextField phoneField = new JTextField();
         JTextField birthdayField = new JTextField();
         JTextField nameField = new JTextField();
+
         userInfoPanel.add(new JLabel("Username:"));
         userInfoPanel.add(usernameField);
         userInfoPanel.add(new JLabel("Email:"));
@@ -1002,11 +1004,11 @@ public class Client {
         userInfoPanel.add(birthdayField);
         userInfoPanel.add(new JLabel("Name:"));
         userInfoPanel.add(nameField);
+
         JButton registerButton = new JButton("Register");
         newUserFrame.add(userInfoPanel, BorderLayout.CENTER);
         newUserFrame.add(registerButton, BorderLayout.SOUTH);
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        newUserFrame.setLocation(dim.width / 2 - newUserFrame.getSize().width / 2, dim.height / 2 - newUserFrame.getSize().height / 2);
+
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String newUserInfo = String.format("%s, %s, %s, %s, %s",
@@ -1015,26 +1017,12 @@ public class Client {
 
                 pw.write(newUserInfo);
                 pw.println();
-                try (Socket socket = new Socket("localhost", 1234);
-                     BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-                    String response = bfr.readLine();
-                    if ("success".equals(response)) {
-                        newUserFrame.dispose();
-                    } else if ("username".equals(response)) {
-                        JOptionPane.showMessageDialog(null, "The username is already taken.");
-                    } else if ("email".equals(response)) {
-                        JOptionPane.showMessageDialog(null, "There is already an account with that email.");
-                    } else if ("phoneNumber".equals(response)) {
-                        JOptionPane.showMessageDialog(null, "There is already an account with that phone number.");
-                    }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                newUserFrame.dispose();
             }
         });
+
         newUserFrame.setVisible(true);
     }
-
     public static void showProfilePage(String[] profilePageThings, PrintWriter pw, BufferedReader bfr) {
         //splits the user information;
         String username = profilePageThings[0];
