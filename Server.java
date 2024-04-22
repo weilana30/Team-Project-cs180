@@ -48,7 +48,6 @@ public class Server implements Runnable, ServerInterface {
                     if (user != null) {
                         pw.println("yes");
                         pw.println(user);
-                        pw.println(br.readLine());
                         boolean passwordCorrect = false;
                     } else {
                         pw.println("no");
@@ -192,6 +191,11 @@ public class Server implements Runnable, ServerInterface {
                 pw.println("yes");
             } else if (response.equalsIgnoreCase("view")) {
                 String friendToView = bfr.readLine();
+
+                pw.println(profile.getNameByUsername(friendToView));
+                pw.println(profile.getEmailByUsername(friendToView));
+                pw.println(profile.getBirthdayByUsername(friendToView));
+
                 String unfriendOption = bfr.readLine();
 
                 System.out.println(unfriendOption);
@@ -227,21 +231,20 @@ public class Server implements Runnable, ServerInterface {
                         e.printStackTrace();
                     }
 
-
                     if (friendRemoved) {
+                        pw.println("yes");
                         try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername()
                                 + "Friends.txt"))) {
                             String friendUsername;
                             while ((friendUsername = reader.readLine()) != null) {
-                                pw.println(friendUsername);
+                                pw.println(friendUsername.split(", ")[0]);
                             }
                             pw.println(" ");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     } else {
-                        pw.println("Sorry, there was an error retrieving your friends!");
-                        pw.println(" ");
+                        pw.println("no");
                     }
                 }
             }
