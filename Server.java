@@ -48,6 +48,7 @@ public class Server implements Runnable, ServerInterface {
                     if (user != null) {
                         pw.println("yes");
                         pw.println(user);
+                        pw.println(br.readLine());
                         boolean passwordCorrect = false;
                     } else {
                         pw.println("no");
