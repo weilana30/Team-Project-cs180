@@ -471,8 +471,6 @@ public class Client {
         JButton backToProfile = new JButton("Profile");
         JButton search = new JButton("Search");
         JTextField searchText = new JTextField("", 5);
-        JComboBox<String> userDropdown = new JComboBox<>();
-        userDropdown.setPreferredSize(new Dimension(200, 50));
         backToProfile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -510,7 +508,6 @@ public class Client {
                             for (String user : users) {
                                 System.out.println(user);
                             }
-                            userDropdown.removeAllItems();
 
                         }
                         System.out.println("hello");
@@ -519,7 +516,6 @@ public class Client {
                         }
                         if(!users.getFirst().equalsIgnoreCase("no")) {
                             System.out.println("here");
-                            userDropdown.setModel(new DefaultComboBoxModel<String>(users.toArray(new String[0])));
                             frame.setVisible(false);
                             openFoundUsers(users, pw, bfr, userInfo);
                         } else {
@@ -532,33 +528,21 @@ public class Client {
                 }
             }
         });
-        userDropdown.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (e.getSource() == userDropdown) {
-                    String selectedUser = (String) userDropdown.getSelectedItem();
-                    //open profile of that user
-                    pw.write(selectedUser);
-                    try {
-                        String userString = bfr.readLine();
-                        System.out.println(userString);
-                        // searchedUserProfile(pw, bfr, userString);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            }
-        });
+
 
         JPanel panel = new JPanel();
 
         panel.add(backToProfile);
-        panel.add(search);
         panel.add(searchText);
-        panel.add(userDropdown);
+        panel.add(search);
         frame.add(panel, BorderLayout.NORTH);
-
-        frame.setSize(800, 400);
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JTextArea description = new JTextArea(String.valueOf("Type a username, email, or name of a User\n" +
+                "                 then press search!"));
+        centerPanel.add(description);
+        description.setEditable(false);
+        frame.setSize(400, 200);
+        frame.add(centerPanel, BorderLayout.CENTER);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -774,6 +758,8 @@ public class Client {
             public void actionPerformed(ActionEvent e) {
                 pw.println("profile");
                 pw.println("end");
+                frame.setVisible(false);
+                showProfilePage(userInfoSplit, pw, bfr);
             }
         });
         JPanel panel = new JPanel();
@@ -997,7 +983,7 @@ public class Client {
                 pw.write(newUserInfo);
                 pw.println();
                 try (Socket socket = new Socket("localhost", 1234);
-                        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                     BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                     String response = bfr.readLine();
                     if ("success".equals(response)) {
                         newUserFrame.dispose();
