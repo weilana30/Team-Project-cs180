@@ -3,6 +3,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Server
  * <p>
@@ -11,7 +12,7 @@ import java.util.List;
  * @author Andrew Weiland, lab section 15
  * @version April 15, 2024
  */
-public class Server implements Runnable, ServerInterface {
+public class Server implements Runnable {
     private Socket clientSocket;
     private static Profile profile = new Profile();
 
@@ -138,9 +139,11 @@ public class Server implements Runnable, ServerInterface {
             e.printStackTrace();
         }
         if (!empty) {
+            System.out.println("Made it.");
             bfr.readLine();
             String response = bfr.readLine();
             System.out.println(response);
+
             if (response.equalsIgnoreCase("message")) {
                 String friendToMessage = bfr.readLine();
                 String userMessaging = bfr.readLine();
@@ -247,7 +250,11 @@ public class Server implements Runnable, ServerInterface {
                     } else {
                         pw.println("no");
                     }
+                } else if (!unfriendOption.equalsIgnoreCase("profile")) {
+                    System.out.println("error");
                 }
+            } else if (!response.equalsIgnoreCase("profile")) {
+                System.out.println("error.");
             }
         }
     }
