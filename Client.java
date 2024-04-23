@@ -188,14 +188,15 @@ public class Client {
 
         String friends = bfr.readLine();
         ArrayList<String> allFriendsUsers = new ArrayList<>();
-        ArrayList<String> allFriends = new ArrayList<>();
 
         if (friends.equals(" ")) {
             System.out.println("No friends found!\n\n");
+            JOptionPane.showMessageDialog(null, "You have no friends. Go make some!",
+                    "TextOGram - Friends", JOptionPane.PLAIN_MESSAGE);
+            showProfilePage(userInfo, pw, bfr);
         } else {
             while (!friends.equals(" ")) {
                 allFriendsUsers.add(friends.split(", ")[0]);
-                allFriends.add(friends);
                 friends = bfr.readLine();
             }
 
@@ -221,6 +222,7 @@ public class Client {
             friendsPanel.add(new JScrollPane(friendsList), BorderLayout.CENTER);
 
             JPanel buttonPanel = new JPanel(new FlowLayout());
+
             JButton messageButton = new JButton("Message");
             messageButton.addActionListener(new ActionListener() {
                 @Override
@@ -240,7 +242,7 @@ public class Client {
                         pw.flush();
 
                         try {
-                            openMessageWindow(selectedFriend, pw, bfr, frame);
+                            openMessageWindow(selectedFriend, pw, bfr, frame, userInfo);
                             frame.setVisible(false);
                         } catch (IOException ex) {
                             ex.printStackTrace();
@@ -266,7 +268,7 @@ public class Client {
                         pw.println();
                         pw.flush();
 
-                        openViewWindow(selectedFriend, pw, bfr, frame, friendsPanel);
+                        openViewWindow(selectedFriend, pw, bfr, frame, friendsPanel, userInfo);
                         frame.setVisible(false);
 
                     } else {
@@ -301,7 +303,7 @@ public class Client {
         }
     }
 
-    private static void openMessageWindow(String friendUsername, PrintWriter pw, BufferedReader bfr, JFrame frame) throws IOException {
+    private static void openMessageWindow(String friendUsername, PrintWriter pw, BufferedReader bfr, JFrame frame, String[] userInfo) throws IOException {
         JFrame messageFrame = new JFrame("Message to " + friendUsername);
         messageFrame.setSize(400, 300);
         messageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -337,9 +339,21 @@ public class Client {
                 if (!messageInputArea.getText().isEmpty()) {
                     sendMessage(pw, messageInputArea);
                     messageFrame.setVisible(false);
-                    JOptionPane.showMessageDialog(null, "Message sent!",
-                            "TextOGram", JOptionPane.PLAIN_MESSAGE);
-                    frame.setVisible(true);
+
+                    try {
+                        if (bfr.readLine().equalsIgnoreCase("yes")) {
+                            JOptionPane.showMessageDialog(null, "Message sent!",
+                                    "TextOGram", JOptionPane.PLAIN_MESSAGE);
+                            showProfilePage(userInfo, pw, bfr);
+                        }
+                        else {
+                            JOptionPane.showMessageDialog(null, "Error",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    frame.setVisible(false);
                 } else {
                     JOptionPane.showMessageDialog(null, "Please enter a message.",
                             "TextOGram", JOptionPane.ERROR_MESSAGE);
@@ -361,7 +375,7 @@ public class Client {
         messageArea.setText("");
     }
 
-    private static void openViewWindow(String friendUsername, PrintWriter pw, BufferedReader bfr, JFrame frame, JPanel friendsPanel) {
+    private static void openViewWindow(String friendUsername, PrintWriter pw, BufferedReader bfr, JFrame frame, JPanel friendsPanel, String[] userInfo) {
         JFrame viewFrame = new JFrame(friendUsername + "'s Profile");
         viewFrame.setSize(400, 300);
         viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -402,7 +416,7 @@ public class Client {
         viewFrame.add(birthdayPanel);
 
         JButton unfriendButton = new JButton("Unfriend");
-        JButton leaveButton = new JButton("Leave");
+        JButton profileButton = new JButton("Profile");
 
         unfriendButton.addActionListener(new ActionListener() {
             @Override
@@ -435,7 +449,8 @@ public class Client {
                     JOptionPane.showMessageDialog(null, "Friend successfully removed!",
                             "TextOGram", JOptionPane.PLAIN_MESSAGE);
                     updateFrame(frame, users, friendsPanel);
-                    frame.setVisible(true);
+                    showProfilePage(userInfo, pw, bfr);
+                    frame.setVisible(false);
                 } else {
                     JOptionPane.showMessageDialog(null, "Sorry, there was an error!",
                             "TextOGram", JOptionPane.ERROR_MESSAGE);
@@ -443,20 +458,22 @@ public class Client {
             }
         });
 
-        leaveButton.addActionListener(new ActionListener() {
+        profileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pw.write("leave");
+                pw.write("profile");
                 pw.println();
                 pw.flush();
 
                 viewFrame.setVisible(false);
-                frame.setVisible(true);
+                frame.setVisible(false);
+
+                showProfilePage(userInfo, pw, bfr);
             }
         });
 
         buttonPanel.add(unfriendButton);
-        buttonPanel.add(leaveButton);
+        buttonPanel.add(profileButton);
 
         viewFrame.add(buttonPanel);
 
@@ -1078,7 +1095,7 @@ public class Client {
         signout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //signout
+                pw.println("signout");
             }
         });
         JPanel panel = new JPanel();
