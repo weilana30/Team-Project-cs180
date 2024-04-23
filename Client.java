@@ -25,10 +25,11 @@ public class Client {
              InputStream is = socket.getInputStream();
              PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
              Scanner scan = new Scanner(System.in)) {
-            boolean newOrReturning = showLogInMessage(pw);
+            showLogInMessage(pw, bfr);
             boolean continueGoing = false;
             boolean newUser = false;
             String[] userInformation = new String[0];
+            boolean newOrReturning = bfr.readLine().equalsIgnoreCase("yes");
             do {
                 if (newOrReturning) {
                     //sends yes to the server if they are a returning user
@@ -36,10 +37,9 @@ public class Client {
                     continueGoing = true;
                 } else {
                     //send server a no if they are a new user
-                    pw.write("no");
-                    pw.println();
                     boolean invalidInformation = false;
                     do {
+
                         String newUserInfo = createNewUsername();
                         //sends a string of the new users username, email, number, and birthday
                         pw.write(newUserInfo);
@@ -100,7 +100,7 @@ public class Client {
                 int attempts = 0;
                 boolean validPassword;
                 do {
-                    enterPassword(pw);
+                    enterPassword(pw, bfr, userInfoString);
 
                     String password = bfr.readLine();
 
@@ -824,7 +824,7 @@ public class Client {
         frame.add(panel, BorderLayout.SOUTH);
         frame.setVisible(true);
     }
-    public static boolean showLogInMessage(PrintWriter pw) {
+    public static boolean showLogInMessage(PrintWriter pw, BufferedReader bfr) {
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(400, 100);
         loginFrame.setLocationRelativeTo(null);
@@ -839,15 +839,16 @@ public class Client {
 
         newUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
+                pw.println("no");
                 loginFrame.dispose();
-                createNewUserGUI(pw);
+                createNewUserGUI(pw, bfr);
             }
         });
 
         returningUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
+                    pw.println("yes");
                     enterUsername(pw);
                     loginFrame.dispose();
                 } catch (IOException ex) {
@@ -969,7 +970,7 @@ public class Client {
         usernameFrame.add(panel, BorderLayout.CENTER);
         usernameFrame.setVisible(true);
     }
-    public static void enterPassword(PrintWriter pw) throws IOException {
+    public static void enterPassword(PrintWriter pw, BufferedReader bfr, String userInfo) throws IOException {
 
         passwordFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         passwordFrame.setSize(300, 150);
@@ -988,10 +989,20 @@ public class Client {
 
                 // Perform action with the entered username
                 // For example, send it to the server
-                pw.print(password);
-                pw.println();
-                pw.flush();
                 passwordField.setText("");
+                passwordFrame.setVisible(false);
+                String [] userInfoSplit = new String[6];
+                String [] oldInfoSplit = userInfo.split(", ");
+                userInfoSplit[0] = oldInfoSplit[0];
+                userInfoSplit[1] = oldInfoSplit[1];
+                userInfoSplit[2] = password;
+                userInfoSplit[3] = oldInfoSplit[2];
+                userInfoSplit[4] = oldInfoSplit[3];
+                userInfoSplit[5] = oldInfoSplit[4];
+                pw.println(userInfoSplit[0] + ", " + userInfoSplit[1] + ", " + userInfoSplit[2] + ", "
+                        + userInfoSplit[3] + ", " + userInfoSplit[4] + ", " + userInfoSplit[5]);
+
+                showProfilePage(userInfoSplit, pw, bfr);
             }
         });
 
@@ -1002,7 +1013,7 @@ public class Client {
         passwordFrame.add(panel, BorderLayout.CENTER);
         passwordFrame.setVisible(true);
     }
-    public static void createNewUserGUI(PrintWriter pw) {
+    public static void createNewUserGUI(PrintWriter pw, BufferedReader bfr) {
         JFrame newUserFrame = new JFrame("New User Registration");
         newUserFrame.setSize(400, 300);
         newUserFrame.setLayout(new BorderLayout());
@@ -1038,6 +1049,11 @@ public class Client {
 
                 pw.write(newUserInfo);
                 pw.println();
+                try {
+                    enterPassword(pw, bfr, newUserInfo);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 newUserFrame.dispose();
             }
         });
@@ -1110,3 +1126,4 @@ public class Client {
         frame.setVisible(true);
     }
 }
+
