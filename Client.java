@@ -185,6 +185,7 @@ public class Client {
         pw.write("friends");
         pw.println();
         pw.flush();
+
         String friends = bfr.readLine();
         ArrayList<String> allFriendsUsers = new ArrayList<>();
         ArrayList<String> allFriends = new ArrayList<>();
@@ -265,7 +266,7 @@ public class Client {
                         pw.println();
                         pw.flush();
 
-                        openViewWindow(selectedFriend, pw, bfr, frame, allFriendsUsers);
+                        openViewWindow(selectedFriend, pw, bfr, frame, friendsPanel);
                         frame.setVisible(false);
 
                     } else {
@@ -280,14 +281,12 @@ public class Client {
             profileButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    String selectedFriend = friendsList.getSelectedValue();
-                    if (selectedFriend != null) {
-                        pw.write("profile");
-                        pw.println();
-                        pw.flush();
+                    pw.write("profile");
+                    pw.println();
+                    pw.flush();
 
-
-                    }
+                    frame.setVisible(false);
+                    showProfilePage(userInfo, pw, bfr);
                 }
             });
 
@@ -362,7 +361,7 @@ public class Client {
         messageArea.setText("");
     }
 
-    private static void openViewWindow(String friendUsername, PrintWriter pw, BufferedReader bfr, JFrame frame, ArrayList<String> users) {
+    private static void openViewWindow(String friendUsername, PrintWriter pw, BufferedReader bfr, JFrame frame, JPanel friendsPanel) {
         JFrame viewFrame = new JFrame(friendUsername + "'s Profile");
         viewFrame.setSize(400, 300);
         viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -435,7 +434,7 @@ public class Client {
                 if (result.equals("yes")) {
                     JOptionPane.showMessageDialog(null, "Friend successfully removed!",
                             "TextOGram", JOptionPane.PLAIN_MESSAGE);
-                    updateFrame(frame, users);
+                    updateFrame(frame, users, friendsPanel);
                     frame.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Sorry, there was an error!",
@@ -447,7 +446,12 @@ public class Client {
         leaveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                pw.write("leave");
+                pw.println();
+                pw.flush();
 
+                viewFrame.setVisible(false);
+                frame.setVisible(true);
             }
         });
 
@@ -459,13 +463,13 @@ public class Client {
         viewFrame.setVisible(true);
     }
 
-    private static void updateFrame(JFrame frame, ArrayList<String> users) {
-        frame.getContentPane().removeAll();
+    private static void updateFrame(JFrame frame, ArrayList<String> users, JPanel friendsPanel) {
+        frame.getContentPane().remove(friendsPanel);
         frame.setLocationRelativeTo(null);
 
-        JPanel friendsPanel = new JPanel(new BorderLayout());
+        JPanel newFriendsPanel = new JPanel(new BorderLayout());
         JLabel friendsLabel = new JLabel("Here are your friends:");
-        friendsPanel.add(friendsLabel, BorderLayout.NORTH);
+        newFriendsPanel.add(friendsLabel, BorderLayout.NORTH);
 
         DefaultListModel<String> friendsListModel = new DefaultListModel<>();
 
@@ -475,9 +479,9 @@ public class Client {
 
         JList<String> friendsList = new JList<>(friendsListModel);
 
-        friendsPanel.add(new JScrollPane(friendsList), BorderLayout.CENTER);
+        newFriendsPanel.add(new JScrollPane(friendsList), BorderLayout.CENTER);
 
-        frame.getContentPane().add(friendsPanel, BorderLayout.CENTER);
+        frame.getContentPane().add(newFriendsPanel, BorderLayout.CENTER);
 
         frame.revalidate();
         frame.repaint();
