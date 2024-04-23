@@ -3,7 +3,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Server
  * <p>
@@ -42,6 +41,7 @@ public class Server implements Runnable {
             User user;
 
             if ("yes".equalsIgnoreCase(newUser)) {
+                pw.println("yes");
                 do {
                     String username = br.readLine();
                     user = profile.getUserByUsername(username);
@@ -56,11 +56,13 @@ public class Server implements Runnable {
                     }
                 } while (user == null);
             } else {
+                pw.println("no");
 
                 boolean accountCorrect = false;
 
                 while (!accountCorrect) {
                     String newAccount = br.readLine();
+                    System.out.println(newAccount);
                     String[] parts = newAccount.split(", ");
                     String username = parts[0].trim();
                     String email = parts[1].trim();
@@ -82,6 +84,7 @@ public class Server implements Runnable {
                     }
                 }
                 String userInfo = br.readLine();
+                System.out.println(userInfo);
                 user = new User(userInfo);
                 user.addUserToFile();
                 profile.addUser(user);
@@ -139,11 +142,9 @@ public class Server implements Runnable {
             e.printStackTrace();
         }
         if (!empty) {
-            System.out.println("Made it.");
             bfr.readLine();
             String response = bfr.readLine();
             System.out.println(response);
-
             if (response.equalsIgnoreCase("message")) {
                 String friendToMessage = bfr.readLine();
                 String userMessaging = bfr.readLine();
@@ -195,11 +196,6 @@ public class Server implements Runnable {
                 pw.println("yes");
             } else if (response.equalsIgnoreCase("view")) {
                 String friendToView = bfr.readLine();
-
-                pw.println(profile.getNameByUsername(friendToView));
-                pw.println(profile.getEmailByUsername(friendToView));
-                pw.println(profile.getBirthdayByUsername(friendToView));
-
                 String unfriendOption = bfr.readLine();
 
                 System.out.println(unfriendOption);
@@ -235,26 +231,23 @@ public class Server implements Runnable {
                         e.printStackTrace();
                     }
 
+
                     if (friendRemoved) {
-                        pw.println("yes");
                         try (BufferedReader reader = new BufferedReader(new FileReader(user.getUsername()
                                 + "Friends.txt"))) {
                             String friendUsername;
                             while ((friendUsername = reader.readLine()) != null) {
-                                pw.println(friendUsername.split(", ")[0]);
+                                pw.println(friendUsername);
                             }
                             pw.println(" ");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     } else {
-                        pw.println("no");
+                        pw.println("Sorry, there was an error retrieving your friends!");
+                        pw.println(" ");
                     }
-                } else if (!unfriendOption.equalsIgnoreCase("profile")) {
-                    System.out.println("error");
                 }
-            } else if (!response.equalsIgnoreCase("profile")) {
-                System.out.println("error.");
             }
         }
     }
