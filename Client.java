@@ -416,6 +416,7 @@ public class Client {
                         } else {
                             JOptionPane.showMessageDialog(frame, "No users found.",
                                     "Error", JOptionPane.ERROR_MESSAGE);
+                            pw.println("search");
                         }
                     } catch (Exception er) {
                         System.out.println("An error occurred");
@@ -695,29 +696,26 @@ public class Client {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean redoIt = false;
-                do {
-                    String username = usernameField.getText();
-                    pw.println(username);
-                    String valid = null;
+                String username = usernameField.getText();
+                pw.println(username);
+                String valid = null;
+                try {
+                    valid = bfr.readLine();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                if (valid.equalsIgnoreCase("yes")) {
                     try {
-                        valid = bfr.readLine();
+                        String userInfo = bfr.readLine();
+                        enterPassword(pw, bfr, userInfo);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
-                    if (valid.equalsIgnoreCase("yes")) {
-                        try {
-                            String userInfo = bfr.readLine();
-                            enterPassword(pw, bfr, userInfo);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    } else {
-                        System.out.println("here");
-                        JOptionPane.showMessageDialog(usernameFrame, "Incorrect Password",
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                        redoIt = true;
-                    }
-                } while(redoIt);
+                } else {
+                    System.out.println("here");
+                    JOptionPane.showMessageDialog(usernameFrame, "No Account Found with that Username",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -868,6 +866,7 @@ public class Client {
             @Override
             public void actionPerformed(ActionEvent e) {
                 pw.println("signout");
+                frame.dispose();
             }
         });
         JPanel panel = new JPanel();
