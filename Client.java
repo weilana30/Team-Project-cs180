@@ -38,7 +38,6 @@ public class Client {
         ArrayList<String> allFriendsUsers = new ArrayList<>();
 
         if (friends.equals(" ")) {
-            System.out.println("No friends found!\n\n");
             JOptionPane.showMessageDialog(null, "You have no friends. Go make some!",
                     "TextOGram - Friends", JOptionPane.PLAIN_MESSAGE);
             showProfilePage(userInfo, pw, bfr);
@@ -284,12 +283,10 @@ public class Client {
                         users.add(friend);
                         friend = bfr.readLine();
                     }
-                    System.out.println(result);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
 
-                System.out.println(users);
 
                 viewFrame.setVisible(false);
 
@@ -390,7 +387,6 @@ public class Client {
                     try {
                         String firstUser = bfr.readLine();
                         users.add(firstUser);
-                        System.out.println(firstUser);
 
                         while (!fUser.equalsIgnoreCase("done")) {
                             fUser = bfr.readLine();
@@ -400,17 +396,8 @@ public class Client {
                             if (!fUser.equalsIgnoreCase(userInfo[0])) {
                                 users.add(fUser);
                             }
-                            for (String user : users) {
-                                System.out.println(user);
-                            }
-
-                        }
-                        System.out.println("hello");
-                        for (String user : users) {
-                            System.out.println(user);
                         }
                         if (!users.get(0).equalsIgnoreCase("no")) {
-                            System.out.println("here");
                             frame.setVisible(false);
                             openFoundUsers(users, pw, bfr, userInfo);
                         } else {
@@ -419,7 +406,8 @@ public class Client {
                             pw.println("search");
                         }
                     } catch (Exception er) {
-                        System.out.println("An error occurred");
+                        JOptionPane.showMessageDialog(usernameFrame, "An Error Occurred",
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -707,12 +695,12 @@ public class Client {
                 if (valid.equalsIgnoreCase("yes")) {
                     try {
                         String userInfo = bfr.readLine();
+                        usernameFrame.dispose();
                         enterPassword(pw, bfr, userInfo);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
                 } else {
-                    System.out.println("here");
                     JOptionPane.showMessageDialog(usernameFrame, "No Account Found with that Username",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -744,7 +732,11 @@ public class Client {
                 String password = passwordField.getText();
                 String [] userInfoSplit = userInfo.split(", ");
                 if(userInfoSplit[2].equalsIgnoreCase(password)) {
+                    passwordFrame.dispose();
                     showProfilePage(userInfoSplit, pw, bfr);
+                } else {
+                    JOptionPane.showMessageDialog(usernameFrame, "Incorrect Password",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 // Perform action with the entered username
                 // For example, send it to the server
