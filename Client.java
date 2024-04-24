@@ -2,7 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -20,165 +23,10 @@ public class Client {
     static JFrame passwordFrame = new JFrame("Enter Password");
 
     public static void main(String[] args) throws IOException, NullPointerException {
-        try (Socket socket = new Socket("localhost", 1234);
+            Socket socket = new Socket("localhost", 1234);
              BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             InputStream is = socket.getInputStream();
              PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
-             Scanner scan = new Scanner(System.in)) {
-            showLogInMessage(pw, bfr);
-            boolean continueGoing = false;
-            boolean newUser = false;
-            String[] userInformation = new String[0];
-            boolean newOrReturning = bfr.readLine().equalsIgnoreCase("yes");
-            do {
-                if (newOrReturning) {
-                    //sends yes to the server if they are a returning user
-                    pw.println("yes");
-                    continueGoing = true;
-                } else {
-                    //send server a no if they are a new user
-                    boolean invalidInformation = false;
-                    do {
-
-                        String newUserInfo = createNewUsername();
-                        //sends a string of the new users username, email, number, and birthday
-                        pw.write(newUserInfo);
-                        pw.println();
-                        String validNewUser = bfr.readLine();
-                        //if the username, email, and number are not taken
-                        if (validNewUser.equals("yes")) {
-                            //creates a new password
-                            String password = createNewPassword();
-                            String[] information = newUserInfo.split(", ");
-                            String userString = information[0] + ", " + information[1] + ", " + password + ", " +
-                                    information[2] + ", " + information[3] + ", " + information[4];
-                            pw.println(userString);
-                            userInformation = new String[]{information[0], information[1], password,
-                                    information[2], information[3], information[4]};
-                            continueGoing = true;
-                            newUser = true;
-                            invalidInformation = true;
-                        } else {
-                            if (validNewUser.equals("username")) {
-                                System.out.println("The username is already taken.");
-                                if (is.available() > 0) {
-                                    validNewUser = bfr.readLine();
-                                }
-                            }
-                            if (validNewUser.equals("email")) {
-                                System.out.println("There is already an account with that email.");
-                                if (is.available() > 0) {
-                                    validNewUser = bfr.readLine();
-                                }
-                            }
-                            if (validNewUser.equals("phoneNumber")) {
-                                System.out.println("There is already an account with that phoneNumber.");
-                            }
-                        }
-                        //continues looping until the information is new and valid
-                    } while (!invalidInformation);
-                }
-            } while (!continueGoing);
-            boolean isUser;
-            if (!newUser) {
-                do {
-                    String validUser = bfr.readLine();
-                    if (validUser.equals("no")) {
-                        JOptionPane.showMessageDialog(null, "The Username, email, or phone-Number you entered does not have an account", "Search Database",
-                                JOptionPane.ERROR_MESSAGE);
-                        isUser = false;
-                    } else {
-                        usernameFrame.dispose();
-                        isUser = true;
-                    }
-                } while (!isUser);
-                String userInfoString = bfr.readLine();
-                //receives the user information from the server
-                // if they are a valid user and splits it into each component
-                String[] userInfo = userInfoString.split(", ");
-                //this should check if the password is correct after
-                int attempts = 0;
-                boolean validPassword;
-                do {
-                    enterPassword(pw, bfr, userInfoString);
-
-                    String password = bfr.readLine();
-
-                    if (!password.equals(userInfo[2])) {
-                        JOptionPane.showMessageDialog(null, "That is the wrong password. Please try again! You have " + (2 - attempts) + " attempts remaining.", "Incorrect Password",
-                                JOptionPane.ERROR_MESSAGE);
-                        pw.print("no");
-                        pw.println();
-                        pw.flush();
-                        attempts += 1;
-                        validPassword = false;
-                    } else {
-                        pw.print("yes");
-                        pw.println();
-                        pw.flush();
-                        passwordFrame.dispose();
-                        JOptionPane.showMessageDialog(null, "Login Successful!");
-                        attempts = 3;
-                        validPassword = true;
-                    }
-                    if (attempts == 3 && !validPassword) {
-                        passwordFrame.dispose();
-                        JOptionPane.showMessageDialog(null, "You have used your maximum attempts. " +
-                                "You will now be logged out to prevent suspicious activity");
-                    }
-                } while (attempts < 3);
-
-                if (validPassword) {
-                    userInformation = userInfo;
-                }
-            }
-
-            //create a user object when logged in
-
-            boolean askQuestion;
-            String response;
-            boolean logout = false;
-            do {
-                do {
-                    showProfilePage(userInformation, pw, bfr);
-                    System.out.println("Welcome to textogram. What would you like to do? " +
-                            "(Type 'friends', 'search', or 'signout')");
-                    response = scan.nextLine();
-                    if (!response.equalsIgnoreCase("friends") &&
-                            !response.equalsIgnoreCase("search") &&
-                            !response.equalsIgnoreCase("signout")) {
-                        System.out.println("Not a valid response");
-                        askQuestion = true;
-                    } else {
-                        askQuestion = false;
-                    }
-                } while (askQuestion);
-                pw.write(response);
-                pw.println();
-                pw.flush();
-                boolean validResponse = false;
-                do {
-                    if (response.equalsIgnoreCase("friends")) {
-                        friendsOption(pw, bfr, userInformation);
-                        validResponse = true;
-                    } else if (response.equalsIgnoreCase("search")) {
-                        try {
-                            searchUsers(pw, bfr, userInformation);
-                            validResponse = true;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    } else if (response.equalsIgnoreCase("signout")) {
-                        logout = true;
-                        validResponse = true;
-                    } else {
-                        validResponse = false;
-                    }
-                } while (!validResponse);
-            } while (!logout);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+             showLogInMessage(pw, bfr);
     }
     public static void friendsOption(PrintWriter pw, BufferedReader bfr,
                                      String[] userInfo) throws IOException {
@@ -593,132 +441,6 @@ public class Client {
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-//        do {
-//            System.out.println("Would you like to search for a user? yes or no");
-//            response = scan.nextLine();
-//            if (!response.equalsIgnoreCase("yes") && !response.equalsIgnoreCase("no")) {
-//                System.out.println("Not a valid response");
-//            } else {
-//                validResponse = true;
-//            }
-//        } while (!validResponse);
-//        if (response.equalsIgnoreCase("yes")) {
-//            pw.println(response);
-//            boolean searchUser = true;
-//            do {
-//                System.out.println("Please enter the user you are searching for?");
-//                String userToSearch = scan.nextLine();
-//                //sends the server the name they are searching for
-//                pw.println(userToSearch);
-//                ArrayList<String> users = new ArrayList<>();
-//                String fUser = "";
-//                String firstUser = bfr.readLine();
-//                if (!firstUser.equalsIgnoreCase(userName) && !firstUser.equalsIgnoreCase(userName)) {
-//                    System.out.println(firstUser);
-//                }
-//                users.add(firstUser);
-//                while (!fUser.equalsIgnoreCase("done")) {
-//                    fUser = bfr.readLine();
-//                    if (fUser.equalsIgnoreCase("done")) {
-//                        break;
-//                    }
-//                    if (!fUser.equalsIgnoreCase(userName)) {
-//                        users.add(fUser);
-//                    }
-//                }
-//                if (users.get(0).equalsIgnoreCase("no") || (users.size() == 1 &&
-//                        users.get(0).equalsIgnoreCase(userName))) {
-//                    boolean again = false;
-//                    do {
-//                        System.out.println("There were no results.\n" +
-//                                "If you want to search again, type search. " +
-//                                "If you want to go back to your profile, type profile.");
-//                        String noResultsResponse = scan.nextLine();
-//                        if (noResultsResponse.equalsIgnoreCase("profile")) {
-//                            searchUser = false;
-//                            pw.println("end");
-//                        } else if (!noResultsResponse.equalsIgnoreCase("search")) {
-//                            System.out.println("Not a valid response");
-//                            again = true;
-//                        } else if (noResultsResponse.equals("search")) {
-//                            again = false;
-//                            pw.println("search");
-//                        }
-//                    } while (again);
-//                } else {
-//                    System.out.println("Users Found:");
-//                    for (String username : users) {
-//                        if (!username.equalsIgnoreCase(userName)) {
-//                            System.out.println(username);
-//                        }
-//                    }
-//                    boolean validUsername = false;
-//                    do {
-//                        System.out.println("If you want to view one of these users profiles enter their username.\n" +
-//                                "If you want to search again, type search. " +
-//                                "If you want to go back to your profile, type profile.");
-//                        String nextResponse = scan.nextLine();
-//                        if (nextResponse.equalsIgnoreCase("profile")) {
-//                            searchUser = false;
-//                            validUsername = true;
-//                            pw.println("end");
-//                        } else if (!nextResponse.equalsIgnoreCase("search")) {
-//                            //sends the username to open the profile
-//                            pw.println(nextResponse);
-//                            //should send back the users string
-//                            String profile = bfr.readLine();
-//                            //sends back no if it not a valid username
-//                            if (profile.equalsIgnoreCase("no")) {
-//                                System.out.println("That username is not valid");
-//                            } else {
-//                                validUsername = true;
-//                                String[] info = profile.split(", ");
-//                                //prints the profile of the user
-//                                showProfilePage(info);
-//                                boolean repeatFriend = false;
-//                                do {
-//                                    //asks the user if they want to add them as a friend
-//                                    System.out.println("Would you like to add the user as a friend or " +
-//                                            "block them? Enter add " +
-//                                            "or block, or entire profile to return to the profile");
-//                                    String friend = scan.nextLine();
-//                                    //if block, add the user to the blocked list
-//                                    if (friend.equalsIgnoreCase("block")) {
-//                                        //blocks the user
-//                                        pw.println("block");
-//                                        pw.println(userName);
-//                                        System.out.println("User blocked Successfully. Returning to profile.");
-//                                        searchUser = false;
-//                                        //if add, adds the user to friends list
-//                                    } else if (friend.equalsIgnoreCase("add")) {
-//                                        //adds the user as a friend
-//                                        pw.println("add");
-//                                        pw.println(userName);
-//                                        System.out.println("Friend added Succesfully. Returning to profile.");
-//                                        searchUser = false;
-//                                        repeatFriend = false;
-//                                        //if profile, returns to user profile
-//                                    } else if (friend.equalsIgnoreCase("profile")) {
-//                                        searchUser = false;
-//                                        pw.println("done");
-//                                        repeatFriend = false;
-//                                    } else {
-//                                        System.out.println("Not a valid response");
-//                                        repeatFriend = true;
-//                                    }
-//                                } while (repeatFriend);
-//                            }
-//                        } else {
-//                            pw.println("search");
-//                            validUsername = true;
-//                            searchUser = true;
-//                        }
-//                    } while (!validUsername);
-//                }
-//            } while (searchUser);
-//        } else {
-//            pw.println("no");
-//        }
     }
 
     public static void openFoundUsers(ArrayList<String> users, PrintWriter pw, BufferedReader bfr, String[] userInfo) {
@@ -770,7 +492,6 @@ public class Client {
         userInfo.append("Name: ").append(name).append("\n");
         userInfo.append("Email: ").append(email).append("\n");
         userInfo.append("Birthday: ").append(birthday).append("\n");
-        System.out.println("fuck");
         JFrame frame = new JFrame(String.valueOf(profilePageThings[0]));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JTextArea description = new JTextArea(String.valueOf(userInfo));
@@ -849,7 +570,7 @@ public class Client {
             public void actionPerformed(ActionEvent e) {
                 try {
                     pw.println("yes");
-                    enterUsername(pw);
+                    enterUsername(pw, bfr);
                     loginFrame.dispose();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -862,42 +583,57 @@ public class Client {
     }
 
 
-    public static String createNewUsername() {
-        System.out.println("Please enter the username for your new account");
-        Scanner scan = new Scanner(System.in);
-        String username = scan.nextLine();
-        System.out.println("Please enter the email for your new account");
-        String email = scan.nextLine();
-        System.out.println("Please enter the phone number for your new account");
-        String phone = scan.nextLine();
-        System.out.println("Please enter your birthday in the format MM-DD-YYYY");
-        String birthday = scan.nextLine();
-        System.out.println("Please enter your first and last name");
-        String name = scan.nextLine();
-        return String.format("%s, %s, %s, %s, %s", username, name, email, phone, birthday);
-    }
-    public static String createNewPassword() {
-        boolean same = false;
-        String passwordOne;
-        String passwordTwo;
-        do {
-            do {
-                System.out.println("Please enter your password for your new account");
-                System.out.println("The password must contain at least one uppercase letter, lowercase");
-                System.out.println("letter, number, and special character");
-                Scanner scan = new Scanner(System.in);
-                passwordOne = scan.nextLine();
-                System.out.println("Please re-enter your new password");
-                passwordTwo = scan.nextLine();
-                if (passwordOne.equals(passwordTwo)) {
-                    same = true;
+    public static void createNewPassword(PrintWriter pw, BufferedReader bfr, String userInfo) {
+        JFrame newPasswordFrame = new JFrame("Create New Password");
+        newPasswordFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        newPasswordFrame.setSize(250, 150);
+        newPasswordFrame.setLocationRelativeTo(null);
+        newPasswordFrame.setLayout(new BorderLayout());
+
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+        JButton submitButton = new JButton("Submit");
+        JTextField passwordOne = new JTextField("");
+        JTextField passwordTwo = new JTextField("");
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String password = passwordOne.getText();
+                String passwordNumTwo = passwordTwo.getText();
+                if (!passwordNumTwo.equals(password)) {
+                    JOptionPane.showMessageDialog(newPasswordFrame, "Passwords Do Not Match",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    boolean valid = checkPassword(password);
+                    if (valid) {
+                        String[] userInfoSplit = userInfo.split(", ");
+                        String[] userInformation = new String[6];
+                        userInformation[0] = userInfoSplit[0];
+                        userInformation[1] = userInfoSplit[1];
+                        userInformation[2] = password;
+                        ;
+                        userInformation[3] = userInfoSplit[2];
+                        userInformation[4] = userInfoSplit[3];
+                        userInformation[5] = userInfoSplit[4];
+                        pw.println(userInformation[0] + ", " + userInformation[1] + ", " + userInformation[2] + ", " +
+                                userInformation[3] + ", " + userInformation[3] + ", " + userInformation[5]);
+                        newPasswordFrame.dispose();
+                        showProfilePage(userInformation, pw, bfr);
+                    } else {
+                        JOptionPane.showMessageDialog(newPasswordFrame, "Password Must Contain Atleast One Special " +
+                                        "Character, Uppercase Letter, Lowercase Letter, and Number",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+
+                    }
                 }
-            } while (!same);
-            if (!checkPassword(passwordOne)) {
-                System.out.println("The password does not include all of the required characters");
             }
-        } while (!checkPassword(passwordOne));
-        return passwordOne;
+        });
+        panel.add(new JLabel("Enter Password:"));
+        panel.add(passwordOne);
+        panel.add(new JLabel("Re-Enter Password:"));
+        panel.add(passwordTwo);
+        newPasswordFrame.add(panel, BorderLayout.CENTER);
+        newPasswordFrame.add(submitButton, BorderLayout.SOUTH);
+        newPasswordFrame.setVisible(true);
     }
     // this method checks if the password inputted meets all the requirements for a secure password
     public static boolean checkPassword(String password) {
@@ -944,7 +680,7 @@ public class Client {
         // otherwise returns false
         return hasChar & hasInt & hasUpper & hasLower;
     }
-    public static void enterUsername(PrintWriter pw) throws IOException {
+    public static void enterUsername(PrintWriter pw, BufferedReader bfr) throws IOException {
         usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         usernameFrame.setSize(300, 150);
         usernameFrame.setLocationRelativeTo(null);
@@ -958,8 +694,30 @@ public class Client {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                pw.println(username);
+                boolean redoIt = false;
+                do {
+                    String username = usernameField.getText();
+                    pw.println(username);
+                    String valid = null;
+                    try {
+                        valid = bfr.readLine();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if (valid.equalsIgnoreCase("yes")) {
+                        try {
+                            String userInfo = bfr.readLine();
+                            enterPassword(pw, bfr, userInfo);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        System.out.println("here");
+                        JOptionPane.showMessageDialog(usernameFrame, "Incorrect Password",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        redoIt = true;
+                    }
+                } while(redoIt);
             }
         });
 
@@ -986,23 +744,13 @@ public class Client {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String password = passwordField.getText();
-
+                String [] userInfoSplit = userInfo.split(", ");
+                if(userInfoSplit[2].equalsIgnoreCase(password)) {
+                    showProfilePage(userInfoSplit, pw, bfr);
+                }
                 // Perform action with the entered username
                 // For example, send it to the server
                 passwordField.setText("");
-                passwordFrame.setVisible(false);
-                String [] userInfoSplit = new String[6];
-                String [] oldInfoSplit = userInfo.split(", ");
-                userInfoSplit[0] = oldInfoSplit[0];
-                userInfoSplit[1] = oldInfoSplit[1];
-                userInfoSplit[2] = password;
-                userInfoSplit[3] = oldInfoSplit[2];
-                userInfoSplit[4] = oldInfoSplit[3];
-                userInfoSplit[5] = oldInfoSplit[4];
-                pw.println(userInfoSplit[0] + ", " + userInfoSplit[1] + ", " + userInfoSplit[2] + ", "
-                        + userInfoSplit[3] + ", " + userInfoSplit[4] + ", " + userInfoSplit[5]);
-
-                showProfilePage(userInfoSplit, pw, bfr);
             }
         });
 
@@ -1016,7 +764,9 @@ public class Client {
     public static void createNewUserGUI(PrintWriter pw, BufferedReader bfr) {
         JFrame newUserFrame = new JFrame("New User Registration");
         newUserFrame.setSize(400, 300);
+        newUserFrame.setLocationRelativeTo(null);
         newUserFrame.setLayout(new BorderLayout());
+        newUserFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel userInfoPanel = new JPanel(new GridLayout(5, 2));
 
@@ -1047,14 +797,20 @@ public class Client {
                         usernameField.getText(), nameField.getText(),
                         emailField.getText(), phoneField.getText(), birthdayField.getText());
 
-                pw.write(newUserInfo);
-                pw.println();
+                pw.println(newUserInfo);
+                String valid = null;
                 try {
-                    enterPassword(pw, bfr, newUserInfo);
+                    valid = bfr.readLine();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-                newUserFrame.dispose();
+                if (valid.equalsIgnoreCase("yes")) {
+                    newUserFrame.dispose();
+                    createNewPassword(pw, bfr, newUserInfo);
+                } else if (valid.equalsIgnoreCase("username")) {
+                    JOptionPane.showMessageDialog(newUserFrame, "That Username is already Taken",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -1126,4 +882,3 @@ public class Client {
         frame.setVisible(true);
     }
 }
-
