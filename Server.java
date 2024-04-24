@@ -278,43 +278,48 @@ public class Server implements Runnable {
                 pw.println("done");
                 pw.flush();
                 boolean doAgain = false;
-                do {
-                    String response = br.readLine();
-                    if (response.equalsIgnoreCase("search")) {
-                        repeatSearch = true;
-                    } else if (response.equalsIgnoreCase("end")) {
-                        doAgain = false;
-                    } else {
-                        repeatSearch = false;
-                        User user = profile.getUserByUsername(response);
-
-                        if (user == null) {
-                            pw.println("no");
-                            pw.flush();
-                            doAgain = true;
+                if(found != 0) {
+                    do {
+                        String response = br.readLine();
+                        if (response.equalsIgnoreCase("search")) {
+                            repeatSearch = true;
+                        } else if (response.equalsIgnoreCase("end")) {
+                            doAgain = false;
+                            repeatSearch = false;
                         } else {
-                            pw.println(user);
-                            pw.flush();
-                            System.out.println(user);
-                            String userChoice = br.readLine();
-                            if (userChoice.equalsIgnoreCase("block")) {
-                                String userName = br.readLine();
-                                File file = new File(userName + "Blocked.txt");
-                                PrintWriter blockWriter = new PrintWriter(new FileOutputStream(file));
-                                blockWriter.println(user);
-                                blockWriter.close();
-                            } else if (userChoice.equalsIgnoreCase("add")) {
-                                System.out.println("here");
-                                String userName = br.readLine();
-                                System.out.println(userName);
-                                File file = new File(userName + "Friends.txt");
-                                PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file, true));
-                                friendsWriter.println(user);
-                                friendsWriter.close();
+                            repeatSearch = false;
+                            User user = profile.getUserByUsername(response);
+
+                            if (user == null) {
+                                pw.println("no");
+                                pw.flush();
+                                doAgain = true;
+                            } else {
+                                pw.println(user);
+                                pw.flush();
+                                System.out.println(user);
+                                String userChoice = br.readLine();
+                                if (userChoice.equalsIgnoreCase("block")) {
+                                    String userName = br.readLine();
+                                    File file = new File(userName + "Blocked.txt");
+                                    PrintWriter blockWriter = new PrintWriter(new FileOutputStream(file));
+                                    blockWriter.println(user);
+                                    blockWriter.close();
+                                    doAgain = false;
+                                } else if (userChoice.equalsIgnoreCase("add")) {
+                                    System.out.println("here");
+                                    String userName = br.readLine();
+                                    System.out.println(userName);
+                                    File file = new File(userName + "Friends.txt");
+                                    PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file, true));
+                                    friendsWriter.println(user);
+                                    friendsWriter.close();
+                                    doAgain = false;
+                                }
                             }
                         }
-                    }
-                } while (doAgain);
+                    } while (doAgain);
+                }
             } while (repeatSearch);
         }
     }
