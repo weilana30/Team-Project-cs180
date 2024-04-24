@@ -65,14 +65,12 @@ public class Server implements Runnable {
                         pw.write("username");
                         pw.println();
                     } else {
-                        System.out.println("Yes");
                         accountCorrect = true;
                         pw.write("yes");
                         pw.println();
                     }
                 }
                 String userInfo = br.readLine();
-                System.out.println(userInfo);
                 user = new User(userInfo);
                 user.addUserToFile();
                 profile.addUser(user);
@@ -80,7 +78,6 @@ public class Server implements Runnable {
             boolean signout = false;
             do {
                 String userChoice = br.readLine();
-                System.out.println(userChoice);
                 if ("friends".equalsIgnoreCase(userChoice)) {
                     handleFriends(user, br, pw);
                 } else if ("search".equalsIgnoreCase(userChoice)) {
@@ -132,7 +129,6 @@ public class Server implements Runnable {
         if (!empty) {
             bfr.readLine();
             String response = bfr.readLine();
-            System.out.println(response);
             if (response.equalsIgnoreCase("message")) {
                 String friendToMessage = bfr.readLine();
                 String userMessaging = bfr.readLine();
@@ -191,7 +187,6 @@ public class Server implements Runnable {
 
                 String unfriendOption = bfr.readLine();
 
-                System.out.println(unfriendOption);
 
                 if (unfriendOption.equals("unfriend")) {
 
@@ -246,17 +241,12 @@ public class Server implements Runnable {
 
     public void handleProfileSearch(BufferedReader br, PrintWriter pw, User currentUser) throws IOException {
         String choice = br.readLine();
-        System.out.println("here");
-        System.out.println(choice);
 
         if (choice.equals("yes")) {
 
             boolean repeatSearch = false;
             do {
-                System.out.println("beginning");
                 String searchValue = br.readLine();
-                System.out.println(searchValue);
-                System.out.println("here");
                 int found = 0;
                 for (User user : profile.getUsers()) {
                     if (!user.getUsername().equals(currentUser.getUsername())) {
@@ -297,7 +287,6 @@ public class Server implements Runnable {
                             } else {
                                 pw.println(user);
                                 pw.flush();
-                                System.out.println(user);
                                 String userChoice = br.readLine();
                                 if (userChoice.equalsIgnoreCase("block")) {
                                     String userName = br.readLine();
@@ -307,9 +296,7 @@ public class Server implements Runnable {
                                     blockWriter.close();
                                     doAgain = false;
                                 } else if (userChoice.equalsIgnoreCase("add")) {
-                                    System.out.println("here");
                                     String userName = br.readLine();
-                                    System.out.println(userName);
                                     File file = new File(userName + "Friends.txt");
                                     PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file, true));
                                     friendsWriter.println(user);
