@@ -791,23 +791,44 @@ public class Client {
 
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String newUserInfo = String.format("%s, %s, %s, %s, %s",
-                        usernameField.getText(), nameField.getText(),
-                        emailField.getText(), phoneField.getText(), birthdayField.getText());
-
-                pw.println(newUserInfo);
-                String valid = null;
-                try {
-                    valid = bfr.readLine();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-                if (valid.equalsIgnoreCase("yes")) {
-                    newUserFrame.dispose();
-                    createNewPassword(pw, bfr, newUserInfo);
-                } else if (valid.equalsIgnoreCase("username")) {
-                    JOptionPane.showMessageDialog(newUserFrame, "That Username is already Taken",
+                if (usernameField.getText().isEmpty() || nameField.getText().isEmpty() ||
+                        emailField.getText().isEmpty() || phoneField.getText().isEmpty() ||
+                        birthdayField.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(newUserFrame, "One or More Field is Blank",
                             "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    boolean badBirthday = false;
+                    try {
+                        String[] birthday = birthdayField.getText().split("-");
+                        int month = Integer.parseInt(birthday[0]);
+                        int day = Integer.parseInt(birthday[1]);
+                        int year = Integer.parseInt(birthday[2]);
+                    } catch (Exception error) {
+                        JOptionPane.showMessageDialog(newUserFrame, "Birthday is Not Valid and/or in the " +
+                                        "Correct Format",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        badBirthday = true;
+                    }
+                    if (!badBirthday) {
+                        String newUserInfo = String.format("%s, %s, %s, %s, %s",
+                                usernameField.getText(), nameField.getText(),
+                                emailField.getText(), phoneField.getText(), birthdayField.getText());
+
+                        pw.println(newUserInfo);
+                        String valid = null;
+                        try {
+                            valid = bfr.readLine();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        if (valid.equalsIgnoreCase("yes")) {
+                            newUserFrame.dispose();
+                            createNewPassword(pw, bfr, newUserInfo);
+                        } else if (valid.equalsIgnoreCase("username")) {
+                            JOptionPane.showMessageDialog(newUserFrame, "That Username is already Taken",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
                 }
             }
         });
