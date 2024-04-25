@@ -3,6 +3,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Server
  * <p>
@@ -129,7 +130,10 @@ public class Server implements Runnable {
         if (!empty) {
             bfr.readLine();
             String response = bfr.readLine();
+            System.out.println(response);
+
             if (response.equalsIgnoreCase("message")) {
+
                 String friendToMessage = bfr.readLine();
                 String userMessaging = bfr.readLine();
                 String first = "";
@@ -161,23 +165,81 @@ public class Server implements Runnable {
                     e.printStackTrace();
                 }
 
-                String message = bfr.readLine();
+                String removeOption = bfr.readLine();
+                System.out.println(removeOption);
 
-                try (PrintWriter pwr = new PrintWriter(new FileWriter(first + second + ".txt", true));
-                     BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
+                if (removeOption.equalsIgnoreCase("send")) {
+                    String message = bfr.readLine();
 
-                    if (reader.readLine() != null) {
-                        pwr.println();
-                        pwr.write(userMessaging + ": " + message);
-                        pwr.flush();
-                    } else if (reader.readLine() == null) {
-                        pwr.write(userMessaging + ": " + message);
-                        pwr.flush();
+                    try (PrintWriter pwr = new PrintWriter(new FileWriter(first + second + ".txt", true));
+                         BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
+
+                        if (reader.readLine() != null) {
+                            pwr.println();
+                            pwr.write(userMessaging + ": " + message);
+                            pwr.flush();
+                        } else if (reader.readLine() == null) {
+                            pwr.write(userMessaging + ": " + message);
+                            pwr.flush();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    pw.println("yes");
+                } else if (removeOption.equalsIgnoreCase("remove")) {
+
+                    String deleteOption = bfr.readLine();
+
+                    if (deleteOption.equalsIgnoreCase("delete")) {
+                        String messageToRemove = bfr.readLine();
+
+                        ArrayList<String> lines = new ArrayList<>();
+
+                        try (BufferedReader reader = new BufferedReader(new FileReader(first + second + ".txt"))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                lines.add(line);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        boolean foundMessage = false;
+                        boolean nullMessage = false;
+
+                        for (int i = 0; i < lines.size(); i++) {
+                            String line = lines.get(i);
+                            if (!line.split(": ")[1].equals(messageToRemove)) {
+                                lines.set(i, line);
+                            } else {
+                                foundMessage = true;
+                                lines.remove(i);
+                                i--;
+                            }
+                        }
+
+                        try (PrintWriter pwr = new PrintWriter(new FileWriter(first + second + ".txt"))) {
+                            for (int i = 0; i < lines.size(); i++) {
+                                pwr.print(lines.get(i));
+                                if (i < lines.size() - 1) {
+                                    pwr.println();
+                                }
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (foundMessage & !nullMessage) {
+                            pw.println("yes");
+                        } else if (nullMessage) {
+                            pw.println("null");
+                        } else {
+                            pw.println("no");
+                        }
+                    } else if (!deleteOption.equalsIgnoreCase("profile")) {
+                        System.out.println("error");
+                    }
                 }
-                pw.println("yes");
             } else if (response.equalsIgnoreCase("view")) {
                 String friendToView = bfr.readLine();
 
@@ -187,6 +249,7 @@ public class Server implements Runnable {
 
                 String unfriendOption = bfr.readLine();
 
+                System.out.println(unfriendOption);
 
                 if (unfriendOption.equals("unfriend")) {
 
@@ -234,7 +297,11 @@ public class Server implements Runnable {
                     } else {
                         pw.println("no");
                     }
+                } else if (!unfriendOption.equalsIgnoreCase("profile")) {
+                    System.out.println("error");
                 }
+            } else if (!response.equalsIgnoreCase("profile")) {
+                System.out.println("error.");
             }
         }
     }
@@ -268,7 +335,7 @@ public class Server implements Runnable {
                 pw.println("done");
                 pw.flush();
                 boolean doAgain = false;
-                if(found != 0) {
+                if (found != 0) {
                     do {
                         String response = br.readLine();
                         if (response.equalsIgnoreCase("search")) {
