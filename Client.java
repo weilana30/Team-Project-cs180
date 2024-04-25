@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 /**
  * Client
  * <p>
@@ -23,11 +24,12 @@ public class Client {
     static JFrame passwordFrame = new JFrame("Enter Password");
 
     public static void main(String[] args) throws IOException, NullPointerException {
-            Socket socket = new Socket("localhost", 1234);
-             BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
-             showLogInMessage(pw, bfr);
+        Socket socket = new Socket("localhost", 1234);
+        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+        showLogInMessage(pw, bfr);
     }
+
     public static void friendsOption(PrintWriter pw, BufferedReader bfr,
                                      String[] userInfo) throws IOException {
         pw.write("friends");
@@ -38,6 +40,7 @@ public class Client {
         ArrayList<String> allFriendsUsers = new ArrayList<>();
 
         if (friends.equals(" ")) {
+            System.out.println("No friends found!\n\n");
             JOptionPane.showMessageDialog(null, "You have no friends. Go make some!",
                     "TextOGram - Friends", JOptionPane.PLAIN_MESSAGE);
             showProfilePage(userInfo, pw, bfr);
@@ -179,22 +182,27 @@ public class Client {
         JTextArea messageInputArea = new JTextArea();
         inputPanel.add(messageInputArea, BorderLayout.CENTER);
 
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!messageInputArea.getText().isEmpty()) {
+                    pw.write("send");
+                    pw.println();
+                    pw.flush();
+
                     sendMessage(pw, messageInputArea);
                     messageFrame.setVisible(false);
 
                     try {
                         if (bfr.readLine().equalsIgnoreCase("yes")) {
-                            JOptionPane.showMessageDialog(null, "Message sent!",
+                            JOptionPane.showMessageDialog(messageFrame, "Message sent!",
                                     "TextOGram", JOptionPane.PLAIN_MESSAGE);
                             showProfilePage(userInfo, pw, bfr);
-                        }
-                        else {
-                            JOptionPane.showMessageDialog(null, "Error",
+                        } else {
+                            JOptionPane.showMessageDialog(messageFrame, "Error",
                                     "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     } catch (IOException ex) {
@@ -202,13 +210,51 @@ public class Client {
                     }
                     frame.setVisible(false);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Please enter a message.",
+                    JOptionPane.showMessageDialog(messageFrame, "Please enter a message.",
                             "TextOGram", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
-        inputPanel.add(sendButton, BorderLayout.SOUTH);
+        JButton removeButton = new JButton("Remove");
+        removeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pw.write("remove");
+                pw.println();
+                pw.flush();
+
+                try {
+                    openRemoveWindow(pw, bfr, messageHistoryArea, userInfo, frame);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                messageInputArea.setText("");
+                messageFrame.setVisible(false);
+            }
+        });
+
+        JButton profileButton = new JButton("Profile");
+        profileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pw.write("profile");
+                pw.println();
+                pw.flush();
+
+                frame.setVisible(false);
+                messageFrame.setVisible(false);
+
+                showProfilePage(userInfo, pw, bfr);
+            }
+        });
+
+        buttonPanel.add(sendButton);
+        buttonPanel.add(removeButton);
+        buttonPanel.add(profileButton);
+
+        inputPanel.add(buttonPanel, BorderLayout.SOUTH);
         messageFrame.add(inputPanel, BorderLayout.SOUTH);
 
         messageFrame.setVisible(true);
@@ -220,6 +266,101 @@ public class Client {
 
         pw.println(message);
         messageArea.setText("");
+    }
+
+    private static void openRemoveWindow(PrintWriter pw, BufferedReader bfr, JTextArea messageHistoryArea, String[] userInfo, JFrame frame) throws IOException {
+        JFrame removeFrame = new JFrame("Message Removal");
+        removeFrame.setSize(400, 300);
+        removeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        removeFrame.setLocationRelativeTo(null);
+        removeFrame.setLayout(new BorderLayout());
+
+        JPanel removePanel = new JPanel(new BorderLayout());
+
+        DefaultListModel<String> removeListModel = new DefaultListModel<>();
+
+        String[] allMessages = messageHistoryArea.getText().split("\n");
+        ArrayList<String> userMessages = new ArrayList<>();
+
+        for (String message : allMessages) {
+            String[] eachMessage = message.split(": ");
+            if (eachMessage[0].equals(userInfo[0])) {
+                userMessages.add(message);
+            }
+        }
+
+        for (String message : userMessages) {
+            removeListModel.addElement(message.split(": ")[1]);
+        }
+
+        JList<String> removeList = new JList<>(removeListModel);
+
+        removePanel.add(new JScrollPane(removeList), BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pw.write("delete");
+                pw.println();
+                pw.flush();
+
+                String messageToRemove = removeList.getSelectedValue();
+                if (messageToRemove != null) {
+                    pw.write(messageToRemove);
+                    pw.println();
+                    pw.flush();
+
+                    frame.setVisible(false);
+                    removeFrame.setVisible(false);
+
+                    try {
+                        if (bfr.readLine().equals("yes")) {
+                            JOptionPane.showMessageDialog(removeFrame, "Message Successfully Deleted!",
+                                    "TextOGram", JOptionPane.PLAIN_MESSAGE);
+                        } else if (bfr.readLine().equals("no")) {
+                            JOptionPane.showMessageDialog(removeFrame, "Error",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        } else if (bfr.readLine().equals("null")) {
+                            JOptionPane.showMessageDialog(removeFrame, "You have no message history. Go talk to this person more!",
+                                    "TextOGram", JOptionPane.PLAIN_MESSAGE);
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    showProfilePage(userInfo, pw, bfr);
+                } else {
+                    JOptionPane.showMessageDialog(removeFrame, "Please select a message to delete.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        JButton profileButton = new JButton("Profile");
+        profileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pw.write("profile");
+                pw.println();
+                pw.flush();
+
+                frame.setVisible(false);
+                removeFrame.setVisible(false);
+
+                showProfilePage(userInfo, pw, bfr);
+            }
+        });
+
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(profileButton);
+
+        removeFrame.add(removePanel, BorderLayout.CENTER);
+        removeFrame.add(buttonPanel, BorderLayout.SOUTH);
+
+        removeFrame.setVisible(true);
     }
 
     private static void openViewWindow(String friendUsername, PrintWriter pw, BufferedReader bfr, JFrame frame, JPanel friendsPanel, String[] userInfo) {
@@ -283,21 +424,21 @@ public class Client {
                         users.add(friend);
                         friend = bfr.readLine();
                     }
+                    System.out.println(result);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
 
-
                 viewFrame.setVisible(false);
 
                 if (result.equals("yes")) {
-                    JOptionPane.showMessageDialog(null, "Friend successfully removed!",
+                    JOptionPane.showMessageDialog(viewFrame, "Friend successfully removed!",
                             "TextOGram", JOptionPane.PLAIN_MESSAGE);
                     updateFrame(frame, users, friendsPanel);
                     showProfilePage(userInfo, pw, bfr);
                     frame.setVisible(false);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Sorry, there was an error!",
+                    JOptionPane.showMessageDialog(viewFrame, "Sorry, there was an error!",
                             "TextOGram", JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -534,6 +675,7 @@ public class Client {
         frame.add(panel, BorderLayout.SOUTH);
         frame.setVisible(true);
     }
+
     public static boolean showLogInMessage(PrintWriter pw, BufferedReader bfr) {
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(400, 100);
@@ -624,6 +766,7 @@ public class Client {
         newPasswordFrame.add(submitButton, BorderLayout.SOUTH);
         newPasswordFrame.setVisible(true);
     }
+
     // this method checks if the password inputted meets all the requirements for a secure password
     public static boolean checkPassword(String password) {
         // creating 3 different string representations of allowed symbols from a keyboard
@@ -669,6 +812,7 @@ public class Client {
         // otherwise returns false
         return hasChar & hasInt & hasUpper & hasLower;
     }
+
     public static void enterUsername(PrintWriter pw, BufferedReader bfr) throws IOException {
         usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         usernameFrame.setSize(300, 150);
@@ -714,6 +858,7 @@ public class Client {
         usernameFrame.add(panel, BorderLayout.CENTER);
         usernameFrame.setVisible(true);
     }
+
     public static void enterPassword(PrintWriter pw, BufferedReader bfr, String userInfo) throws IOException {
 
         passwordFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -730,8 +875,8 @@ public class Client {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String password = passwordField.getText();
-                String [] userInfoSplit = userInfo.split(", ");
-                if(userInfoSplit[2].equalsIgnoreCase(password)) {
+                String[] userInfoSplit = userInfo.split(", ");
+                if (userInfoSplit[2].equalsIgnoreCase(password)) {
                     passwordFrame.dispose();
                     showProfilePage(userInfoSplit, pw, bfr);
                 } else {
@@ -751,6 +896,7 @@ public class Client {
         passwordFrame.add(panel, BorderLayout.CENTER);
         passwordFrame.setVisible(true);
     }
+
     public static void createNewUserGUI(PrintWriter pw, BufferedReader bfr) {
         JFrame newUserFrame = new JFrame("New User Registration");
         newUserFrame.setSize(400, 300);
@@ -827,6 +973,7 @@ public class Client {
 
         newUserFrame.setVisible(true);
     }
+
     public static void showProfilePage(String[] profilePageThings, PrintWriter pw, BufferedReader bfr) {
         //splits the user information;
         String username = profilePageThings[0];
@@ -880,6 +1027,10 @@ public class Client {
             public void actionPerformed(ActionEvent e) {
                 pw.println("signout");
                 frame.dispose();
+
+                JOptionPane.showMessageDialog(frame, "Have a nice day!",
+                        "TextOGram", JOptionPane.PLAIN_MESSAGE);
+
             }
         });
         JPanel panel = new JPanel();
