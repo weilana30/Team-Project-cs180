@@ -91,7 +91,7 @@ public class User implements UserInterface {
         this.phoneNumber = phoneNumber;
     }
 
-    public void addUserToFile() throws IOException {
+    public synchronized void addUserToFile() throws IOException {
         File file = new File("Users.txt");
         FileOutputStream fos = new FileOutputStream(file, true);
         PrintWriter pw = new PrintWriter(fos);
