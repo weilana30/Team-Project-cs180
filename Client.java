@@ -748,7 +748,7 @@ public class Client {
                         userInformation[4] = userInfoSplit[3];
                         userInformation[5] = userInfoSplit[4];
                         pw.println(userInformation[0] + ", " + userInformation[1] + ", " + userInformation[2] + ", " +
-                                userInformation[3] + ", " + userInformation[3] + ", " + userInformation[5]);
+                                userInformation[3] + ", " + userInformation[4] + ", " + userInformation[5]);
                         newPasswordFrame.dispose();
                         showProfilePage(userInformation, pw, bfr);
                     } else {
