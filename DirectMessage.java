@@ -57,7 +57,7 @@ public class DirectMessage {
         return true;
     }
     //updates the file with the current contents of messages
-    public boolean updateFile() {
+    public synchronized boolean updateFile() {
         try {
             File file = new File(fileName);
             FileOutputStream fos = new FileOutputStream(file, false);
