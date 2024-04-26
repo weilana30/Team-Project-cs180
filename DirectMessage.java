@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * @author Andrew Weiland, lab section 15
  * @version March 31, 2024
  */
-public class DirectMessage {
+public class DirectMessage implements DirectMessageInterface{
     private String fileName;
     private User [] users;
     private int textNumber;
