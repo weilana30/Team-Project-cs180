@@ -358,17 +358,44 @@ public class Server implements Runnable {
                                 if (userChoice.equalsIgnoreCase("block")) {
                                     String userName = br.readLine();
                                     File file = new File(userName + "Blocked.txt");
-                                    PrintWriter blockWriter = new PrintWriter(new FileOutputStream(file));
-                                    blockWriter.println(user);
-                                    blockWriter.close();
-                                    doAgain = false;
+                                    if (!file.exists()) {
+                                        file.createNewFile();
+                                    }
+                                    FileReader reader = new FileReader(file);
+                                    BufferedReader bfr = new BufferedReader(reader);
+                                    String line;
+                                    ArrayList <String> blocked = new ArrayList<>();
+                                    while ((line = bfr.readLine()) != null) {
+                                        blocked.add(line);
+                                    }
+                                    bfr.close();
+                                    if (blocked.contains(user.toString())) {
+                                        PrintWriter blockWriter = new PrintWriter(new FileOutputStream(file));
+                                        blockWriter.println(user);
+                                        blockWriter.close();
+                                    }
+                                    doAgain = true;
                                 } else if (userChoice.equalsIgnoreCase("add")) {
                                     String userName = br.readLine();
+                                    System.out.println(userName);
                                     File file = new File(userName + "Friends.txt");
-                                    PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file, true));
-                                    friendsWriter.println(user);
-                                    friendsWriter.close();
-                                    doAgain = false;
+                                    if (!file.exists()) {
+                                        file.createNewFile();
+                                    }
+                                    FileReader reader = new FileReader(file);
+                                    BufferedReader bfr = new BufferedReader(reader);
+                                    String line;
+                                    ArrayList <String> friends = new ArrayList<>();
+                                    while ((line = bfr.readLine()) != null) {
+                                        friends.add(line);
+                                    }
+                                    bfr.close();
+                                    if (!friends.contains(user.toString())) {
+                                        PrintWriter friendsWriter = new PrintWriter(new FileOutputStream(file, true));
+                                        friendsWriter.println(user);
+                                        friendsWriter.close();
+                                    }
+                                    doAgain = true;
                                 }
                             }
                         }
