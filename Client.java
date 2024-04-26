@@ -41,8 +41,7 @@ public class Client {
         ArrayList<String> allFriendsUsers = new ArrayList<>();
 
         if (friends.equals(" ")) {
-            System.out.println("No friends found!\n\n");
-            JOptionPane.showMessageDialog(null, "You have no friends. Go make some!",
+            JOptionPane.showMessageDialog(null, "You have no friends. Go make some through the search feature!",
                     "TextOGram - Friends", JOptionPane.PLAIN_MESSAGE);
             showProfilePage(userInfo, pw, bfr);
         } else {
@@ -51,7 +50,7 @@ public class Client {
                 friends = bfr.readLine();
             }
 
-            JFrame frame = new JFrame("TextOGram - Friends");
+            JFrame frame = new JFrame(userInfo[0] + " - Friends");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(400, 300);
             frame.setResizable(true);
@@ -956,7 +955,7 @@ public class Client {
                                 emailField.getText(), phoneField.getText(), birthdayField.getText());
 
                         pw.println(newUserInfo);
-                        String valid = null;
+                        String valid;
                         try {
                             valid = bfr.readLine();
                         } catch (IOException ex) {
