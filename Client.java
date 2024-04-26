@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -633,6 +634,7 @@ public class Client {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == addFriend) {
                     pw.println("add");
+                    pw.println(userInfoSplit[0]);
                     pw.println("end");
                     JOptionPane.showMessageDialog(frame, "User Successfully added as friend.",
                             "User added", JOptionPane.PLAIN_MESSAGE);
@@ -647,6 +649,7 @@ public class Client {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == block) {
                     pw.println("block");
+                    pw.println(userInfoSplit[0]);
                     pw.println("end");
                     JOptionPane.showMessageDialog(frame, "User Successfully blocked.",
                             "User blocked", JOptionPane.PLAIN_MESSAGE);
