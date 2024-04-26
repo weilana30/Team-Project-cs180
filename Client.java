@@ -817,7 +817,7 @@ public class Client {
 
     public static void enterUsername(PrintWriter pw, BufferedReader bfr) throws IOException {
         usernameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        usernameFrame.setSize(300, 150);
+        usernameFrame.setSize(800, 150);
         usernameFrame.setLocationRelativeTo(null);
         usernameFrame.setLayout(new BorderLayout());
 
@@ -853,7 +853,7 @@ public class Client {
             }
         });
 
-        panel.add(new JLabel("Enter your username, email, or phone number:"));
+        panel.add(new JLabel("Enter your username, email, or phone number (case-sensitive):"));
         panel.add(usernameField);
         panel.add(submitButton);
 
