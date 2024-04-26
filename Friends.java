@@ -105,7 +105,7 @@ public class Friends implements FriendsInterface {
         return friends;
     }
 
-    private void readFriendsFromFile(String username) {
+    private synchronized void readFriendsFromFile(String username) {
         // reads friends data from file and populates the friends ArrayList
         try {
             FileReader reader = new FileReader(username + "Friends.txt");
@@ -145,7 +145,7 @@ public class Friends implements FriendsInterface {
     }
 
 
-    public void updateFriendsFile(String username) {
+    public synchronized void updateFriendsFile(String username) {
         try {
             FileWriter writer = new FileWriter(username + "Friends.txt");
             for (User friend : friends) {
@@ -157,7 +157,7 @@ public class Friends implements FriendsInterface {
         }
     }
 
-    private void updateBlockedFile(String username) {
+    private synchronized void updateBlockedFile(String username) {
         try {
             FileWriter writer = new FileWriter(username + "Blocked.txt");
             for (User blockedUser : blocked) {
@@ -176,7 +176,7 @@ public class Friends implements FriendsInterface {
         return blocked;
     }
 
-    private void readBlockedFromFile(String username) {
+    private synchronized void readBlockedFromFile(String username) {
         // reads blocked users data from file specific to the given username and populate the blocked ArrayList
         try {
             FileReader reader = new FileReader(username + "Blocked.txt");
