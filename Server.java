@@ -130,7 +130,6 @@ public class Server implements Runnable {
         if (!empty) {
             bfr.readLine();
             String response = bfr.readLine();
-            System.out.println(response);
 
             if (response.equalsIgnoreCase("message")) {
 
@@ -166,7 +165,6 @@ public class Server implements Runnable {
                 }
 
                 String removeOption = bfr.readLine();
-                System.out.println(removeOption);
 
                 if (removeOption.equalsIgnoreCase("send")) {
                     String message = bfr.readLine();
@@ -248,8 +246,6 @@ public class Server implements Runnable {
                 pw.println(profile.getBirthdayByUsername(friendToView));
 
                 String unfriendOption = bfr.readLine();
-
-                System.out.println(unfriendOption);
 
                 if (unfriendOption.equals("unfriend")) {
 
@@ -364,7 +360,7 @@ public class Server implements Runnable {
                                     FileReader reader = new FileReader(file);
                                     BufferedReader bfr = new BufferedReader(reader);
                                     String line;
-                                    ArrayList <String> blocked = new ArrayList<>();
+                                    ArrayList<String> blocked = new ArrayList<>();
                                     while ((line = bfr.readLine()) != null) {
                                         blocked.add(line);
                                     }
@@ -377,7 +373,6 @@ public class Server implements Runnable {
                                     doAgain = true;
                                 } else if (userChoice.equalsIgnoreCase("add")) {
                                     String userName = br.readLine();
-                                    System.out.println(userName);
                                     File file = new File(userName + "Friends.txt");
                                     if (!file.exists()) {
                                         file.createNewFile();
@@ -385,7 +380,7 @@ public class Server implements Runnable {
                                     FileReader reader = new FileReader(file);
                                     BufferedReader bfr = new BufferedReader(reader);
                                     String line;
-                                    ArrayList <String> friends = new ArrayList<>();
+                                    ArrayList<String> friends = new ArrayList<>();
                                     while ((line = bfr.readLine()) != null) {
                                         friends.add(line);
                                     }
